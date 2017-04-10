@@ -36,8 +36,8 @@ print mx.asnumpy(out)
     * [***Recurrent Neural Networks with LSTM with SoftmaxOutput: Classifying the MNIST data using mxnet***]()(***not yet***)
     * [***Autoencoder Neural Networks with logisticRegressionOutput : Compressing the MNIST data using mxnet***]()(***not yet***)
 * ### ***Neural Networks Applications***
-    * [***Predicting lotto numbers in regression analysis using mxnet version1***]()
-    * [***Predicting lotto numbers in regression analysis using mxnet version2***]()
+    * [***Predicting lotto numbers in regression analysis using mxnet version1***](https://github.com/JONGGON/Mxnet_Tutorial/tree/master/applications/Predicting%20lotto%20numbers%20in%20regression%20analysis%20using%20mxnet%20version1)
+    * [***Predicting lotto numbers in regression analysis using mxnet version2***](https://github.com/JONGGON/Mxnet_Tutorial/tree/master/applications/Predicting%20lotto%20numbers%20in%20regression%20analysis%20using%20mxnet%20version2)
     * [***Generative Adversarial Network : using undefined data***]()(***not yet***)
     * [***word2vec : using undefined data***]()(***not yet***)
 
