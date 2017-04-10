@@ -1,6 +1,6 @@
 
 >## ***Mxnet?*** 
-Flexible and Efficient Library for Deep Learning
+*Flexible and Efficient Library for Deep Learning*
 
 <image src="https://raw.githubusercontent.com/dmlc/web-data/master/mxnet/image/banner.png" width=800 height=200></image>
 >## ***Introduction*** 
