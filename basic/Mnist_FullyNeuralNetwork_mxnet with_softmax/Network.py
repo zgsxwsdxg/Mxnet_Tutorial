@@ -31,7 +31,7 @@ def NeuralNet(epoch,batch_size,save_period):
 
     '''data loading referenced by Data Loading API '''
     train_iter = mx.io.NDArrayIter(data={'data' : to4d(train_img)},label={'label' : train_lbl}, batch_size=batch_size, shuffle=True) #training data
-    test_iter   = mx.io.NDArrayIter(data={'data' : to4d(test_img)}, label={'label' : train_lbl}, batch_size=batch_size) #test data
+    test_iter   = mx.io.NDArrayIter(data={'data' : to4d(test_img)}, label={'label' : test_lbl}, batch_size=batch_size) #test data
 
     '''neural network'''
     data = mx.sym.Variable('data')
