@@ -9,8 +9,7 @@
 >## ***Official Homepage Tutorial***
 *
     The following LINK is a tutorial on the MXNET  official homepage
-
-* Link : [mxnet homapage tutorials](http://mxnet.io/tutorials/index.html)
+    * Link : [mxnet homapage tutorials](http://mxnet.io/tutorials/index.html)
 >## ***Let's begin with***
 * Required library and very simple code
 ```python
@@ -55,4 +54,5 @@ print mx.asnumpy(out)
 >## ***Dependencies*** 
 + mxnet-0.9.4
 + numpy-1.12.0
++ matplotlib-1.5.0rc3
 
