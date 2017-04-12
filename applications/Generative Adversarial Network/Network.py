@@ -5,6 +5,8 @@ import data_download as dd
 import logging
 logging.basicConfig(level=logging.INFO)
 
+import matplotlib.pyplot as plt
+
 '''unsupervised learning -  Generative Sdversarial Networks'''
 
 def to4d(img):
@@ -31,14 +33,16 @@ def GAN(epoch,batch_size,save_period):
 
     '''
 
-    (train_lbl_one_hot, train_lbl, train_img) = dd.read_data_from_file('train-labels-idx1-ubyte.gz','train-images-idx3-ubyte.gz')
-    (test_lbl_one_hot, test_lbl, test_img) = dd.read_data_from_file('t10k-labels-idx1-ubyte.gz', 't10k-images-idx3-ubyte.gz')
+    '''In this Generative Adversarial Networks tutorial, we don't need the label data.'''
+    (_, _, train_img) = dd.read_data_from_file('train-labels-idx1-ubyte.gz','train-images-idx3-ubyte.gz')
+    (_, _, test_img) = dd.read_data_from_file('t10k-labels-idx1-ubyte.gz', 't10k-images-idx3-ubyte.gz')
 
     '''data loading referenced by Data Loading API '''
-    train_iter = mx.io.NDArrayIter(data={'data' : to4d(train_img)},label={'label' : train_lbl_one_hot}, batch_size=batch_size, shuffle=True) #training data
-    test_iter   = mx.io.NDArrayIter(data={'data' : to4d(test_img)}, label={'label' : test_lbl_one_hot}, batch_size=batch_size) #test data
+    train_iter  = mx.io.NDArrayIter(data={'input' : to4d(train_img)},label={'input_' : to2d(train_img)}, batch_size=batch_size, shuffle=True) #training data
+    test_iter   = mx.io.NDArrayIter(data={'input' : to4d(test_img)},label={'input_' : to2d(test_img)} ,batch_size=batch_size) #test data
 
-    '''neural network'''
+
+    '''1. generator neural network'''
     data = mx.sym.Variable('data')
     data = mx.sym.Flatten(data=data) #Flatten the mnist data
     label = mx.sym.Variable('label')
@@ -59,6 +63,11 @@ def GAN(epoch,batch_size,save_period):
 
     #LogisticRegressionOutput contains a sigmoid function internally. and It should be executed with xxxx_lbl_one_hot data.
     output = mx.sym.LogisticRegressionOutput(data=output_affine ,label=label)
+
+    '''2. discriminator neural network'''
+
+
+
 
     '''
     cost function  = Mean squaer error(MSE)
@@ -104,7 +113,7 @@ def GAN(epoch,batch_size,save_period):
             aux_params=None,
             num_epoch=epoch,
             epoch_end_callback=checkpoint)
-
+    mod.sa
     # Network information print
     print mod.data_shapes
     print mod.label_shapes
@@ -117,31 +126,22 @@ def GAN(epoch,batch_size,save_period):
     mod.bind(data_shapes=test_iter.provide_data, label_shapes=test_iter.provide_label, force_rebind=True)
 
     '''Annotate only when running test data.'''
-    # mod.set_params(arg_params, aux_params)
+    #mod.set_params(arg_params, aux_params)
 
-    #batch by batch accuracy
-    #To use the code below, Test / batchsize must be an integer.
-    '''for preds, i_batch, eval_batch in mod.iter_predict(test_iter):
-        pred_label = preds[0].asnumpy().argmax(axis=1)
-        label = eval_batch.label[0].asnumpy().argmax(axis=1)
-        print('batch %d, accuracy %f' % (i_batch, float(sum(pred_label == label)) / len(label)))
-    '''
     '''all data test'''
-    result = mod.predict(test_iter).asnumpy().argmax(axis=1)
-    print 'Final accuracy : {}%' .format(float(sum(test_lbl == result)) / len(result)*100)
+    result = mod.predict(test_iter).asnumpy()
 
-    '''
-    #Second optimization method
-    model = mx.model.FeedForward(
-        symbol=output,  # network structure
-        num_epoch=10,  # number of data passes for training
-        learning_rate=0.1  # learning rate of SGD
-    )
-    model.fit(
-        X=train_iter,  # training data
-        eval_data=test_iter,  # validation data
-        batch_end_callback=mx.callback.Speedometer(batch_size, 200)  # output progress for each 200 data batches
-    )'''
+    '''visualization'''
+    print_size=10
+    fig ,  ax = plt.subplots(2, print_size, figsize=(print_size, 2))
+
+    for i in xrange(print_size):
+        ax[0][i].set_axis_off()
+        ax[1][i].set_axis_off()
+        ax[0][i].imshow(np.reshape(result[i], (28, 28)))
+        ax[1][i].imshow(np.reshape(result[i+10], (28, 28)))
+
+    plt.show()
 
 if __name__ == "__main__":
 
