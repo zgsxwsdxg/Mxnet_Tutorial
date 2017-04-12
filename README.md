@@ -33,7 +33,7 @@ print mx.asnumpy(out)
     * [***Fully Connected Neural Network with SoftmaxOutput : Classifying the MNIST data using mxnet***](https://github.com/JONGGON/Mxnet_Tutorial/tree/master/basic/Mnist_FullyNeuralNetwork_mxnet%20with_softmax)
     * [***Convolutional Neural Networks with SoftmaxOutput : Classifying the MNIST data using mxnet***](https://github.com/JONGGON/Mxnet_Tutorial/tree/master/basic/Convolutional%20Neural%20Networks%20with%20SoftmaxOutput)
     * [***Recurrent Neural Networks with SoftmaxOutput : Classifying the MNIST data using mxnet***]()(***not yet***)
-    * [***Recurrent Neural Networks with LSTM with SoftmaxOutput: Classifying the MNIST data using mxnet***]()(***not yet***)
+    * [***Recurrent Neural Networks + LSTM with SoftmaxOutput : Classifying the MNIST data using mxnet***]()(***not yet***)
     * [***Autoencoder Neural Networks with logisticRegressionOutput : Compressing the MNIST data using mxnet***](https://github.com/JONGGON/Mxnet_Tutorial/tree/master/basic/Autoencoder%20Neural%20Networks%20with%20logisticRegressionOutput)
 * ### ***Neural Networks Applications***
     * [***Predicting lotto numbers in regression analysis using mxnet version1***](https://github.com/JONGGON/Mxnet_Tutorial/tree/master/applications/Predicting%20lotto%20numbers%20in%20regression%20analysis%20using%20mxnet%20version1)
