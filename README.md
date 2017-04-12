@@ -44,6 +44,7 @@ print mx.asnumpy(out)
 
 * ### ***Jonggon Project with Machine Running and Deep Learning***  
      * [***Motion Generation***]()(***in progress***)
+     * [***t-SNE***]()(***in progress***)
 
 
 >## ***Development environment***
