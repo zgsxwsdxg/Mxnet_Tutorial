@@ -38,7 +38,7 @@ print mx.asnumpy(out)
 * ### ***Neural Networks Applications***
     * [***Predicting lotto numbers in regression analysis using mxnet version1***](https://github.com/JONGGON/Mxnet_Tutorial/tree/master/applications/Predicting%20lotto%20numbers%20in%20regression%20analysis%20using%20mxnet%20version1)
     * [***Predicting lotto numbers in regression analysis using mxnet version2***](https://github.com/JONGGON/Mxnet_Tutorial/tree/master/applications/Predicting%20lotto%20numbers%20in%20regression%20analysis%20using%20mxnet%20version2)    
-    * [***Generative Adversarial Network : using undefined data***]()(***not yet***)
+    * [***Generative Adversarial Network : using the MNIST data***]()(***not yet***)
     * [***word2vec : using undefined data***]()(***not yet***)
 
 >## ***Development environment***
