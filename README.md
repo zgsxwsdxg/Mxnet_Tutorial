@@ -42,6 +42,10 @@ print mx.asnumpy(out)
     * [***Generative Adversarial Network version2 with Convolution Neural Network : using the MNIST data***]()(***in progress***)
     * [***word2vec : using undefined data***]()(***not yet***)
 
+* ### ***Jonggon Project with Machine Running and Deep Learning***  
+     * [***Motion Generation***]()(***in progress***)
+
+
 >## ***Development environment***
 * window 8.1 64bit 
 * WinPython-64bit-2.7.10.3 - (Also available in Python package Library like Anaconda and so on)  
