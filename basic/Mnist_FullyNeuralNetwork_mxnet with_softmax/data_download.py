@@ -62,8 +62,8 @@ if __name__ == "__main__":
 
     '''print "download mnist data"
     path = 'http://yann.lecun.com/exdb/mnist/'
-    (train_lbl, train_img) = read_data_from_internetpath + 'train-labels-idx1-ubyte.gz', path + 'train-images-idx3-ubyte.gz')
-    (val_lbl, val_img) = read_data_from_internet(path + 't10k-labels-idx1-ubyte.gz', path + 't10k-images-idx3-ubyte.gz')'''
+    (train_lbl_one_hot, train_lbl, train_img) = read_data_from_internet(path + 'train-labels-idx1-ubyte.gz', path + 'train-images-idx3-ubyte.gz')
+     (test_lbl_one_hot, test_lbl, test_img)  = read_data_from_internet(path + 't10k-labels-idx1-ubyte.gz', path + 't10k-images-idx3-ubyte.gz')'''
 
     (train_lbl_one_hot, train_lbl, train_img) = read_data_from_file('train-labels-idx1-ubyte.gz','train-images-idx3-ubyte.gz')
     (test_lbl_one_hot, test_lbl, test_img) = read_data_from_file('t10k-labels-idx1-ubyte.gz','t10k-images-idx3-ubyte.gz')

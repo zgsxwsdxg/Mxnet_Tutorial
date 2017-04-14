@@ -15,11 +15,11 @@
   <component name="ExecutionTargetManager" SELECTED_TARGET="default_target" />
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="data_download.py" pinned="false" current-in-tab="false">
+      <file leaf-file-name="data_download.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/data_download.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="893">
-              <caret line="52" column="7" lean-forward="false" selection-start-line="52" selection-start-column="7" selection-end-line="52" selection-end-column="7" />
+            <state relative-caret-position="621">
+              <caret line="65" column="44" lean-forward="false" selection-start-line="65" selection-start-column="44" selection-end-line="65" selection-end-column="44" />
               <folding>
                 <element signature="e#0#18#0" expanded="true" />
               </folding>
@@ -27,11 +27,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="Network.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="Network.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Network.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="665">
-              <caret line="101" column="109" lean-forward="false" selection-start-line="101" selection-start-column="109" selection-end-line="101" selection-end-column="109" />
+            <state relative-caret-position="1767">
+              <caret line="96" column="51" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="155" selection-end-column="0" />
               <folding>
                 <element signature="e#24#42#0" expanded="true" />
               </folding>
@@ -91,17 +91,17 @@
         <option value="$PROJECT_DIR$/data_preprocessing.py" />
         <option value="C:/WinPython-64bit-3.5.3.0Qt5/python-3.5.3.amd64/Lib/site-packages/matplotlib/font_manager.py" />
         <option value="C:/WinPython-64bit-2.7.10.3/python-2.7.10.amd64/Lib/site-packages/mxnet-0.9.4-py2.7.egg/mxnet/metric.py" />
-        <option value="$PROJECT_DIR$/data_download.py" />
         <option value="C:/WinPython-64bit-2.7.10.3/python-2.7.10.amd64/Lib/site-packages/mxnet-0.9.4-py2.7.egg/mxnet/module/base_module.py" />
         <option value="$PROJECT_DIR$/../Lotto_prediction/data_preprocessing.py" />
         <option value="$PROJECT_DIR$/main.py" />
         <option value="$PROJECT_DIR$/Network.py" />
+        <option value="$PROJECT_DIR$/data_download.py" />
       </list>
     </option>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="505" />
-    <option name="y" value="68" />
+    <option name="x" value="88" />
+    <option name="y" value="14" />
     <option name="width" value="960" />
     <option name="height" value="1040" />
   </component>
@@ -139,7 +139,7 @@
     </panes>
   </component>
   <component name="PropertiesComponent">
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/../Mnist_FullyNeuralNetwork_mxnet with_LogisticRegressionOutput" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
   </component>
   <component name="RunManager" selected="Python.main">
@@ -393,7 +393,7 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="505" y="68" width="960" height="1040" extended-state="0" />
+    <frame x="88" y="14" width="960" height="1040" extended-state="0" />
     <editor active="true" />
     <layout>
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.17584746" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
@@ -638,16 +638,6 @@
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/../Lotto_prediction/data_preprocessing.py" />
-    <entry file="file://$PROJECT_DIR$/data_download.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="893">
-          <caret line="52" column="7" lean-forward="false" selection-start-line="52" selection-start-column="7" selection-end-line="52" selection-end-column="7" />
-          <folding>
-            <element signature="e#0#18#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/main.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="114">
@@ -660,10 +650,20 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/Network.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="665">
-          <caret line="101" column="109" lean-forward="false" selection-start-line="101" selection-start-column="109" selection-end-line="101" selection-end-column="109" />
+        <state relative-caret-position="1767">
+          <caret line="96" column="51" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="155" selection-end-column="0" />
           <folding>
             <element signature="e#24#42#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/data_download.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="621">
+          <caret line="65" column="44" lean-forward="false" selection-start-line="65" selection-start-column="44" selection-end-line="65" selection-end-column="44" />
+          <folding>
+            <element signature="e#0#18#0" expanded="true" />
           </folding>
         </state>
       </provider>
