@@ -70,7 +70,10 @@ def NeuralNet(epoch,batch_size,save_period):
     model_name = 'weights/Neural_Net'
     checkpoint = mx.callback.do_checkpoint(model_name, period=save_period)
 
+    # training mod
     mod = mx.mod.Module(symbol=output, data_names=['data'], label_names=['label'], context=mx.gpu(0))
+    # test mod
+    test = mx.mod.Module(symbol=output, data_names=['data'], label_names=['label'], context=mx.gpu(0))
 
     # Network information print
     print mod.data_names
@@ -78,23 +81,25 @@ def NeuralNet(epoch,batch_size,save_period):
     print train_iter.provide_data
     print train_iter.provide_label
 
-    #the below code already is declared by mod.fit function, thus we don't have to write it.
-    #mod.bind(data_shapes=train_iter.provide_data,label_shapes=train_iter.provide_label)
+    '''if the below code already is declared by mod.fit function, thus we don't have to write it.
+    but, when you load the saved weights, you must write the below code.'''
+    mod.bind(data_shapes=train_iter.provide_data,label_shapes=train_iter.provide_label)
 
     #weights load
-    '''
+
     # When you want to load the saved weights, uncomment the code below.
-    symbol, arg_params, aux_params = mx.model.load_checkpoint(model_name, 10)
+    symbol, arg_params, aux_params = mx.model.load_checkpoint(model_name, 100)
 
     #the below code needs mod.bind, but If arg_params and aux_params is set in mod.fit, you do not need the code below, nor do you need mod.bind.
-    # mod.set_params(arg_params, aux_params)
-    '''
+    mod.set_params(arg_params, aux_params)
+
 
     '''in this code ,  eval_metric, mod.score doesn't work'''
     mod.fit(train_iter, initializer=mx.initializer.Xavier(rnd_type='gaussian', factor_type="avg", magnitude=1),
             optimizer='adam',
             optimizer_params={'learning_rate': 0.001},
             eval_metric=mx.metric.MSE(),
+            # Once the loaded parameters are declared here,You do not need to declare mod.set_params,mod.bind
             arg_params=None,
             aux_params=None,
             num_epoch=epoch,
@@ -109,10 +114,12 @@ def NeuralNet(epoch,batch_size,save_period):
     print mod.score(train_iter, ['mse', 'acc'])
 
     #################################TEST####################################
-    mod.bind(data_shapes=test_iter.provide_data, label_shapes=test_iter.provide_label, force_rebind=True)
+    symbol, arg_params, aux_params = mx.model.load_checkpoint(model_name, 100)
+
+    test.bind(data_shapes=test_iter.provide_data, label_shapes=test_iter.provide_label, for_training=False)
 
     '''Annotate only when running test data.'''
-    # mod.set_params(arg_params, aux_params)
+    test.set_params(arg_params, aux_params)
 
     #batch by batch accuracy
     #To use the code below, Test / batchsize must be an integer.
@@ -122,7 +129,7 @@ def NeuralNet(epoch,batch_size,save_period):
         print('batch %d, accuracy %f' % (i_batch, float(sum(pred_label == label)) / len(label)))
     '''
     '''all data test'''
-    result = mod.predict(test_iter).asnumpy().argmax(axis=1)
+    result = test.predict(test_iter).asnumpy().argmax(axis=1)
     print 'Final accuracy : {}%' .format(float(sum(test_lbl == result)) / len(result)*100)
 
     '''
@@ -141,7 +148,7 @@ def NeuralNet(epoch,batch_size,save_period):
 if __name__ == "__main__":
 
     print "NeuralNet_starting in main"
-    NeuralNet(epoch=10,batch_size=100,save_period=1)
+    NeuralNet(epoch=100,batch_size=100,save_period=100)
 
 else:
 

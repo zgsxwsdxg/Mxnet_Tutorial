@@ -37,25 +37,17 @@ def LottoNet(epoch,batch_size,save_period):
     output = mx.sym.LinearRegressionOutput(data=out_affine, label=label)
     #output = mx.sym.LogisticRegressionOutput(data=out_affine , label=label)
 
-    '''
-    #print output.list_arguments()
-    model = mx.model.FeedForward(
-        symbol=output,  # network structure
-        num_epoch=10000,  # number of data passes for training
-        learning_rate=0.1  # learning rate of SGD
-    )
-    model.fit(
-        X=train_iter,  # training data  # validation data
-        batch_end_callback=mx.callback.Speedometer(batch_size, 50)  # output progress for each 200 data batches
-    )
-    print model.predict(test_iter)*45
-    '''
+
     print output.list_arguments()
     #weights save
     model_name = 'weights/Lotto_Net'
     checkpoint = mx.callback.do_checkpoint(model_name,period=save_period)
 
+    # training mod
     mod = mx.mod.Module(symbol=output, data_names = ["input"], label_names = ["output"] ,context = mx.gpu())
+
+    # test mod
+    test = mx.mod.Module(symbol=out_affine , data_names=['input'], label_names=None, context=mx.gpu(0))
 
     # Network information print
     print mod.data_names
@@ -63,16 +55,16 @@ def LottoNet(epoch,batch_size,save_period):
     print train_iter.provide_data
     print train_iter.provide_label
 
-    #the below code already is declared by mod.fit function, thus we don't have to write it.
-    #mod.bind(data_shapes=train_iter.provide_data,label_shapes=train_iter.provide_label)
+    '''if the below code already is declared by mod.fit function, thus we don't have to write it.
+    but, when you load the saved weights, you must write the below code.'''
+    mod.bind(data_shapes=train_iter.provide_data,label_shapes=train_iter.provide_label)
 
-    '''
     # When you want to load the saved weights, uncomment the code below.
     symbol, arg_params, aux_params = mx.model.load_checkpoint(model_name, 50000)
 
     #the below code needs mod.bind, but If arg_params and aux_params is set in mod.fit, you do not need the code below, nor do you need mod.bind.
-    # mod.set_params(arg_params, aux_params)
-    '''
+    mod.set_params(arg_params, aux_params)
+
 
     mod.fit(train_iter,
             optimizer='adam',
@@ -80,6 +72,7 @@ def LottoNet(epoch,batch_size,save_period):
             initializer=mx.initializer.Xavier(rnd_type='gaussian', factor_type="avg", magnitude=1),
             eval_metric=mx.metric.MSE(),
             num_epoch=epoch,
+            # Once the loaded parameters are declared here,You do not need to declare mod.set_params,mod.bind
             arg_params= None,
             aux_params=None,
             epoch_end_callback=checkpoint)
@@ -97,12 +90,15 @@ def LottoNet(epoch,batch_size,save_period):
     #print result1
     #print result2
 
-    mod.bind(data_shapes=test_iter.provide_data,label_shapes=None,force_rebind=True)
+    #################################TEST####################################
+    symbol, arg_params, aux_params = mx.model.load_checkpoint(model_name, 50000)
+
+    test.bind(data_shapes=test_iter.provide_data,for_training=False)
 
     '''Annotate only when running test data.'''
-    # mod.set_params(arg_params, aux_params)
+    test.set_params(arg_params, aux_params)
 
-    result=mod.predict(test_iter)
+    result=test.predict(test_iter)
     result1 = mx.nd.round(normalization_factor*result)
     result2 = mx.nd.rint(normalization_factor*result)
 
