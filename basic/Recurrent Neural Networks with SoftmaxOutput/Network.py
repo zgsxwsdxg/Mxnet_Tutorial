@@ -6,13 +6,12 @@ import data_download as dd
 import logging
 logging.basicConfig(level=logging.INFO)
 
-def to4d(img):
-    return img.reshape(img.shape[0], 1, 28, 28).astype(np.float32)/255
-
 def NeuralNet(epoch,batch_size,save_period):
 
     time_step=28
-    hidden_unit_number=50
+    hidden_unit_number1 = 100
+    hidden_unit_number2 = 100
+    fullyconnected_unit_number1=100
     class_number=10
     batch_size = 100
 
@@ -23,6 +22,9 @@ def NeuralNet(epoch,batch_size,save_period):
 
     train_iter = mx.io.NDArrayIter(data={'data' : to4d(train_img)},label={'label' : train_lbl}, batch_size=batch_size, shuffle=True) #training data
     test_iter   = mx.io.NDArrayIter(data={'data' : to4d(test_img)}, label={'label' : test_lbl}, batch_size=batch_size) #test data
+                                                                or
+    train_iter = mx.io.NDArrayIter(data={'data' : to4d(train_img)},label={'label' : train_lbl_one_hot}, batch_size=batch_size, shuffle=True) #training data
+    test_iter   = mx.io.NDArrayIter(data={'data' : to4d(test_img)}, label={'label' : test_lbl_one_hot}, batch_size=batch_size) #test data
 
     2. LogisticRegressionOutput , LinearRegressionOutput , MakeLoss and so on.. must be
 
@@ -38,28 +40,54 @@ def NeuralNet(epoch,batch_size,save_period):
     test_iter   = mx.io.NDArrayIter(data={'data' : test_img}, label={'label' : test_lbl_one_hot}, batch_size=batch_size) #test data
 
     ####################################################-Network-################################################################
-
+    use_cudnn=True
 
     data = mx.sym.Variable('data')
-    data = mx.sym.transpose(data, axes=(1, 0, 2))  # (time,batch,column)
     label = mx.sym.Variable(('label'))
+    data = mx.sym.transpose(data, axes=(1, 0, 2))  # (time,batch,column)
 
-    '''RNN'''
-    lstm1= mx.rnn.LSTMCell(num_hidden=hidden_unit_number)
-    output, states=lstm1.unroll(length=time_step, inputs=data, merge_outputs=True, layout="TNC")
+    '''1. RNN cell declaration'''
 
-    output = mx.sym.Reshape(states[0], shape=(-1, hidden_unit_number), reverse=True)
+    '''
+    Fusing RNN layers across time step into one kernel.
+    Improves speed but is less flexible. Currently only
+    supported if using cuDNN on GPU.
+    '''
+
+    if use_cudnn: #faster!!!
+        rnn1 = mx.rnn.FusedRNNCell(num_hidden=hidden_unit_number1, mode="rnn_tanh", prefix="rnn1_",get_next_state=True)
+        rnn2 = mx.rnn.FusedRNNCell(num_hidden=hidden_unit_number2, mode="rnn_tanh", prefix="rnn2_",get_next_state=True)
+    else:
+        rnn1 = mx.rnn.RNNCell(num_hidden=hidden_unit_number1,activation='tanh', prefix='rnn1_')
+        rnn2 = mx.rnn.RNNCell(num_hidden=hidden_unit_number2,activation='tanh', prefix='rnn2_')
 
 
-    affine1 = mx.sym.FullyConnected(data=output, num_hidden=hidden_unit_number, name='affine1')
+    '''2. Unroll the RNN CELL on a time axis.'''
+
+
+    ''' unroll's return parameter
+    outputs : list of Symbol
+              output symbols.
+    states : Symbol or nested list of Symbol
+            has the same structure as begin_state()
+
+    '''
+    layer1, state1= rnn1.unroll(length=time_step, inputs=data, merge_outputs=True, layout='TNC')
+    layer1 = mx.sym.Dropout(layer1, p=0.3)
+    layer2, state2 = rnn2.unroll(length=time_step, inputs=layer1, merge_outputs=True,layout="TNC")
+    rnn_output= mx.sym.Reshape(state2[-1], shape=(-1,hidden_unit_number1))
+
+    '''FullyConnected Layer'''
+    affine1 = mx.sym.FullyConnected(data=rnn_output, num_hidden=fullyconnected_unit_number1, name='affine1')
     act1 = mx.sym.Activation(data=affine1, act_type='sigmoid', name='sigmoid1')
-    affine2= mx.sym.FullyConnected(data=act1, num_hidden=class_number, name = 'affine2')
+    affine2 = mx.sym.FullyConnected(data=act1, num_hidden=class_number, name = 'affine2')
     output = mx.sym.SoftmaxOutput(data=affine2, label=label, name='softmax')
-
 
     print output.list_arguments()
 
+    # training mod
     mod = mx.module.Module(symbol = output , data_names=['data'], label_names=['label'], context=mx.gpu(0))
+    # test mod
     test = mx.module.Module(symbol = output , data_names=['data'], label_names=['label'], context=mx.gpu(0))
 
     # Network information print
@@ -68,6 +96,8 @@ def NeuralNet(epoch,batch_size,save_period):
     print train_iter.provide_data
     print train_iter.provide_label
 
+    '''if the below code already is declared by mod.fit function, thus we don't have to write it.
+    but, when you load the saved weights, you must write the below code.'''
     mod.bind(data_shapes=train_iter.provide_data, label_shapes=train_iter.provide_label)
 
     # weights save
@@ -78,15 +108,15 @@ def NeuralNet(epoch,batch_size,save_period):
     #weights load
 
     # When you want to load the saved weights, uncomment the code below.
-    #symbol, arg_params, aux_params = mx.model.load_checkpoint(model_name, 10)
+    symbol, arg_params, aux_params = mx.model.load_checkpoint(model_name, 300)
 
     #the below code needs mod.bind, but If arg_params and aux_params is set in mod.fit, you do not need the code below, nor do you need mod.bind.
-    #mod.set_params(arg_params, aux_params)
+    mod.set_params(arg_params, aux_params)
 
     '''in this code ,  eval_metric, mod.score doesn't work'''
     mod.fit(train_iter, initializer=mx.initializer.Xavier(rnd_type='gaussian', factor_type="avg", magnitude=1),
             optimizer='adam',
-            optimizer_params={'learning_rate': 0.001},
+            optimizer_params={'learning_rate': 0.0001},
             eval_metric=mx.metric.MSE(),
             # Once the loaded parameters are declared here,You do not need to declare mod.set_params,mod.bind
             num_epoch=epoch,
@@ -104,7 +134,7 @@ def NeuralNet(epoch,batch_size,save_period):
     print mod.score(train_iter, ['mse', 'acc'])
 
     #################################TEST####################################
-    symbol, arg_params, aux_params = mx.model.load_checkpoint(model_name, 10)
+    symbol, arg_params, aux_params = mx.model.load_checkpoint(model_name, 300)
 
     test.bind(data_shapes=test_iter.provide_data, label_shapes=test_iter.provide_label, for_training=False)
 
@@ -118,14 +148,14 @@ def NeuralNet(epoch,batch_size,save_period):
         label = eval_batch.label[0].asnumpy().argmax(axis=1)
         print('batch %d, accuracy %f' % (i_batch, float(sum(pred_label == label)) / len(label)))
     '''
-
     '''all data test'''
     result = test.predict(test_iter).asnumpy().argmax(axis=1)
     print 'Final accuracy : {}%' .format(float(sum(test_lbl == result)) / len(result)*100)
+
 if __name__ == "__main__":
 
     print "NeuralNet_starting in main"
-    NeuralNet(epoch=100,batch_size=100,save_period=100)
+    NeuralNet(epoch=300,batch_size=100,save_period=100)
 
 else:
 
