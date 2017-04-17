@@ -1,7 +1,3 @@
-# -*- coding: utf-8 -*-
-import mxnet as mx
-from Network import GAN
+import Network
 
-'''implement'''
-
-GAN(epoch=10,batch_size=100,save_period=1)
+Network.GAN(epoch=0,batch_size=100,save_period=100)

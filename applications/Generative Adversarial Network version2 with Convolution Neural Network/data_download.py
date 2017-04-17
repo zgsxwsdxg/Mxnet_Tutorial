@@ -55,21 +55,19 @@ def read_data_from_file(label, image):
     '''
     label_one_hot =  mx.nd.one_hot(label_one_hot , 10)
 
-    return (label_one_hot,label, image)
+    return (label_one_hot, label, image)
 
 
 if __name__ == "__main__":
-
-    #'''
+    '''
     print "download mnist data"
     path = 'http://yann.lecun.com/exdb/mnist/'
-    (train_lbl_one_hot, train_lbl, train_img) = read_data_from_internet(path + 'train-labels-idx1-ubyte.gz', path + 'train-images-idx3-ubyte.gz')
+    (train_lbl_one_hot,train_lbl, train_img) = read_data_from_internet(path + 'train-labels-idx1-ubyte.gz', path + 'train-images-idx3-ubyte.gz')
     (test_lbl_one_hot, test_lbl, test_img) = read_data_from_internet(path + 't10k-labels-idx1-ubyte.gz', path + 't10k-images-idx3-ubyte.gz')
-    #'''
     '''
     (train_lbl_one_hot, train_lbl, train_img) = read_data_from_file('train-labels-idx1-ubyte.gz','train-images-idx3-ubyte.gz')
     (test_lbl_one_hot, test_lbl, test_img) = read_data_from_file('t10k-labels-idx1-ubyte.gz','t10k-images-idx3-ubyte.gz')
-    '''
+
 else:
 
     print "Load the mnist data"

@@ -114,8 +114,8 @@ def NeuralNet(epoch,batch_size,save_period):
     print mod.score(train_iter, ['mse', 'acc'])
 
     #################################TEST####################################
-    symbol, arg_params, aux_params = mx.model.load_checkpoint(model_name, 100)
-
+    #symbol, arg_params, aux_params = mx.model.load_checkpoint(model_name, 100)
+    arg_params, aux_params = mod.get_params()
     test.bind(data_shapes=test_iter.provide_data, label_shapes=test_iter.provide_label, for_training=False)
 
     '''Annotate only when running test data.'''
