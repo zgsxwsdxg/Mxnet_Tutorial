@@ -62,6 +62,7 @@ def GAN(epoch,batch_size,save_period):
     cost_function - MIN_MAX cost_function
     '''
     '''Network'''
+
     generator=Generator()
     discriminator=Discriminator()
 
@@ -73,61 +74,16 @@ def GAN(epoch,batch_size,save_period):
 
     #discriminator mod
     d_mod = mx.mod.Module(symbol=discriminator, data_names=['data'],label_names=['label'], context=mx.gpu(0))
-    d_mod.bind(data_shapes=noise_iter.provide_data)
+    d_mod.bind(data_shapes=train_iter.provide_data)
     d_mod.init_params(initializer=mx.initializer.Xavier(rnd_type='gaussian', factor_type="avg", magnitude=1),)
     d_mod.init_optimizer(optimizer='adam',optimizer_params={'learning_rate': 0.001})
 
-    def facc(label, pred):
-        pred = pred.ravel()
-        label = label.ravel()
-        return ((pred > 0.5) == label).mean()
-
-    def fentropy(label, pred):
-        pred = pred.ravel()
-        label = label.ravel()
-        return -(label*np.log(pred+1e-12) + (1.-label)*np.log(1.-pred+1e-12)).mean()
-
-    mG = mx.metric.CustomMetric(fentropy)
-    mD = mx.metric.CustomMetric(fentropy)
-
+    g_mod.fit
     #In mxnet,I think Implementing the Gan code is harder to implement than anything framework.
     ####################################training loop############################################
-    for epoch in xrange(epoch):
-        train_iter.reset()
-        for t, batch in enumerate(train_iter):
-            noise_batch=noise_iter.next()
-            g_mod.forward(noise_batch,is_train=True)
-            g_output=g_mod.get_outputs()
-
-            #generator -> discriminator
-            label[:] = 0
-            d_mod.forward(mx.io.DataBatch(g_output,[label]),is_train=True)
-            d_mod.backward()
-            gradD = [[grad.copyto(grad.context) for grad in grads] for grads in d_mod._exec_group.grad_arrays]
-            d_mod.update_metric(mD, [label])
-
-            #update discriminator on real
-            label[:] = 1
-            batch.label = [label]
-            d_mod.forward(batch, is_train=True)
-            d_mod.backward()
-            for gradsr, gradsf in zip(d_mod._exec_group.grad_arrays, gradD):
-                for gradr, gradf in zip(gradsr, gradsf):
-                    gradr += gradf
-            d_mod.update()
-
-            d_mod.update_metric(mD, [label])
-
-            # update generator
-            label[:] = 1
-            d_mod.forward(mx.io.DataBatch(g_output, [label]), is_train=True)
-            d_mod.backward()
-            diffD = d_mod.get_input_grads()
-            g_mod.backward(diffD)
-            g_mod.update()
-            mG.update([label], d_mod.get_outputs())
-
-    train_iter.reset()
+    for batch in noise_iter:
+        g_mod.forward(batch, is_train=True)  # compute predictions
+        g_mod.get_outputs()
 
     #################################TEST####################################
 
