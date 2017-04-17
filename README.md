@@ -49,10 +49,10 @@ print mx.asnumpy(out)
 >## ***Development environment***
 * window 8.1 64bit 
 * WinPython-64bit-2.7.10.3 - (Also available in Python package Library like Anaconda and so on)  
-* mxnet-0.9.4
+* mxnet-0.9.5
 * pycharm Community Edition 2016.3.2 - (Also available in editors such as Spyder and Eclipse and so on.)
 >## ***Dependencies*** 
-+ mxnet-0.9.4
-+ numpy-1.12.0
++ mxnet-0.9.5
++ numpy-1.12.1
 + matplotlib-1.5.0rc3
 
