@@ -55,7 +55,7 @@ def read_data_from_file(label, image):
     '''
     label_one_hot =  mx.nd.one_hot(label_one_hot , 10)
 
-    return (label_one_hot,label, image)
+    return (label_one_hot, label, image)
 
 
 if __name__ == "__main__":

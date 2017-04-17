@@ -8,122 +8,131 @@ import matplotlib.pyplot as plt
 
 '''unsupervised learning -  Autoencoder'''
 
-def to4d(img):
-    return img.reshape(img.shape[0], 1, 28, 28).astype(np.float32)/255
 
 def to2d(img):
     return img.reshape(img.shape[0],784).astype(np.float32)/255
 
-def NeuralNet(epoch,batch_size,save_period):
-    '''
-    load_data
+def get_noise(batch_size,noise_data):
+    return mx.nd.normal(loc=0,scale=1,shape=(batch_size,noise_data))
 
-    1. SoftmaxOutput must be
-
-    train_iter = mx.io.NDArrayIter(data={'data' : to4d(train_img)},label={'label' : train_lbl}, batch_size=batch_size, shuffle=True) #training data
-    test_iter   = mx.io.NDArrayIter(data={'data' : to4d(test_img)}, label={'label' : test_lbl}, batch_size=batch_size) #test data
-
-    2. LogisticRegressionOutput , LinearRegressionOutput , MakeLoss and so on.. must be
-
-    train_iter = mx.io.NDArrayIter(data={'data' : to4d(train_img)},label={'label' : train_lbl_one_hot}, batch_size=batch_size, shuffle=True) #training data
-    test_iter   = mx.io.NDArrayIter(data={'data' : to4d(test_img)}, label={'label' : test_lbl_one_hot}, batch_size=batch_size) #test data
-    '''
-
-    '''In this Autoencoder tutorial, we don't need the label data.'''
+def data_processing(batch_size):
+    '''In this Gan tutorial, we don't need the label data.'''
     (train_lbl_one_hot, train_lbl, train_img) = dd.read_data_from_file('train-labels-idx1-ubyte.gz','train-images-idx3-ubyte.gz')
     (test_lbl_one_hot, test_lbl, test_img) = dd.read_data_from_file('t10k-labels-idx1-ubyte.gz','t10k-images-idx3-ubyte.gz')
 
     '''data loading referenced by Data Loading API '''
-    train_iter  = mx.io.NDArrayIter(data={'data' : to4d(train_img)},label={'label' : train_lbl_one_hot}, batch_size=batch_size, shuffle=True) #training data
-    test_iter   = mx.io.NDArrayIter(data={'input' : to4d(test_img)},label={'label' : test_lbl_one_hot} ,batch_size=batch_size) #test data
+    #train_iter  = mx.io.NDArrayIter(data={'data' : to2d(train_img)},label={'label' : train_lbl_one_hot}, batch_size=batch_size, shuffle=True) #training data
+    train_iter = mx.io.NDArrayIter(data={'data': to2d(train_img)}, batch_size=batch_size, shuffle=True)  # training data
+    noise_iter = mx.io.NDArrayIter(data={'noise': get_noise(batch_size,128)}, batch_size=batch_size)  #training data#noise data
 
-    '''Generative Adversarial Networks
+    return train_iter,noise_iter
+
+def Generator():
+    #generator neural networks
+    noise = mx.sym.Variable('noise') # The size of noise is 128.
+    g_affine1 = mx.sym.FullyConnected(data=noise,name='g_affine1',num_hidden=256)
+    generator1 = mx.sym.Activation(data=g_affine1, name='g_sigmoid1', act_type='sigmoid')
+    g_affine2 = mx.sym.FullyConnected(data=generator1, name='g_affine2', num_hidden=784)
+    g_out= mx.sym.Activation(data=g_affine2, name='g_sigmoid2', act_type='sigmoid')
+    return g_out
+
+def Discriminator():
+    #discriminator neural networks
+    data = mx.sym.Variable('data') # The size of data is 784(28*28)
+    label = mx.sym.Variable('label')
+    d_affine1 = mx.sym.FullyConnected(data=data,name='d_affine1',num_hidden=256)
+    discriminator1 = mx.sym.Activation(data=d_affine1,name='d_sigmoid1',act_type='sigmoid')
+    d_affine2 = mx.sym.FullyConnected(data=discriminator1,name = 'd_affine2' , num_hidden=1)
+    discriminator2 = mx.sym.Activation(data=d_affine2, name='d_sigmoid2', act_type='sigmoid')
+    d_out=mx.sym.LogisticRegressionOutput(data=discriminator2,label=label,name='d_loss')
+    return d_out
+
+def GAN(epoch,batch_size,save_period):
+
+    train_iter, noise_iter = data_processing(batch_size)
+    label = mx.nd.zeros(shape=(batch_size,))
+    '''
+    Generative Adversarial Networks
 
     <structure>
+    generator - 128 - 256 - (784 image generate)
 
+    discriminator -  784 - 256 - (1 Identifies whether the image is an actual image or not)
 
+    cost_function - MIN_MAX cost_function
     '''
+    '''Network'''
+    generator=Generator()
+    discriminator=Discriminator()
 
-    #1. generator neural networks
-    noise = mx.sym.Variable('noise')
-    affine1 = mx.sym.FullyConnected(data=noise,name='affine1',num_hidden=256)
-    generator1 = mx.sym.Activation(data=affine1, name='sigmoid1', act_type="sigmoid")
-    affine2 = mx.sym.FullyConnected(data=generator1, name='affine2', num_hidden=784)
-    generator2 = mx.sym.Activation(data=affine2, name='sigmoid2', act_type="sigmoid")
+    #generator mod
+    g_mod = mx.mod.Module(symbol=generator, data_names=['noise'],label_names=None, context=mx.gpu(0))
+    g_mod.bind(data_shapes=noise_iter.provide_data)
+    g_mod.init_params(initializer=mx.initializer.Xavier(rnd_type='gaussian', factor_type="avg", magnitude=1),)
+    g_mod.init_optimizer(optimizer='adam',optimizer_params={'learning_rate': 0.001})
 
-    #2. discriminator neural networks
-    data = mx.sym.Variable('data')
-    noise = mx.sym.Flatten(data=data) #Flatten the mnist data
+    #discriminator mod
+    d_mod = mx.mod.Module(symbol=discriminator, data_names=['data'],label_names=['label'], context=mx.gpu(0))
+    d_mod.bind(data_shapes=noise_iter.provide_data)
+    d_mod.init_params(initializer=mx.initializer.Xavier(rnd_type='gaussian', factor_type="avg", magnitude=1),)
+    d_mod.init_optimizer(optimizer='adam',optimizer_params={'learning_rate': 0.001})
 
+    def facc(label, pred):
+        pred = pred.ravel()
+        label = label.ravel()
+        return ((pred > 0.5) == label).mean()
 
+    def fentropy(label, pred):
+        pred = pred.ravel()
+        label = label.ravel()
+        return -(label*np.log(pred+1e-12) + (1.-label)*np.log(1.-pred+1e-12)).mean()
 
+    mG = mx.metric.CustomMetric(fentropy)
+    mD = mx.metric.CustomMetric(fentropy)
 
-    # Fisrt optimization method
-    # weights save
+    #In mxnet,I think Implementing the Gan code is harder to implement than anything framework.
+    ####################################training loop############################################
+    for epoch in xrange(epoch):
+        train_iter.reset()
+        for t, batch in enumerate(train_iter):
+            noise_batch=noise_iter.next()
+            g_mod.forward(noise_batch,is_train=True)
+            g_output=g_mod.get_outputs()
 
-    model_name = 'weights/GAN'
-    checkpoint = mx.callback.do_checkpoint(model_name, period=save_period)
+            #generator -> discriminator
+            label[:] = 0
+            d_mod.forward(mx.io.DataBatch(g_output,[label]),is_train=True)
+            d_mod.backward()
+            gradD = [[grad.copyto(grad.context) for grad in grads] for grads in d_mod._exec_group.grad_arrays]
+            d_mod.update_metric(mD, [label])
 
-    #training mod
-    mod = mx.mod.Module(symbol=result, data_names=['input'],label_names=['input_'], context=mx.gpu(0))
+            #update discriminator on real
+            label[:] = 1
+            batch.label = [label]
+            d_mod.forward(batch, is_train=True)
+            d_mod.backward()
+            for gradsr, gradsf in zip(d_mod._exec_group.grad_arrays, gradD):
+                for gradr, gradf in zip(gradsr, gradsf):
+                    gradr += gradf
+            d_mod.update()
 
-    #test mod
-    test = mx.mod.Module(symbol=result, data_names=['input'],label_names=['input_'], context=mx.gpu(0))
+            d_mod.update_metric(mD, [label])
 
-    # Network information print
-    print mod.data_names
-    print mod.label_names
-    print train_iter.provide_data
-    print train_iter.provide_label
+            # update generator
+            label[:] = 1
+            d_mod.forward(mx.io.DataBatch(g_output, [label]), is_train=True)
+            d_mod.backward()
+            diffD = d_mod.get_input_grads()
+            g_mod.backward(diffD)
+            g_mod.update()
+            mG.update([label], d_mod.get_outputs())
 
-    '''if the below code already is declared by mod.fit function, thus we don't have to write it.
-    but, when you load the saved weights, you must write the below code.'''
-    mod.bind(data_shapes=train_iter.provide_data,label_shapes=train_iter.provide_label)
-
-    #weights load
-
-    # When you want to load the saved weights, uncomment the code below.
-    symbol, arg_params, aux_params = mx.model.load_checkpoint(model_name, 100)
-
-    #the below code needs mod.bind, but If arg_params and aux_params is set in mod.fit, you do not need the code below, nor do you need mod.bind.
-    mod.set_params(arg_params, aux_params)
-
-
-    '''in this code ,  eval_metric, mod.score doesn't work'''
-
-    '''if you want to modify the learning process, go into the mod.fit function()'''
-
-    mod.fit(train_iter, initializer=mx.initializer.Xavier(rnd_type='gaussian', factor_type="avg", magnitude=1),
-            optimizer='adam', #optimizer
-            optimizer_params={'learning_rate': 0.001}, #learning rate
-            eval_metric=mx.metric.MSE(),
-            # Once the loaded parameters are declared here,You do not need to declare mod.set_params,mod.bind
-            arg_params=None,
-            aux_params=None,
-            num_epoch=epoch,
-            epoch_end_callback=checkpoint)
-
-    # Network information print
-    print mod.data_shapes
-    print mod.label_shapes
-    print mod.output_shapes
-    print mod.get_params()
-    print mod.get_outputs()
-    print mod.score(train_iter, ['mse', 'acc'])
-
-    print "completed"
-
+    train_iter.reset()
 
     #################################TEST####################################
-    symbol, arg_params, aux_params = mx.model.load_checkpoint(model_name, 100)
-
-    test.bind(data_shapes=test_iter.provide_data,label_shapes=test_iter.provide_label,for_training=False)
-
-    '''Annotate only when running test data.'''
-    test.set_params(arg_params, aux_params)
 
     '''all data test'''
-    result = test.predict(test_iter).asnumpy()
+    result = g_mod.predict(noise_iter).asnumpy()
 
     '''visualization'''
     print_size=10
@@ -140,7 +149,7 @@ def NeuralNet(epoch,batch_size,save_period):
 if __name__ == "__main__":
 
     print "NeuralNet_starting in main"
-    NeuralNet(epoch=100,batch_size=100,save_period=10)
+    GAN(epoch=100,batch_size=100,save_period=10)
 
 else:
 
