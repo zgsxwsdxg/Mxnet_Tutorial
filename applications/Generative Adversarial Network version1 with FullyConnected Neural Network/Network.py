@@ -78,28 +78,37 @@ def GAN(epoch,batch_size,save_period):
     d_mod.init_params(initializer=mx.initializer.Xavier(rnd_type='gaussian', factor_type="avg", magnitude=1),)
     d_mod.init_optimizer(optimizer='adam',optimizer_params={'learning_rate': 0.001})
 
-    g_mod.fit
     #In mxnet,I think Implementing the Gan code is harder to implement than anything framework.
     ####################################training loop############################################
     for batch in noise_iter:
         g_mod.forward(batch, is_train=True)  # compute predictions
         g_mod.get_outputs()
+        print g_mod.get_outputs()[0]
 
-    #################################TEST####################################
 
+
+
+
+    #################################Generating Image####################################
     '''all data test'''
     result = g_mod.predict(noise_iter).asnumpy()
 
     '''visualization'''
     print_size=10
-    fig ,  ax = plt.subplots(2, print_size, figsize=(print_size, 2))
+    fig ,  ax = plt.subplots(1, print_size, figsize=(print_size, 1))
+    #fig ,  ax = plt.subplots(2, print_size, figsize=(print_size, 2))
 
     for i in xrange(print_size):
+        '''show 10 image'''
+        ax[i].set_axis_off()
+        ax[i].imshow(np.reshape(result[i],(28,28)))
+        '''
+        # show 20 image
         ax[0][i].set_axis_off()
         ax[1][i].set_axis_off()
         ax[0][i].imshow(np.reshape(result[i], (28, 28)))
         ax[1][i].imshow(np.reshape(result[i+10], (28, 28)))
-
+        '''
     plt.show()
 
 if __name__ == "__main__":
