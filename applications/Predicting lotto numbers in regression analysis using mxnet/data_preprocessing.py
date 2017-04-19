@@ -7,6 +7,7 @@ def data_preprocessing():
 
     #data normalization
     normalization_factor=1.0
+    Lotto_number=6
 
     #show all data
     np.set_printoptions(threshold=10000) #threshold 총갯수
@@ -19,7 +20,6 @@ def data_preprocessing():
 
     #data normalization
     generator=data[:,1:-1]
-    print np.shape(generator)
 
     input =  data[1: , 1:-1]/normalization_factor
     output = data[0:np.shape(data)[0]-1,1:-1]/normalization_factor
@@ -35,7 +35,7 @@ def data_preprocessing():
     training_data=zip(input,output)
 
     #test_data
-    test_data=np.array([[3,10,13,22,31,32],[12,14,24,26,34,45]]).reshape(-1,6)/normalization_factor
+    test_data=np.array([[12,14,24,26,34,45],[1,2,15,19,24,36]]).reshape(-1,Lotto_number)/normalization_factor
     #test_data = np.array([7, 9, 12, 14, 23, 28, 17]).reshape(-1,7) / normalization_factor
     return training_data,test_data,normalization_factor
 

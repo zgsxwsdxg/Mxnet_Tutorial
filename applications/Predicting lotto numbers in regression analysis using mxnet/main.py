@@ -5,6 +5,6 @@ from Network import LottoNet
 
 '''implement'''
 
-net=LottoNet(epoch=5,batch_size=10,save_period=1000)
+net=LottoNet(epoch=10000,batch_size=100,save_period=10000)
 print net[0]
-print net[1]
+#print net[1]
