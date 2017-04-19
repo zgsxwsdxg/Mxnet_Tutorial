@@ -54,17 +54,19 @@ def Discriminator():
     d_affine2 = mx.sym.FullyConnected(data=discriminator1,name = 'd_affine2' , num_hidden=1)
     discriminator2= mx.sym.Activation(data=d_affine2, name='d_sigmoid2', act_type='sigmoid')
     d_out=mx.sym.LinearRegressionOutput(data=discriminator2 ,label=label,name='d_loss')
+    #d_out = mx.sym.LogisticRegressionOutput(data=d_affine2 , label=label, name='d_loss')
     return d_out
 
 def GAN(epoch,batch_size,save_period):
 
-    save_weights=True
+    save_weights=False
     save_path="Weights/"
 
     train_iter = Data_Processing(batch_size)
     noise_iter = NoiseIter(batch_size, 128)
 
-    label = mx.nd.zeros((batch_size,))
+    label = mx.nd.zeros((batch_size))
+    print np.shape(label)
 
     '''
     Generative Adversarial Networks
@@ -116,7 +118,10 @@ def GAN(epoch,batch_size,save_period):
     '''
     def cost_Function(label, pred):
         pred = pred.ravel()
-        return -(np.log(pred + 1e-12) + np.log(1. - pred + 1e-12)).mean()
+        #return -(np.log(pred + 1e-12) + np.log(1. - pred + 1e-12)).mean()
+        label = label.ravel()
+        return -(label * np.log(pred + 1e-12) + (1. - label) * np.log(1. - pred + 1e-12)).mean()
+
 
     #loss_generator
     mG = mx.metric.CustomMetric(cost_Function)
@@ -137,7 +142,7 @@ def GAN(epoch,batch_size,save_period):
             ########################################## update discriminator on fake##############################################
             '''generator -> discriminator'''
             label[:]= 0
-            print [label]
+            #print [label]
             modD.forward(mx.io.DataBatch(outG,[label]), is_train=True)
             modD.backward()
 
@@ -156,7 +161,7 @@ def GAN(epoch,batch_size,save_period):
             gradD = [[grad.copyto(grad.context) for grad in grads] for grads in modD._exec_group.grad_arrays]
 
             #update discriminator on fake, only updating discriminator variables
-            modD.update_metric(mD, [label])
+            #modD.update_metric(mD, [label])
 
             ########################################## update discriminator on real##############################################
             label[:] = 1
@@ -169,7 +174,7 @@ def GAN(epoch,batch_size,save_period):
             modD.update()
 
             # update discriminator on real, only updating discriminator variables
-            modD.update_metric(mD, [label])
+            #modD.update_metric(mD, [label])
 
             ##########################################update generator##############################################
             modD.forward(mx.io.DataBatch(outG, [label]), is_train=True)
@@ -196,14 +201,13 @@ def GAN(epoch,batch_size,save_period):
             mG.update([label], modD.get_outputs())
 
         #Save the data
-        if save_weights and epoch%100==0:
+        if save_weights and epoch%save_period==0:
             print('Saving weights')
             modG.save_params(save_path+"modG-{}.params" .format(epoch))
             modD.save_params(save_path+"modD-{}.params"  .format(epoch))
 
 
     #################################Generating Image####################################
-
     arg_params, aux_params=modG.get_params() #load 'Learning completed parameters'
     test_mod.bind(data_shapes=noise_iter.provide_data,label_shapes=None, for_training=False)
     test_mod.set_params(arg_params=arg_params, aux_params=aux_params)
@@ -211,9 +215,11 @@ def GAN(epoch,batch_size,save_period):
     '''generating image'''
     noise = noise_iter.next()
     test_mod.forward(noise,is_train=False)
-    result = test_mod.get_outputs()[0].asnumpy()
-
+    result = test_mod.get_outputs()[0]
+    result=result.asnumpy()
+    print result
     '''visualization'''
+
     column_size=10
     #fig ,  ax = plt.subplots(1, print_size, figsize=(print_size, 1))
     fig ,  ax = plt.subplots(2, column_size, figsize=(column_size, 2))
@@ -232,6 +238,7 @@ def GAN(epoch,batch_size,save_period):
         ax[1][i].imshow(np.reshape(result[i+10], (28, 28)))
         #'''
     plt.show()
+
 if __name__ == "__main__":
 
     print "NeuralNet_starting in main"
