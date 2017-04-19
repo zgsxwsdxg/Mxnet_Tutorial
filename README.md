@@ -36,8 +36,8 @@ print mx.asnumpy(out)
     * [***Autoencoder Neural Networks with logisticRegressionOutput : Compressing the MNIST data using mxnet***](https://github.com/JONGGON/Mxnet_Tutorial/tree/master/basic/Autoencoder%20Neural%20Networks%20with%20logisticRegressionOutput)
 * ### ***Neural Networks Applications***
     * [***Predicting lotto numbers in regression analysis using mxnet***](https://github.com/JONGGON/Mxnet_Tutorial/tree/master/applications/Predicting%20lotto%20numbers%20in%20regression%20analysis%20using%20mxnet)
-    * [***Generative Adversarial Network version1 with fullyConnected Neural Network : using the MNIST data***]()(***in progress***)
-    * [***Generative Adversarial Network version2 with Convolution Neural Network : using the MNIST data***]()(***in progress***)
+    * [***Generative Adversarial Network version1 with fullyConnected Neural Network : using the MNIST data***](https://github.com/JONGGON/Mxnet_Tutorial/tree/master/applications/Generative%20Adversarial%20Network%20version1%20with%20FullyConnected%20Neural%20Network)(***in progress***)
+    * [***Generative Adversarial Network version2 with Convolution Neural Network : using the MNIST data***](https://github.com/JONGGON/Mxnet_Tutorial/tree/master/applications/Generative%20Adversarial%20Network%20version2%20with%20Convolution%20Neural%20Network)(***in progress***)
     * [***word2vec : using undefined data***]()(***not yet***)
 
 * ### ***Jonggon Project with Machine Running and Deep Learning***  
