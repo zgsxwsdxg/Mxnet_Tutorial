@@ -59,8 +59,8 @@ def Discriminator():
     #out2 = mx.sym.MakeLoss(mx.symbol.log(1.0-discriminator2),grad_scale=-1.0,name='loss2')
 
     '''expression-2'''
-    out1 = mx.sym.MakeLoss(-mx.symbol.log(discriminator2),grad_scale=1.0,name="loss1")
-    out2 = mx.sym.MakeLoss(-mx.symbol.log(1.0-discriminator2),grad_scale=1.0,name='loss2')
+    out1 = mx.sym.MakeLoss(-mx.symbol.log(discriminator2),name="loss1")
+    out2 = mx.sym.MakeLoss(-mx.symbol.log(1.0-discriminator2),name='loss2')
 
     group=mx.sym.Group([out1,out2])
 
@@ -97,13 +97,13 @@ def GAN(epoch,noise_size,batch_size,save_period):
     modG = mx.mod.Module(symbol=generator, data_names=['noise'], label_names=None, context= mx.gpu(0))
     modG.bind(data_shapes=noise_iter.provide_data,label_shapes=None,for_training=True)
     modG.init_params(initializer=mx.init.Normal(0.02))
-    modG.init_optimizer(optimizer='adam',optimizer_params={'learning_rate': 0.001})
+    modG.init_optimizer(optimizer='adam',optimizer_params={'learning_rate': 0.01})
 
     # =============module discriminator[0],discriminator[1]=============
     modD_0 = mx.mod.Module(symbol=discriminator[0], data_names=['data'], label_names=None, context= mx.gpu(0))
     modD_0.bind(data_shapes=train_iter.provide_data,label_shapes=None,for_training=True,inputs_need_grad=True)
     modD_0.init_params(initializer=mx.init.Normal(0.02))
-    modD_0.init_optimizer(optimizer='adam',optimizer_params={'learning_rate': 0.001})
+    modD_0.init_optimizer(optimizer='adam',optimizer_params={'learning_rate': 0.01})
 
     modD_1 = mx.mod.Module(symbol=discriminator[1], data_names=['data'], label_names=None, context= mx.gpu(0))
     modD_1.bind(data_shapes=train_iter.provide_data,label_shapes=None,for_training=True,inputs_need_grad=True,shared_module=modD_0)
@@ -154,9 +154,9 @@ def GAN(epoch,noise_size,batch_size,save_period):
 
     #################################Generating Image####################################
     arg_params, aux_params=modG.get_params()
-    print "in?"
     ''' At first I thought I would not have to write SHARED_MODULE = MODG and write the sentence below and the above sentence.
      However, after learning SHARED_MODULE = MODG, I found that it took time to process result.asnumpy (). I do not know why....'''
+
     test_mod.bind(data_shapes=[mx.io.DataDesc(name='noise', shape=(column_size*row_size,noise_size))],label_shapes=None, for_training=False,grad_req='null')
     test_mod.set_params(arg_params=arg_params, aux_params=aux_params)
 
@@ -173,35 +173,33 @@ def GAN(epoch,noise_size,batch_size,save_period):
     #'''
     test_mod.forward(data_batch=mx.io.DataBatch(data=[mx.random.normal(0, 1.0, shape=(column_size*row_size, noise_size))],label=None))
     result = test_mod.get_outputs()[0]
-    print "in?"
-    result = result.asnumpy()
-    print "in?"
-    print np.shape(result)
-    #'''
+    print result
+    #result = result.asnumpy()
+    #print result
 
-    '''visualization'''
+    #'''
+    '''
+    #visualization
     fig ,  ax = plt.subplots(int(row_size/2.0), column_size, figsize=(column_size, int(row_size/2.0)))
     #fig ,  ax = plt.subplots(row_size, column_size, figsize=(column_size, row_size))
 
     for i in xrange(column_size):
-        '''show 10 image'''
-        #'''
+        #show 10 image
+
         ax[i].set_axis_off()
         ax[i].imshow(np.reshape(result[i],(28,28)))
-        #'''
 
-        '''show 20 image'''
-        '''
-        ax[0][i].set_axis_off()
-        ax[1][i].set_axis_off()
-        ax[0][i].imshow(np.reshape(result[i], (28, 28)))
-        ax[1][i].imshow(np.reshape(result[i+10], (28, 28)))
-        '''
+        #show 20 image
+        #ax[0][i].set_axis_off()
+        #ax[1][i].set_axis_off()
+        #ax[0][i].imshow(np.reshape(result[i], (28, 28)))
+        #ax[1][i].imshow(np.reshape(result[i+10], (28, 28)))
     plt.show()
+    '''
 if __name__ == "__main__":
 
     print "NeuralNet_starting in main"
-    GAN(epoch=2, noise_size=128, batch_size=100, save_period=100)
+    GAN(epoch=2, noise_size=100, batch_size=100, save_period=100)
 
 else:
 
