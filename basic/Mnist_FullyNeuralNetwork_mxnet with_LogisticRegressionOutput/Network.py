@@ -114,12 +114,26 @@ def NeuralNet(epoch,batch_size,save_period):
     print mod.score(train_iter, ['mse', 'acc'])
 
     #################################TEST####################################
-    #symbol, arg_params, aux_params = mx.model.load_checkpoint(model_name, 100)
-    arg_params, aux_params = mod.get_params()
-    test.bind(data_shapes=test_iter.provide_data, label_shapes=test_iter.provide_label, for_training=False)
 
-    '''Annotate only when running test data.'''
-    test.set_params(arg_params, aux_params)
+    '''load method1 - load the saved parameter'''
+    #symbol, arg_params, aux_params = mx.model.load_checkpoint(model_name, 100)
+
+    '''load method2 - load the training mod.get_params() directly'''
+    #arg_params, aux_params = mod.get_params()
+
+
+    '''load method3 - using the shared_module'''
+    """
+    Parameters
+    shared_module : Module
+        Default is `None`. This is used in bucketing. When not `None`, the shared module
+        essentially corresponds to a different bucket -- a module with different symbol
+        but with the same sets of parameters (e.g. unrolled RNNs with different lengths).
+    """
+    test.bind(data_shapes=test_iter.provide_data, label_shapes=test_iter.provide_label,shared_module=mod,for_training=False)
+
+    '''Annotate only when running test data. and Uncomment only if it is 'load methdd1' or 'load methdd2'''
+    #test.set_params(arg_params, aux_params)
 
     #batch by batch accuracy
     #To use the code below, Test / batchsize must be an integer.

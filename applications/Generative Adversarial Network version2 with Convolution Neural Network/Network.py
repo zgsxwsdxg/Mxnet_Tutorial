@@ -39,28 +39,35 @@ def Generator():
 
     #generator neural networks
     noise = mx.sym.Variable('noise') # The size of noise is 128.
-    g_affine1 = mx.sym.FullyConnected(data=noise,name='g_affine1',num_hidden=256)
-    generator1 = mx.sym.Activation(data=g_affine1, name='g_sigmoid1', act_type='sigmoid')
-    g_affine2 = mx.sym.FullyConnected(data=generator1, name='g_affine2', num_hidden=784)
-    g_out= mx.sym.Activation(data=g_affine2, name='g_sigmoid2', act_type='sigmoid')
+    #g_affine1 = mx.sym.FullyConnected(data=noise,name='g_affine1',num_hidden=256)
+    #generator1 = mx.sym.Activation(data=g_affine1, name='g_sigmoid1', act_type='sigmoid')
+    g_affine2 = mx.sym.FullyConnected(data=noise, name='g_affine2', num_hidden=256)
+    generator2= mx.sym.Activation(data=g_affine2, name='g_sigmoid2', act_type='sigmoid')
+    g_affine3 = mx.sym.FullyConnected(data=generator2, name='g_affine3', num_hidden=784)
+    g_out= mx.sym.Activation(data=g_affine3, name='g_sigmoid3', act_type='sigmoid')
     return g_out
 
 def Discriminator():
 
     #discriminator neural networks
     data = mx.sym.Variable('data') # The size of data is 784(28*28)
-    d_affine1 = mx.sym.FullyConnected(data=data,name='d_affine1',num_hidden=256)
-    discriminator1 = mx.sym.Activation(data=d_affine1,name='d_sigmoid1',act_type='sigmoid')
-    d_affine2 = mx.sym.FullyConnected(data=discriminator1,name = 'd_affine2' , num_hidden=1)
+
+    #d_affine1 = mx.sym.FullyConnected(data=data,name='d_affine1',num_hidden=512)
+    #discriminator1 = mx.sym.Activation(data=d_affine1,name='d_sigmoid1',act_type='sigmoid')
+    d_affine2 = mx.sym.FullyConnected(data=data,name = 'd_affine2' , num_hidden=256)
     discriminator2 = mx.sym.Activation(data=d_affine2, name='d_sigmoid2', act_type='sigmoid')
+    d_affine3 = mx.sym.FullyConnected(data=discriminator2,name = 'd_affine3' , num_hidden=128)
+    discriminator3 = mx.sym.Activation(data=d_affine3, name='d_sigmoid3', act_type='sigmoid')
+    d_affine4 = mx.sym.FullyConnected(data=discriminator3,name = 'd_affine4' , num_hidden=1)
+    discriminator4 = mx.sym.Activation(data=d_affine4, name='d_sigmoid4', act_type='sigmoid')
 
     '''expression-1'''
-    #out1 = mx.sym.MakeLoss(mx.symbol.log(discriminator2),grad_scale=-1.0,name="loss1")
-    #out2 = mx.sym.MakeLoss(mx.symbol.log(1.0-discriminator2),grad_scale=-1.0,name='loss2')
+    #out1 = mx.sym.MakeLoss(mx.symbol.log(discriminator4),grad_scale=-1.0,name="loss1")
+    #out2 = mx.sym.MakeLoss(mx.symbol.log(1.0-discriminator4),grad_scale=-1.0,name='loss2')
 
     '''expression-2'''
-    out1 = mx.sym.MakeLoss(-mx.symbol.log(discriminator2),grad_scale=1.0,name="loss1")
-    out2 = mx.sym.MakeLoss(-mx.symbol.log(1.0-discriminator2),grad_scale=1.0,name='loss2')
+    out1 = mx.sym.MakeLoss(-mx.symbol.log(discriminator4),name="loss1")
+    out2 = mx.sym.MakeLoss(-mx.symbol.log(1.0-discriminator4),name='loss2')
 
     group=mx.sym.Group([out1,out2])
 
@@ -80,9 +87,9 @@ def GAN(epoch,noise_size,batch_size,save_period):
     Generative Adversarial Networks
 
     <structure>
-    generator - 128 - 256 - (784 image generate)
+    generator(size = 128) - 512 - 128 - 256 - (size = 784 : image generate)
 
-    discriminator -  784 - 256 - (1 Identifies whether the image is an actual image or not)
+    discriminator(size = 784) -  512 - 256 - (size=1 : Identifies whether the image is an actual image or not)
 
     cost_function - MIN_MAX cost_function
     '''
@@ -91,19 +98,21 @@ def GAN(epoch,noise_size,batch_size,save_period):
     generator=Generator()
     discriminator=Discriminator()
 
+
     '''In the code below, the 'inputs_need_grad' parameter in the 'mod.bind' function is very important.'''
 
     # =============module G=============
     modG = mx.mod.Module(symbol=generator, data_names=['noise'], label_names=None, context= mx.gpu(0))
     modG.bind(data_shapes=noise_iter.provide_data,label_shapes=None,for_training=True)
     modG.init_params(initializer=mx.init.Normal(0.02))
-    modG.init_optimizer(optimizer='adam',optimizer_params={'learning_rate': 0.001})
+    modG.init_optimizer(optimizer='adam',optimizer_params={'learning_rate': 0.01})
+
 
     # =============module discriminator[0],discriminator[1]=============
     modD_0 = mx.mod.Module(symbol=discriminator[0], data_names=['data'], label_names=None, context= mx.gpu(0))
     modD_0.bind(data_shapes=train_iter.provide_data,label_shapes=None,for_training=True,inputs_need_grad=True)
     modD_0.init_params(initializer=mx.init.Normal(0.02))
-    modD_0.init_optimizer(optimizer='adam',optimizer_params={'learning_rate': 0.001})
+    modD_0.init_optimizer(optimizer='adam',optimizer_params={'learning_rate': 0.01})
 
     modD_1 = mx.mod.Module(symbol=discriminator[1], data_names=['data'], label_names=None, context= mx.gpu(0))
     modD_1.bind(data_shapes=train_iter.provide_data,label_shapes=None,for_training=True,inputs_need_grad=True,shared_module=modD_0)
@@ -111,14 +120,23 @@ def GAN(epoch,noise_size,batch_size,save_period):
     # =============generate image=============
     test_mod = mx.mod.Module(symbol=generator, data_names=['noise'], label_names=None, context= mx.gpu(0))
 
+    #No need, but must be declared.
 
+    def zero(label, pred):
+        return 0
+
+    null = mx.metric.CustomMetric(zero)
+
+    #No need, but must be declared.
+    label = mx.nd.zeros((batch_size,))
     ####################################training loop############################################
-
     # =============train===============
     for epoch in xrange(1,epoch+1,1):
         print "epoch : {}".format(epoch)
         train_iter.reset()
+        null.reset()
         for batch in train_iter:
+
             ################################updating only parameters related to modD.########################################
             # updating discriminator on real data
             '''MAX : modD_0 : -mx.symbol.log(discriminator2)  real data Discriminator update , bigger and bigger discriminator2'''
@@ -132,18 +150,21 @@ def GAN(epoch,noise_size,batch_size,save_period):
             modG.forward(noise, is_train=True)
             modG_output = modG.get_outputs()
 
-            modD_1.forward(mx.io.DataBatch(modG_output,None), is_train=True)
+            modD_1.forward(mx.io.DataBatch(modG_output, None), is_train=True)
             modD_1.backward()
             modD_1.update()
 
             ################################updating only parameters related to modG.########################################
             # update generator on noise data
             '''MIN : modD_0 : -mx.symbol.log(discriminator2) - noise data Discriminator update  , bigger and bigger discriminator2'''
-            modD_0.forward(mx.io.DataBatch(modG_output,None), is_train=True)
+            modD_0.forward(mx.io.DataBatch(modG_output, None), is_train=True)
             modD_0.backward()
-            diff_v= modD_0.get_input_grads()
+            diff_v = modD_0.get_input_grads()
             modG.backward(diff_v)
             modG.update()
+
+            '''No need, but must be declared.'''
+            null.update([label], modD_0.get_outputs())
 
 
         #Save the data
@@ -153,12 +174,22 @@ def GAN(epoch,noise_size,batch_size,save_period):
             modD_0.save_params(save_path+"modD_0-{}.params"  .format(epoch))
 
     #################################Generating Image####################################
-    arg_params, aux_params=modG.get_params()
-    print "in?"
-    ''' At first I thought I would not have to write SHARED_MODULE = MODG and write the sentence below and the above sentence.
-     However, after learning SHARED_MODULE = MODG, I found that it took time to process result.asnumpy (). I do not know why....'''
-    test_mod.bind(data_shapes=[mx.io.DataDesc(name='noise', shape=(column_size*row_size,noise_size))],label_shapes=None, for_training=False,grad_req='null')
-    test_mod.set_params(arg_params=arg_params, aux_params=aux_params)
+    '''load method1 - load the training mod.get_params() directly'''
+    #arg_params, aux_params = mod.get_params()
+
+    '''load method2 - using the shared_module'''
+    """
+    Parameters
+    shared_module : Module
+        Default is `None`. This is used in bucketing. When not `None`, the shared module
+        essentially corresponds to a different bucket -- a module with different symbol
+        but with the same sets of parameters (e.g. unrolled RNNs with different lengths).
+    """
+
+    test_mod.bind(data_shapes=[mx.io.DataDesc(name='noise', shape=(column_size*row_size,noise_size))],label_shapes=None,shared_module=modG,for_training=False,grad_req='null')
+
+    '''Annotate only when running test data. and Uncomment only if it is 'load method1' or 'load method2'''
+    #test_mod.set_params(arg_params=arg_params, aux_params=aux_params)
 
     '''test_method-1'''
     '''
@@ -173,36 +204,35 @@ def GAN(epoch,noise_size,batch_size,save_period):
     #'''
     test_mod.forward(data_batch=mx.io.DataBatch(data=[mx.random.normal(0, 1.0, shape=(column_size*row_size, noise_size))],label=None))
     result = test_mod.get_outputs()[0]
-    print "in?"
+    print result
     result = result.asnumpy()
-    print "in?"
-    print np.shape(result)
-    #'''
+    #print result
 
-    '''visualization'''
-    fig ,  ax = plt.subplots(int(row_size/2.0), column_size, figsize=(column_size, int(row_size/2.0)))
-    #fig ,  ax = plt.subplots(row_size, column_size, figsize=(column_size, row_size))
+    #'''
+    #'''
+    #visualization
+    #fig ,  ax = plt.subplots(int(row_size/2.0), column_size, figsize=(column_size, int(row_size/2.0)))
+    fig ,  ax = plt.subplots(row_size, column_size, figsize=(column_size, row_size))
 
     for i in xrange(column_size):
-        '''show 10 image'''
-        #'''
-        ax[i].set_axis_off()
-        ax[i].imshow(np.reshape(result[i],(28,28)))
-        #'''
+        #show 10 image
 
-        '''show 20 image'''
-        '''
+        #ax[i].set_axis_off()
+        #ax[i].imshow(np.reshape(result[i],(28,28)))
+
+        #show 20 image
         ax[0][i].set_axis_off()
         ax[1][i].set_axis_off()
         ax[0][i].imshow(np.reshape(result[i], (28, 28)))
         ax[1][i].imshow(np.reshape(result[i+10], (28, 28)))
-        '''
     plt.show()
+    #'''
+
 if __name__ == "__main__":
 
-    print "NeuralNet_starting in main"
+    print "GAN_starting in main"
     GAN(epoch=2, noise_size=128, batch_size=100, save_period=100)
 
 else:
 
-    print "NeuralNet_imported"
+    print "GAN_imported"
