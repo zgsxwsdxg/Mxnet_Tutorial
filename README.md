@@ -30,26 +30,25 @@ print mx.asnumpy(out)
 ```        
 >## ***Topics***
 * ### ***Neural Networks basic***
-    * [***Fully Connected Neural Network with LogisticRegressionOutput : Classifying the MNIST data using mxnet***](https://github.com/JONGGON/Mxnet_Tutorial/tree/master/basic/Mnist_FullyNeuralNetwork_mxnet%20with_LogisticRegressionOutput)
+    * [***Fully Connected Neural Network with LogisticRegressionOutput : Classifying the MNIST data using mxnet***](https://github.com/JONGGON/Mxnet_Tutorial/tree/master/basic/Fully%20Connected%20Neural%20Network%20with_LogisticRegressionOutput)
 
-    * [***Fully Connected Neural Network with SoftmaxOutput : Classifying the MNIST data using mxnet***](https://github.com/JONGGON/Mxnet_Tutorial/tree/master/basic/Mnist_FullyNeuralNetwork_mxnet%20with_softmax)
+    * [***Fully Connected Neural Network with SoftmaxOutput : Classifying the MNIST data using mxnet***](https://github.com/JONGGON/Mxnet_Tutorial/tree/master/basic/Fully%20Connected%20Neural%20Network%20with_softmax)
     
-    * [***Fully Connected Neural Network with SoftmaxOutput*** *(flexible to use the module)* ***: Classifying the MNIST data using mxnet***]()
+    * [***Fully Connected Neural Network with SoftmaxOutput*** *(flexible)* ***: Classifying the MNIST data using mxnet***](https://github.com/JONGGON/Mxnet_Tutorial/tree/master/basic/Fully%20Connected%20Neural%20Network%20with%20SoftmaxOutput(flexible%20to%20use%20the%20module))
 
     * [***Convolutional Neural Networks with SoftmaxOutput : Classifying the MNIST data using mxnet***](https://github.com/JONGGON/Mxnet_Tutorial/tree/master/basic/Convolutional%20Neural%20Networks%20with%20SoftmaxOutput)
 
-    * [***Convolutional Neural Networks with SoftmaxOutput*** *(flexible to use the module)* ***: Classifying the MNIST data using mxnet***]()
-
+    * [***Convolutional Neural Networks with SoftmaxOutput*** *(flexible)* ***: Classifying the MNIST data using mxnet***](https://github.com/JONGGON/Mxnet_Tutorial/tree/master/basic/Convolutional%20Neural%20Networks%20with%20SoftmaxOutput(flexible%20to%20use%20the%20module))
 
     * [***Recurrent Neural Networks with SoftmaxOutput : Classifying the MNIST data using mxnet***](https://github.com/JONGGON/Mxnet_Tutorial/tree/master/basic/Recurrent%20Neural%20Networks%20with%20SoftmaxOutput)
     
     * [***Recurrent Neural Networks + LSTM with SoftmaxOutput : Classifying the MNIST data using mxnet***](https://github.com/JONGGON/Mxnet_Tutorial/tree/master/basic/Recurrent%20Neural%20Networks%20%2B%20LSTM%20with%20SoftmaxOutput)
 
-    * [***Recurrent Neural Networks + LSTM with SoftmaxOutput*** *(flexible to use the module)* ***: Classifying the MNIST data using mxnet***]()
+    * [***Recurrent Neural Networks + LSTM with SoftmaxOutput*** *(flexible)* ***: Classifying the MNIST data using mxnet***](https://github.com/JONGGON/Mxnet_Tutorial/tree/master/basic/Recurrent%20Neural%20Networks%20%2B%20LSTM%20with%20SoftmaxOutput(flexible%20to%20use%20the%20module))
 
     * [***Autoencoder Neural Networks with logisticRegressionOutput : Compressing the MNIST data using mxnet***](https://github.com/JONGGON/Mxnet_Tutorial/tree/master/basic/Autoencoder%20Neural%20Networks%20with%20logisticRegressionOutput)
 
-    * [***Autoencoder Neural Networks with logisticRegressionOutput*** *(flexible to use the module)* ***: Compressing the MNIST data using mxnet***]())
+    * [***Autoencoder Neural Networks with logisticRegressionOutput*** *(flexible)* ***: Compressing the MNIST data using mxnet***](https://github.com/JONGGON/Mxnet_Tutorial/tree/master/basic/Autoencoder%20Neural%20Networks%20with%20logisticRegressionOutput(flexible%20to%20use%20the%20module))
 
 
 * ### ***Neural Networks Applications***
