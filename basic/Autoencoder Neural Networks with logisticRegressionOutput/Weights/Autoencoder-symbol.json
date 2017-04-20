@@ -6,11 +6,6 @@
       "inputs": []
     }, 
     {
-      "op": "Flatten", 
-      "name": "flatten0", 
-      "inputs": [[0, 0, 0]]
-    }, 
-    {
       "op": "null", 
       "name": "encode_weight", 
       "attr": {"num_hidden": "100"}, 
@@ -26,13 +21,13 @@
       "op": "FullyConnected", 
       "name": "encode", 
       "attr": {"num_hidden": "100"}, 
-      "inputs": [[1, 0, 0], [2, 0, 0], [3, 0, 0]]
+      "inputs": [[0, 0, 0], [1, 0, 0], [2, 0, 0]]
     }, 
     {
       "op": "Activation", 
       "name": "sigmoid1", 
       "attr": {"act_type": "sigmoid"}, 
-      "inputs": [[4, 0, 0]]
+      "inputs": [[3, 0, 0]]
     }, 
     {
       "op": "null", 
@@ -50,13 +45,13 @@
       "op": "FullyConnected", 
       "name": "middle", 
       "attr": {"num_hidden": "50"}, 
-      "inputs": [[5, 0, 0], [6, 0, 0], [7, 0, 0]]
+      "inputs": [[4, 0, 0], [5, 0, 0], [6, 0, 0]]
     }, 
     {
       "op": "Activation", 
       "name": "sigmoid2", 
       "attr": {"act_type": "sigmoid"}, 
-      "inputs": [[8, 0, 0]]
+      "inputs": [[7, 0, 0]]
     }, 
     {
       "op": "null", 
@@ -74,13 +69,13 @@
       "op": "FullyConnected", 
       "name": "decode", 
       "attr": {"num_hidden": "100"}, 
-      "inputs": [[9, 0, 0], [10, 0, 0], [11, 0, 0]]
+      "inputs": [[8, 0, 0], [9, 0, 0], [10, 0, 0]]
     }, 
     {
       "op": "Activation", 
       "name": "sigmoid1", 
       "attr": {"act_type": "sigmoid"}, 
-      "inputs": [[12, 0, 0]]
+      "inputs": [[11, 0, 0]]
     }, 
     {
       "op": "null", 
@@ -98,7 +93,7 @@
       "op": "FullyConnected", 
       "name": "result", 
       "attr": {"num_hidden": "784"}, 
-      "inputs": [[13, 0, 0], [14, 0, 0], [15, 0, 0]]
+      "inputs": [[12, 0, 0], [13, 0, 0], [14, 0, 0]]
     }, 
     {
       "op": "null", 
@@ -108,10 +103,10 @@
     {
       "op": "LogisticRegressionOutput", 
       "name": "logisticregressionoutput0", 
-      "inputs": [[16, 0, 0], [17, 0, 0]]
+      "inputs": [[15, 0, 0], [16, 0, 0]]
     }
   ], 
-  "arg_nodes": [0, 2, 3, 6, 7, 10, 11, 14, 15, 17], 
+  "arg_nodes": [0, 1, 2, 5, 6, 9, 10, 13, 14, 16], 
   "node_row_ptr": [
     0, 
     1, 
@@ -131,9 +126,8 @@
     15, 
     16, 
     17, 
-    18, 
-    19
+    18
   ], 
-  "heads": [[18, 0, 0]], 
+  "heads": [[17, 0, 0]], 
   "attrs": {"mxnet_version": ["int", 904]}
 }

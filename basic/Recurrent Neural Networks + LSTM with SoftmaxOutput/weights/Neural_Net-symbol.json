@@ -14,7 +14,7 @@
     {
       "op": "null", 
       "name": "lstm1_parameters", 
-      "attr": {"__init__": "[\"fusedrnn\", {\"num_hidden\": 100, \"init\": null, \"mode\": \"lstm\", \"forget_bias\": 1.0, \"num_layers\": 1, \"bidirectional\": false}]"}, 
+      "attr": {"__init__": "[\"fusedrnn\", {\"bidirectional\": false, \"num_hidden\": 100, \"init\": \"[\\\"xavier\\\", {\\\"rnd_type\\\": \\\"uniform\\\", \\\"magnitude\\\": 2.34, \\\"factor_type\\\": \\\"in\\\"}]\", \"mode\": \"lstm\", \"num_layers\": 1}]"}, 
       "inputs": []
     }, 
     {
@@ -57,7 +57,7 @@
     {
       "op": "null", 
       "name": "lstm2_parameters", 
-      "attr": {"__init__": "[\"fusedrnn\", {\"num_hidden\": 100, \"init\": null, \"mode\": \"lstm\", \"forget_bias\": 1.0, \"num_layers\": 1, \"bidirectional\": false}]"}, 
+      "attr": {"__init__": "[\"fusedrnn\", {\"bidirectional\": false, \"num_hidden\": 100, \"init\": \"[\\\"xavier\\\", {\\\"rnd_type\\\": \\\"uniform\\\", \\\"magnitude\\\": 2.34, \\\"factor_type\\\": \\\"in\\\"}]\", \"mode\": \"lstm\", \"num_layers\": 1}]"}, 
       "inputs": []
     }, 
     {

@@ -6,7 +6,7 @@ import logging
 logging.basicConfig(level=logging.INFO)
 
 def to4d(img):
-    return img.reshape(img.shape[0], 1, 28, 28).astype(np.float32)/255
+    return img.reshape(img.shape[0], 1, 28, 28).astype(np.float32)/255.0
 
 def NeuralNet(epoch,batch_size,save_period):
 
@@ -27,7 +27,7 @@ def NeuralNet(epoch,batch_size,save_period):
 
     '''data loading referenced by Data Loading API '''
     train_iter = mx.io.NDArrayIter(data={'data' : to4d(train_img)},label={'label' : train_lbl_one_hot}, batch_size=batch_size, shuffle=True) #training data
-    test_iter   = mx.io.NDArrayIter(data={'data' : to4d(test_img)}, label={'label' : test_lbl_one_hot}, batch_size=batch_size) #test data
+    test_iter   = mx.io.NDArrayIter(data={'data' : to4d(test_img)}, label={'label' : test_lbl_one_hot}) #test data
 
     '''neural network'''
     data = mx.sym.Variable('data')
@@ -95,8 +95,6 @@ def NeuralNet(epoch,batch_size,save_period):
     #the below code needs mod.bind, but If arg_params and aux_params is set in mod.fit, you do not need the code below, nor do you need mod.bind.
     mod.set_params(arg_params, aux_params)
 
-
-    '''in this code ,  eval_metric, mod.score doesn't work'''
     mod.fit(train_iter, initializer=mx.initializer.Xavier(rnd_type='gaussian', factor_type="avg", magnitude=1),
             optimizer='adam',
             optimizer_params={'learning_rate': 0.001},
@@ -113,8 +111,8 @@ def NeuralNet(epoch,batch_size,save_period):
     print mod.output_shapes
     print mod.get_params()
     print mod.get_outputs()
-    print mod.score(train_iter, ['mse', 'acc'])
-
+    print "training_data : {}".format(mod.score(train_iter, ['mse', 'acc']))
+    print "Optimization complete."
     #################################TEST####################################
 
     '''load method1 - load the saved parameter'''
@@ -134,7 +132,7 @@ def NeuralNet(epoch,batch_size,save_period):
     """
     test.bind(data_shapes=test_iter.provide_data, label_shapes=test_iter.provide_label,shared_module=mod,for_training=False)
 
-    '''Annotate only when running test data. and Uncomment only if it is 'load method1' or 'load method2'''
+    '''Annotate only when running test data. and Uncomment only if it is 'load method1' or 'load method2' '''
     #test.set_params(arg_params, aux_params)
 
     #batch by batch accuracy
@@ -144,9 +142,9 @@ def NeuralNet(epoch,batch_size,save_period):
         label = eval_batch.label[0].asnumpy().argmax(axis=1)
         print('batch %d, accuracy %f' % (i_batch, float(sum(pred_label == label)) / len(label)))
     '''
-    '''all data test'''
+    '''test'''
     result = test.predict(test_iter).asnumpy().argmax(axis=1)
-    print 'Final accuracy : {}%' .format(float(sum(test_lbl == result)) / len(result)*100)
+    print 'Final accuracy : {}%' .format(float(sum(test_lbl == result)) / len(result)*100.0)
 
     '''
     #Second optimization method

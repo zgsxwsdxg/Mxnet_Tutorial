@@ -4,4 +4,4 @@ from Network import NeuralNet
 
 '''implement'''
 
-NeuralNet(epoch=300,batch_size=100,save_period=100)
+NeuralNet(epoch=100,batch_size=100,save_period=100)

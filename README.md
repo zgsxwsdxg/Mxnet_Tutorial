@@ -1,7 +1,9 @@
 
 >## ***Mxnet?*** 
-***Flexible and Efficient Library for Deep Learning***
-
+* ***Flexible and Efficient Library for Deep Learning***
+* ***Symbolic programming or imperative programming***
+* ***Mixed programming available*** *(Symbolic + imperative)*
+ 
 <image src="https://raw.githubusercontent.com/dmlc/web-data/master/mxnet/image/banner.png" width=800 height=200></image>
 >## ***Introduction*** 
 *   
@@ -29,43 +31,43 @@ print mx.asnumpy(out)
 >## ***Topics***
 * ### ***Neural Networks basic***
     * [***Fully Connected Neural Network with LogisticRegressionOutput : Classifying the MNIST data using mxnet***](https://github.com/JONGGON/Mxnet_Tutorial/tree/master/basic/Mnist_FullyNeuralNetwork_mxnet%20with_LogisticRegressionOutput)
+
     * [***Fully Connected Neural Network with SoftmaxOutput : Classifying the MNIST data using mxnet***](https://github.com/JONGGON/Mxnet_Tutorial/tree/master/basic/Mnist_FullyNeuralNetwork_mxnet%20with_softmax)
     
-    * [***Fully Connected Neural Network with SoftmaxOutput*** (flexible to use the module) ***: Classifying the MNIST data using mxnet***]()(in progress)
+    * [***Fully Connected Neural Network with SoftmaxOutput*** *(flexible to use the module)* ***: Classifying the MNIST data using mxnet***]()
 
     * [***Convolutional Neural Networks with SoftmaxOutput : Classifying the MNIST data using mxnet***](https://github.com/JONGGON/Mxnet_Tutorial/tree/master/basic/Convolutional%20Neural%20Networks%20with%20SoftmaxOutput)
 
-    * [***Convolutional Neural Networks with SoftmaxOutput*** (flexible to use the module) ***: Classifying the MNIST data using mxnet***]()(in progress)
+    * [***Convolutional Neural Networks with SoftmaxOutput*** *(flexible to use the module)* ***: Classifying the MNIST data using mxnet***]()
 
 
     * [***Recurrent Neural Networks with SoftmaxOutput : Classifying the MNIST data using mxnet***](https://github.com/JONGGON/Mxnet_Tutorial/tree/master/basic/Recurrent%20Neural%20Networks%20with%20SoftmaxOutput)
+    
     * [***Recurrent Neural Networks + LSTM with SoftmaxOutput : Classifying the MNIST data using mxnet***](https://github.com/JONGGON/Mxnet_Tutorial/tree/master/basic/Recurrent%20Neural%20Networks%20%2B%20LSTM%20with%20SoftmaxOutput)
 
-    * [***Recurrent Neural Networks + LSTM with SoftmaxOutput*** (flexible to use the module) ***: Classifying the MNIST data using mxnet***]()(in progress)
+    * [***Recurrent Neural Networks + LSTM with SoftmaxOutput*** *(flexible to use the module)* ***: Classifying the MNIST data using mxnet***]()
 
     * [***Autoencoder Neural Networks with logisticRegressionOutput : Compressing the MNIST data using mxnet***](https://github.com/JONGGON/Mxnet_Tutorial/tree/master/basic/Autoencoder%20Neural%20Networks%20with%20logisticRegressionOutput)
 
-    * [***Autoencoder Neural Networks with logisticRegressionOutput*** (flexible to use the module) ***: Compressing the MNIST data using mxnet***]()(in progress)
+    * [***Autoencoder Neural Networks with logisticRegressionOutput*** *(flexible to use the module)* ***: Compressing the MNIST data using mxnet***]())
 
 
 * ### ***Neural Networks Applications***
     * [***Predicting lotto numbers in regression analysis using mxnet***](https://github.com/JONGGON/Mxnet_Tutorial/tree/master/applications/Predicting%20lotto%20numbers%20in%20regression%20analysis%20using%20mxnet)
-    * [***Generative Adversarial Network version1 with fullyConnected Neural Network : using the MNIST data***](https://github.com/JONGGON/Mxnet_Tutorial/tree/master/applications/Generative%20Adversarial%20Network%20version1%20with%20FullyConnected%20Neural%20Network)
-    * [***Generative Adversarial Network version2 with Convolution Neural Network : using the MNIST data***](https://github.com/JONGGON/Mxnet_Tutorial/tree/master/applications/Generative%20Adversarial%20Network%20version2%20with%20Convolution%20Neural%20Network)(***in progress***)
+
+    * [***Generative Adversarial Networks with fullyConnected Neural Network : using the MNIST data***](https://github.com/JONGGON/Mxnet_Tutorial/tree/master/applications/Generative%20Adversarial%20Network%20version1%20with%20FullyConnected%20Neural%20Network)
+
+    * [***Generative Adversarial Networks with Convolution Neural Network : using ImageNet data***](https://github.com/JONGGON/Mxnet_Tutorial/tree/master/applications/Generative%20Adversarial%20Network%20version2%20with%20Convolution%20Neural%20Network)(***in progress***)
+
     * [***word2vec : using undefined data***]()(***not yet***)
-
-* ### ***Jonggon Project with Machine Running and Deep Learning***  
-     * [***Motion Generation***]()(***not yet***)
-     * [***t-SNE***]()(***in progress***)
-
 
 >## ***Development environment***
 * window 8.1 64bit 
 * WinPython-64bit-2.7.10.3 - (Also available in Python package Library like Anaconda and so on)  
-* mxnet-0.9.5
 * pycharm Community Edition 2016.3.2 - (Also available in editors such as Spyder and Eclipse and so on.)
+
 >## ***Dependencies*** 
-+ mxnet-0.9.5
-+ numpy-1.12.1
-+ matplotlib-1.5.0rc3
+* mxnet-0.9.4 or mxnet-0.9.5
+* numpy-1.12.1
+* matplotlib-1.5.0rc3
 

@@ -8,11 +8,8 @@ import matplotlib.pyplot as plt
 
 '''unsupervised learning -  Autoencoder'''
 
-def to4d(img):
-    return img.reshape(img.shape[0], 1, 28, 28).astype(np.float32)/255
-
 def to2d(img):
-    return img.reshape(img.shape[0],784).astype(np.float32)/255
+    return img.reshape(img.shape[0],784).astype(np.float32)/255.0
 
 def NeuralNet(epoch,batch_size,save_period):
     '''
@@ -34,8 +31,8 @@ def NeuralNet(epoch,batch_size,save_period):
     (_, _, test_img) = dd.read_data_from_file('t10k-labels-idx1-ubyte.gz', 't10k-images-idx3-ubyte.gz')
 
     '''data loading referenced by Data Loading API '''
-    train_iter  = mx.io.NDArrayIter(data={'input' : to4d(train_img)},label={'input_' : to2d(train_img)}, batch_size=batch_size, shuffle=True) #training data
-    test_iter   = mx.io.NDArrayIter(data={'input' : to4d(test_img)},label={'input_' : to2d(test_img)} ,batch_size=batch_size) #test data
+    train_iter  = mx.io.NDArrayIter(data={'input' : to2d(train_img)},label={'input_' : to2d(train_img)}, batch_size=batch_size, shuffle=True) #training data
+    test_iter   = mx.io.NDArrayIter(data={'input' : to2d(test_img)},label={'input_' : to2d(test_img)}) #test data
 
     '''Autoencoder network
 
@@ -43,8 +40,6 @@ def NeuralNet(epoch,batch_size,save_period):
     input - encode - middle - decode -> output
     '''
     input = mx.sym.Variable('input')
-
-    input = mx.sym.Flatten(data=input) #Flatten the mnist data
     output= mx.sym.Variable('input_')
 
     # encode
@@ -98,8 +93,6 @@ def NeuralNet(epoch,batch_size,save_period):
     mod.set_params(arg_params, aux_params)
 
 
-    '''in this code ,  eval_metric, mod.score doesn't work'''
-
     '''if you want to modify the learning process, go into the mod.fit function()'''
 
     mod.fit(train_iter, initializer=mx.initializer.Xavier(rnd_type='gaussian', factor_type="avg", magnitude=1),
@@ -118,10 +111,10 @@ def NeuralNet(epoch,batch_size,save_period):
     print mod.output_shapes
     print mod.get_params()
     print mod.get_outputs()
-    print mod.score(train_iter, ['mse', 'acc'])
 
-    print "completed"
+    print "training_data : {}".format(mod.score(train_iter, ['mse']))
 
+    print "Optimization complete."
 
     #################################TEST####################################
     '''load method1 - load the saved parameter'''
@@ -129,7 +122,6 @@ def NeuralNet(epoch,batch_size,save_period):
 
     '''load method2 - load the training mod.get_params() directly'''
     #arg_params, aux_params = mod.get_params()
-
 
     '''load method3 - using the shared_module'''
     """
@@ -141,28 +133,28 @@ def NeuralNet(epoch,batch_size,save_period):
     """
     test.bind(data_shapes=test_iter.provide_data, label_shapes=test_iter.provide_label,shared_module=mod,for_training=False)
 
-    '''Annotate only when running test data. and Uncomment only if it is 'load method1' or 'load method2'''
+    '''Annotate only when running test data. and Uncomment only if it is 'load method1' or 'load method2' '''
     #test.set_params(arg_params, aux_params)
 
-    '''all data test'''
-    result = test.predict(test_iter).asnumpy()
+    '''test'''
+    result = test.predict(test_iter,num_batch=20).asnumpy()
 
     '''visualization'''
-    print_size=10
-    fig ,  ax = plt.subplots(2, print_size, figsize=(print_size, 2))
+    column_size=10
+    fig ,  ax = plt.subplots(2, column_size, figsize=(column_size, 2))
 
-    for i in xrange(print_size):
+    for i in xrange(column_size):
         ax[0][i].set_axis_off()
         ax[1][i].set_axis_off()
-        ax[0][i].imshow(np.reshape(result[i], (28, 28)))
-        ax[1][i].imshow(np.reshape(result[i+10], (28, 28)))
+        ax[0][i].imshow(np.reshape(result[i], (28, 28)),cmap='gray')
+        ax[1][i].imshow(np.reshape(result[i+10], (28, 28)),cmap='gray')
 
     plt.show()
 
 if __name__ == "__main__":
 
     print "NeuralNet_starting in main"
-    NeuralNet(epoch=100,batch_size=100,save_period=10)
+    NeuralNet(epoch=100,batch_size=100,save_period=100)
 
 else:
 
