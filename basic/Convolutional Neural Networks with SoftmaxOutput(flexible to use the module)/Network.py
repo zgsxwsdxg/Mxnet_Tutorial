@@ -64,7 +64,7 @@ def NeuralNet(epoch,batch_size,save_period):
     mod.bind(data_shapes=train_iter.provide_data,label_shapes=train_iter.provide_label)
 
     #load the saved mod data
-    #mod.load_params("Weights/mod-100.params")
+    mod.load_params("Weights/mod-100.params")
 
     mod.init_params(initializer=mx.initializer.Xavier(rnd_type='gaussian', factor_type='avg', magnitude=1))
     mod.init_optimizer(optimizer='adam',optimizer_params={'learning_rate': 0.001})
