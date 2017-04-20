@@ -6,7 +6,7 @@ import logging
 logging.basicConfig(level=logging.INFO)
 import matplotlib.pyplot as plt
 
-'''unsupervised learning -  Autoencoder'''
+'''unsupervised learning -  Generative Adversarial Networks'''
 def to2d(img):
     return img.reshape(img.shape[0],784).astype(np.float32)/255.0
 
@@ -52,19 +52,19 @@ def Discriminator():
     discriminator1 = mx.sym.Activation(data=d_affine1, name='d_sigmoid1', act_type='sigmoid')
     d_affine2 = mx.sym.FullyConnected(data=discriminator1,name = 'd_affine2' , num_hidden=128)
     discriminator2 = mx.sym.Activation(data=d_affine2, name='d_sigmoid2', act_type='sigmoid')
-    d_affine3 = mx.sym.FullyConnected(data=discriminator2,name = 'd_affine3' , num_hidden=1)
+    d_affine3 = mx.sym.FullyConnected(data=discriminator2, name='d_affine3', num_hidden=1)
     d_out = mx.sym.Activation(data=d_affine3, name='d_sigmoid3', act_type='sigmoid')
 
     '''expression-1'''
-    #out1 = mx.sym.MakeLoss(mx.symbol.log(discriminator3),grad_scale=-1.0,name="loss1")
-    #out2 = mx.sym.MakeLoss(mx.symbol.log(1.0-discriminator3),grad_scale=-1.0,name='loss2')
+    #out1 = mx.sym.MakeLoss(mx.symbol.log(d_out),grad_scale=-1.0,normalization='batch',name="loss1")
+    #out2 = mx.sym.MakeLoss(mx.symbol.log(1.0-d_out),grad_scale=-1.0,normalization='batch',name='loss2')
 
     '''expression-2,
     question? Why multiply the loss equation by -1?
     answer : for Maximizing the Loss function , and This is because mxnet only provides optimization techniques that minimize.
     '''
-    out1 = mx.sym.MakeLoss(-1.0*mx.symbol.log(d_out),grad_scale=1.0,normalization='batch',name="loss1")
-    out2 = mx.sym.MakeLoss(-1.0*mx.symbol.log(1.0-d_out),grad_scale=1.0,normalization='batch',name='loss2')
+    out1 = mx.sym.MakeLoss(-1.0*mx.symbol.log(d_out),grad_scale=1.0,normalization='null',name="loss1")
+    out2 = mx.sym.MakeLoss(-1.0*mx.symbol.log(1.0-d_out),grad_scale=1.0,normalization='null',name='loss2')
 
     group=mx.sym.Group([out1,out2])
 
@@ -77,6 +77,9 @@ def GAN(epoch,noise_size,batch_size,save_period):
     train_iter,train_data_number= Data_Processing(batch_size)
     noise_iter = NoiseIter(batch_size, noise_size)
 
+    #No need, but must be declared.
+    label =mx.nd.zeros((batch_size,))
+
     column_size=10
     row_size=2
 
@@ -86,7 +89,7 @@ def GAN(epoch,noise_size,batch_size,save_period):
     <structure>
     generator(size = 128) - 256 - (size = 784 : image generate)
 
-    discriminator(size = 784) - 256  - 128 - (size=1 : Identifies whether the image is an actual image or not)
+    discriminator(size = 784) - 256  - (size=1 : Identifies whether the image is an actual image or not)
 
     cost_function - MIN_MAX cost_function
     '''
@@ -102,7 +105,8 @@ def GAN(epoch,noise_size,batch_size,save_period):
     modG = mx.mod.Module(symbol=generator, data_names=['noise'], label_names=None, context= mx.gpu(0))
     modG.bind(data_shapes=noise_iter.provide_data,label_shapes=None,for_training=True)
 
-    #modG.load_params(save_path+"modG-100.params")
+    #load the saved modG data
+    modG.load_params(save_path+"modG-100.params")
 
     modG.init_params(initializer=mx.initializer.Xavier(rnd_type='uniform', factor_type='avg', magnitude=3))
     modG.init_optimizer(optimizer='adam',optimizer_params={'learning_rate': 0.01})
@@ -112,26 +116,61 @@ def GAN(epoch,noise_size,batch_size,save_period):
     modD_0 = mx.mod.Module(symbol=discriminator[0], data_names=['data'], label_names=None, context= mx.gpu(0))
     modD_0.bind(data_shapes=train_iter.provide_data,label_shapes=None,for_training=True,inputs_need_grad=True)
 
-    #modD_0.load_params(save_path+"modD_0-100.params")
+    # load the saved modD_O data
+    modD_0.load_params(save_path+"modD_0-100.params")
 
     modD_0.init_params(initializer=mx.initializer.Xavier(rnd_type='uniform', factor_type='avg', magnitude=3))
     modD_0.init_optimizer(optimizer='adam',optimizer_params={'learning_rate': 0.01})
 
+    """
+    Parameters
+    shared_module : Module
+        Default is `None`. This is used in bucketing. When not `None`, the shared module
+        essentially corresponds to a different bucket -- a module with different symbol
+        but with the same sets of parameters (e.g. unrolled RNNs with different lengths).
+
+    In here, for sharing the Discriminator parameters, we must to use shared_module=modD_0
+    """
     modD_1 = mx.mod.Module(symbol=discriminator[1], data_names=['data'], label_names=None, context= mx.gpu(0))
     modD_1.bind(data_shapes=train_iter.provide_data,label_shapes=None,for_training=True,inputs_need_grad=True,shared_module=modD_0)
 
     # =============generate image=============
     test_mod = mx.mod.Module(symbol=generator, data_names=['noise'], label_names=None, context= mx.gpu(0))
 
-    #No need, but must be declared.
+    '''No need, but must be declared.'''
+
+
+    '''make evaluation method 1 - Using existing ones.
+        metrics = {
+        'acc': Accuracy,
+        'accuracy': Accuracy,
+        'ce': CrossEntropy,
+        'f1': F1,
+        'mae': MAE,
+        'mse': MSE,
+        'rmse': RMSE,
+        'top_k_accuracy': TopKAccuracy
+    }'''
+
+    metric = mx.metric.create(['acc','mse'])
+
+
+
+    '''make evaluation method 2 - Making new things.'''
+    '''
+    Custom evaluation metric that takes a NDArray function.
+    Parameters:
+    •feval (callable(label, pred)) – Customized evaluation function.
+    •name (str, optional) – The name of the metric.
+    •allow_extra_outputs (bool) – If true, the prediction outputs can have extra outputs.
+    This is useful in RNN, where the states are also produced in outputs for forwarding.
+    '''
 
     def zero(label, pred):
         return 0
 
     null = mx.metric.CustomMetric(zero)
 
-    #No need, but must be declared.
-    label = mx.nd.zeros((batch_size,))
     ####################################training loop############################################
     # =============train===============
     for epoch in xrange(1,epoch+1,1):
@@ -178,8 +217,19 @@ def GAN(epoch,noise_size,batch_size,save_period):
             '''Max_Cost of noise data Generator'''
             Min_cost-=modG.get_outputs()[0].asnumpy()
 
-            '''No need, but must be declared.'''
+            '''
+            No need, but must be declared!!!
+
+            in mxnet,If you do not use one of the following two statements, the memory usage becomes 100 percent and the computer crashes.
+            It is not necessary for actual calculation, but the above phenomenon does not occur when it is necessary to write it.
+            I do not know why. Just think of it as meaningless.
+
+            '''
+            '''make evaluation method 1 - Using existing ones'''
+            #metric.update([label], modD_0.get_outputs())
+            '''make evaluation method 2 - Making new things.'''
             null.update([label], modD_0.get_outputs())
+
 
         Max_C=(Max_cost_0+Max_cost_1)/(total_batch_number*1.0)
         Min_C=Max_cost_0/(total_batch_number*1.0)
@@ -250,7 +300,7 @@ def GAN(epoch,noise_size,batch_size,save_period):
 if __name__ == "__main__":
 
     print "GAN_starting in main"
-    GAN(epoch=300, noise_size=128, batch_size=100, save_period=300)
+    GAN(epoch=100, noise_size=128, batch_size=128, save_period=100)
 
 else:
 

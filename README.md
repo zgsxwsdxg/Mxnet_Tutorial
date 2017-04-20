@@ -30,13 +30,27 @@ print mx.asnumpy(out)
 * ### ***Neural Networks basic***
     * [***Fully Connected Neural Network with LogisticRegressionOutput : Classifying the MNIST data using mxnet***](https://github.com/JONGGON/Mxnet_Tutorial/tree/master/basic/Mnist_FullyNeuralNetwork_mxnet%20with_LogisticRegressionOutput)
     * [***Fully Connected Neural Network with SoftmaxOutput : Classifying the MNIST data using mxnet***](https://github.com/JONGGON/Mxnet_Tutorial/tree/master/basic/Mnist_FullyNeuralNetwork_mxnet%20with_softmax)
+    
+    * [***Fully Connected Neural Network with SoftmaxOutput*** (flexible to use the module) ***: Classifying the MNIST data using mxnet***]()(in progress)
+
     * [***Convolutional Neural Networks with SoftmaxOutput : Classifying the MNIST data using mxnet***](https://github.com/JONGGON/Mxnet_Tutorial/tree/master/basic/Convolutional%20Neural%20Networks%20with%20SoftmaxOutput)
+
+    * [***Convolutional Neural Networks with SoftmaxOutput*** (flexible to use the module) ***: Classifying the MNIST data using mxnet***]()(in progress)
+
+
     * [***Recurrent Neural Networks with SoftmaxOutput : Classifying the MNIST data using mxnet***](https://github.com/JONGGON/Mxnet_Tutorial/tree/master/basic/Recurrent%20Neural%20Networks%20with%20SoftmaxOutput)
     * [***Recurrent Neural Networks + LSTM with SoftmaxOutput : Classifying the MNIST data using mxnet***](https://github.com/JONGGON/Mxnet_Tutorial/tree/master/basic/Recurrent%20Neural%20Networks%20%2B%20LSTM%20with%20SoftmaxOutput)
+
+    * [***Recurrent Neural Networks + LSTM with SoftmaxOutput*** (flexible to use the module) ***: Classifying the MNIST data using mxnet***]()(in progress)
+
     * [***Autoencoder Neural Networks with logisticRegressionOutput : Compressing the MNIST data using mxnet***](https://github.com/JONGGON/Mxnet_Tutorial/tree/master/basic/Autoencoder%20Neural%20Networks%20with%20logisticRegressionOutput)
+
+    * [***Autoencoder Neural Networks with logisticRegressionOutput*** (flexible to use the module) ***: Compressing the MNIST data using mxnet***]()(in progress)
+
+
 * ### ***Neural Networks Applications***
     * [***Predicting lotto numbers in regression analysis using mxnet***](https://github.com/JONGGON/Mxnet_Tutorial/tree/master/applications/Predicting%20lotto%20numbers%20in%20regression%20analysis%20using%20mxnet)
-    * [***Generative Adversarial Network version1 with fullyConnected Neural Network : using the MNIST data***](https://github.com/JONGGON/Mxnet_Tutorial/tree/master/applications/Generative%20Adversarial%20Network%20version1%20with%20FullyConnected%20Neural%20Network)(***in progress***)
+    * [***Generative Adversarial Network version1 with fullyConnected Neural Network : using the MNIST data***](https://github.com/JONGGON/Mxnet_Tutorial/tree/master/applications/Generative%20Adversarial%20Network%20version1%20with%20FullyConnected%20Neural%20Network)
     * [***Generative Adversarial Network version2 with Convolution Neural Network : using the MNIST data***](https://github.com/JONGGON/Mxnet_Tutorial/tree/master/applications/Generative%20Adversarial%20Network%20version2%20with%20Convolution%20Neural%20Network)(***in progress***)
     * [***word2vec : using undefined data***]()(***not yet***)
 
