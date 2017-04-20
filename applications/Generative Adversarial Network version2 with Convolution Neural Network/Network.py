@@ -72,8 +72,6 @@ def Discriminator():
 
 def GAN(epoch,noise_size,batch_size,save_period):
 
-    save_weights=True
-    save_path="Weights/"
     train_iter,train_data_number= Data_Processing(batch_size)
     noise_iter = NoiseIter(batch_size, noise_size)
 
@@ -89,7 +87,7 @@ def GAN(epoch,noise_size,batch_size,save_period):
     <structure>
     generator(size = 128) - 256 - (size = 784 : image generate)
 
-    discriminator(size = 784) - 256  - (size=1 : Identifies whether the image is an actual image or not)
+    discriminator(size = 784) - 256 - 128 - (size=1 : Identifies whether the image is an actual image or not)
 
     cost_function - MIN_MAX cost_function
     '''
@@ -106,7 +104,7 @@ def GAN(epoch,noise_size,batch_size,save_period):
     modG.bind(data_shapes=noise_iter.provide_data,label_shapes=None,for_training=True)
 
     #load the saved modG data
-    modG.load_params(save_path+"modG-100.params")
+    modG.load_params("Weights/modG-100.params")
 
     modG.init_params(initializer=mx.initializer.Xavier(rnd_type='uniform', factor_type='avg', magnitude=3))
     modG.init_optimizer(optimizer='adam',optimizer_params={'learning_rate': 0.01})
@@ -117,7 +115,7 @@ def GAN(epoch,noise_size,batch_size,save_period):
     modD_0.bind(data_shapes=train_iter.provide_data,label_shapes=None,for_training=True,inputs_need_grad=True)
 
     # load the saved modD_O data
-    modD_0.load_params(save_path+"modD_0-100.params")
+    modD_0.load_params("Weights/modD_0-100.params")
 
     modD_0.init_params(initializer=mx.initializer.Xavier(rnd_type='uniform', factor_type='avg', magnitude=3))
     modD_0.init_optimizer(optimizer='adam',optimizer_params={'learning_rate': 0.01})
@@ -137,8 +135,8 @@ def GAN(epoch,noise_size,batch_size,save_period):
     # =============generate image=============
     test_mod = mx.mod.Module(symbol=generator, data_names=['noise'], label_names=None, context= mx.gpu(0))
 
-    '''No need, but must be declared.'''
 
+    '''############Although not required, the following code should be declared.#################'''
 
     '''make evaluation method 1 - Using existing ones.
         metrics = {
@@ -153,7 +151,6 @@ def GAN(epoch,noise_size,batch_size,save_period):
     }'''
 
     metric = mx.metric.create(['acc','mse'])
-
 
 
     '''make evaluation method 2 - Making new things.'''
@@ -180,7 +177,6 @@ def GAN(epoch,noise_size,batch_size,save_period):
         total_batch_number = np.ceil(train_data_number/(batch_size*1.0))
         print "epoch : {}".format(epoch)
         train_iter.reset()
-        null.reset()
         for batch in train_iter:
             ################################updating only parameters related to modD.########################################
             # updating discriminator on real data
@@ -239,10 +235,12 @@ def GAN(epoch,noise_size,batch_size,save_period):
         print "Min Generator Cost : {}".format(Min_C.mean())
 
         #Save the data
-        if save_weights and epoch%save_period==0:
+        if epoch%save_period==0:
             print('Saving weights')
-            modG.save_params(save_path+"modG-{}.params" .format(epoch))
-            modD_0.save_params(save_path+"modD_0-{}.params"  .format(epoch))
+            modG.save_params("Weights/modG-{}.params" .format(epoch))
+            modD_0.save_params("Weights/modD_0-{}.params"  .format(epoch))
+
+    print "Optimization complete."
 
     #################################Generating Image####################################
     '''load method1 - load the training mod.get_params() directly'''
