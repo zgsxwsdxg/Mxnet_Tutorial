@@ -52,7 +52,7 @@ def Generator(relu ='relu',tanh='tanh',fix_gamma=True,eps=0.0001,no_bias=True):
 
     <Details of Adversarial Training>
     1. noise data : uniform distribution -> okay
-    2. No pre-processing was applied to training images besides scaling to the range of the tanh activation function [-1, 1]
+    2. No pre-processing was applied to training images besides scaling to the range of the tanh activation function [-1, 1] -> okay
     3. Using adam optimizer , learning rate = 0.0002 , B1 term is 0.5 -> okay
     4. mini-batch size 128 -> okay
     5. In the LeakyReLU, the slope of the leak was set to 0.2 in all models. -> okay
