@@ -21,29 +21,31 @@ def LottoNet(epoch,batch_size,save_period):
     label = mx.sym.Variable('output')
 
     affine1 = mx.sym.FullyConnected(data=input,name='fc1',num_hidden=200)
-    hidden1 = mx.sym.Activation(data=affine1, name='sigmoid1', act_type="relu")
+    affine1 = mx.sym.BatchNorm(affine1, fix_gamma=False, eps=0.0001,name='batch1')
+    hidden1 = mx.sym.Activation(data=affine1, name='sigmoid1', act_type='sigmoid')
 
     affine2 = mx.sym.FullyConnected(data=hidden1, name='fc2', num_hidden=200)
-    hidden2 = mx.sym.Activation(data=affine2, name='sigmoid2', act_type="relu")
+    affine2 = mx.sym.BatchNorm(affine2, fix_gamma=False, eps=0.0001, name='batch2')
+    hidden2 = mx.sym.Activation(data=affine2, name='sigmoid2', act_type='sigmoid')
 
     affine3 = mx.sym.FullyConnected(data=hidden2, name='fc3', num_hidden=200)
-    hidden3 = mx.sym.Activation(data=affine3, name='sigmoid3', act_type="relu")
+    affine3 = mx.sym.BatchNorm(affine3, fix_gamma=False, eps=0.0001, name='batch3')
+    hidden3 = mx.sym.Activation(data=affine3, name='sigmoid3', act_type='sigmoid')
 
     affine4 = mx.sym.FullyConnected(data=hidden3, name='fc4', num_hidden=200)
-    hidden4 = mx.sym.Activation(data=affine4, name='sigmoid4', act_type="relu")
+    affine4 = mx.sym.BatchNorm(affine4, fix_gamma=False, eps=0.0001, name='batch4')
+    hidden4 = mx.sym.Activation(data=affine4, name='sigmoid4', act_type='sigmoid')
 
     affine5 = mx.sym.FullyConnected(data=hidden4, name='fc5', num_hidden=200)
-    hidden5 = mx.sym.Activation(data=affine5, name='sigmoid5', act_type="relu")
+    affine5 = mx.sym.BatchNorm(affine5, fix_gamma=False, eps=0.0001, name='batch5')
+    hidden5 = mx.sym.Activation(data=affine5, name='sigmoid5', act_type='sigmoid')
 
-    affine6 = mx.sym.FullyConnected(data=hidden5, name='fc6', num_hidden=100)
-    hidden6 = mx.sym.Activation(data=affine6, name='sigmoid6', act_type="relu")
+    affine6 = mx.sym.FullyConnected(data=hidden5, name='fc6', num_hidden=200)
+    affine6 = mx.sym.BatchNorm(affine6, fix_gamma=False, eps=0.0001, name='batch6')
+    hidden6 = mx.sym.Activation(data=affine6, name='sigmoid6', act_type='sigmoid')
 
     out_affine = mx.sym.FullyConnected(data=hidden6, name='out_fc', num_hidden=6)
-
     output = mx.sym.LinearRegressionOutput(data=out_affine, label=label)
-    # LogisticRegressionOutput contains a sigmoid function internally. and It should be executed with xxxx_lbl_one_hot data.
-    #output = mx.sym.LogisticRegressionOutput(data=out_affine , label=label)
-
     print output.list_arguments()
 
     #weights save
@@ -63,19 +65,19 @@ def LottoNet(epoch,batch_size,save_period):
 
     '''if the below code already is declared by mod.fit function, thus we don't have to write it.
     but, when you load the saved weights, you must write the below code.'''
-    mod.bind(data_shapes=train_iter.provide_data,label_shapes=train_iter.provide_label)
+    #mod.bind(data_shapes=train_iter.provide_data,label_shapes=train_iter.provide_label)
 
     #'''
     # When you want to load the saved weights, uncomment the code below.
-    symbol, arg_params, aux_params = mx.model.load_checkpoint(model_name, 10000)
+    #symbol, arg_params, aux_params = mx.model.load_checkpoint(model_name, 50000)
 
     #the below code needs mod.bind, but If arg_params and aux_params is set in mod.fit, you do not need the code below, nor do you need mod.bind.
-    mod.set_params(arg_params, aux_params)
+    #mod.set_params(arg_params, aux_params)
     #'''
 
     mod.fit(train_iter,
             optimizer='adam',
-            optimizer_params={'learning_rate': 0.0001},
+            optimizer_params={'learning_rate': 0.001},
             initializer=mx.initializer.Xavier(rnd_type='gaussian', factor_type="avg", magnitude=1),
             eval_metric=mx.metric.MSE(),
             num_epoch=epoch,
@@ -89,21 +91,30 @@ def LottoNet(epoch,batch_size,save_period):
     print mod.output_shapes
     print mod.get_params()
     print mod.get_outputs()
-    print mod.score(train_iter, ['mse', 'acc'])
 
-    result = mod.predict(train_iter).asnumpy()
-    result1 = np.round(result*normalization_factor)
-    result2 = np.rint(result*normalization_factor)
-    #print result1
-    #print result2
-    #'''
+    print "training_data : {}".format(mod.score(train_iter, ['mse', 'acc']))
+    print "Optimization complete."
+
     #################################TEST####################################
-    symbol, arg_params, aux_params = mx.model.load_checkpoint(model_name, 10000)
 
-    test.bind(data_shapes=test_iter.provide_data,for_training=False)
+    '''load method1 - load the saved parameter'''
+    #symbol, arg_params, aux_params = mx.model.load_checkpoint(model_name, 50000)
 
-    '''Annotate only when running test data.'''
-    test.set_params(arg_params, aux_params)
+    '''load method2 - load the training mod.get_params() directly'''
+    #arg_params, aux_params = mod.get_params()
+
+    '''load method3 - using the shared_module'''
+    """
+    Parameters
+    shared_module : Module
+        Default is `None`. This is used in bucketing. When not `None`, the shared module
+        essentially corresponds to a different bucket -- a module with different symbol
+        but with the same sets of parameters (e.g. unrolled RNNs with different lengths).
+    """
+    test.bind(data_shapes=test_iter.provide_data, label_shapes=None, shared_module=mod,for_training=False)
+
+    '''Annotate only when running test data. and Uncomment only if it is 'load method1' or 'load method2' '''
+    #test.set_params(arg_params, aux_params)
 
     result= test.predict(test_iter)
     result1 = mx.nd.round(normalization_factor*result)

@@ -12,17 +12,17 @@ def to2d(img):
 
 class NoiseIter(mx.io.DataIter):
 
-    def __init__(self, batch_size, ndim):
+    def __init__(self, batch_size, noise_size):
         self.batch_size = batch_size
-        self.ndim = ndim
-        self.provide_data = [('noise', (batch_size, ndim))]
+        self.noise_size = noise_size
+        self.provide_data = [('noise', (batch_size, noise_size))]
         self.provide_label = []
 
     def iter_next(self):
         return True
 
     def getdata(self):
-        return [mx.random.normal(0, 1.0, shape=(self.batch_size, self.ndim),ctx=mx.gpu(0))]
+        return [mx.random.normal(0, 1.0, shape=(self.batch_size, self.noise_size),ctx=mx.gpu(0))]
 
 def Data_Processing(batch_size):
 
@@ -35,11 +35,26 @@ def Data_Processing(batch_size):
     return train_iter,len(train_img)
 
 def Generator():
+    '''
+    <structure> is based on "" Generative Adversarial Networks paper
+    authored by Ian J. Goodfellow, Jean Pouget-Abadie, Mehdi Mirza, Bing Xu, David Warde-Farley, Sherjil Ozair, Aaron Courville, Yoshua Bengio
+
+
+    #I refer to the following
+    with reference to the below sentense
+    We trained adversarial nets an a range of datasets including MNIST[21], the Toronto Face Database
+    (TFD) [27], and CIFAR-10 [19]. The generator nets used a mixture of rectifier linear activations [17,
+    8] and sigmoid activations, while the discriminator net used maxout [9] activations. Dropout [16]
+    was applied in training the discriminator net. While our theoretical framework permits the use of
+    dropout and other noise at intermediate layers of the generator, we used noise as the input to only
+    the bottommost layer of the generator network.
+    '''
 
     #generator neural networks
     noise = mx.sym.Variable('noise') # The size of noise is 128.
     g_affine1 = mx.sym.FullyConnected(data=noise, name='g_affine1', num_hidden=256)
     generator1= mx.sym.Activation(data=g_affine1, name='g_sigmoid1', act_type='sigmoid')
+
     g_affine2 = mx.sym.FullyConnected(data=generator1, name='g_affine2', num_hidden=784)
     g_out= mx.sym.Activation(data=g_affine2, name='g_sigmoid2', act_type='sigmoid')
     return g_out
@@ -50,8 +65,12 @@ def Discriminator():
     data = mx.sym.Variable('data') # The size of data is 784(28*28)
     d_affine1 = mx.sym.FullyConnected(data=data,name = 'd_affine1' , num_hidden=256)
     discriminator1 = mx.sym.Activation(data=d_affine1, name='d_sigmoid1', act_type='sigmoid')
+    discriminator1=mx.sym.Dropout(data=discriminator1,p=0.2,name='drop_out_1')
+
     d_affine2 = mx.sym.FullyConnected(data=discriminator1,name = 'd_affine2' , num_hidden=128)
     discriminator2 = mx.sym.Activation(data=d_affine2, name='d_sigmoid2', act_type='sigmoid')
+    discriminator2 = mx.sym.Dropout(data=discriminator2,p=0.2,name='drop_out_2')
+
     d_affine3 = mx.sym.FullyConnected(data=discriminator2, name='d_affine3', num_hidden=1)
     d_out = mx.sym.Activation(data=d_affine3, name='d_sigmoid3', act_type='sigmoid')
 
@@ -63,8 +82,8 @@ def Discriminator():
     question? Why multiply the loss equation by -1?
     answer : for Maximizing the Loss function , and This is because mxnet only provides optimization techniques that minimize.
     '''
-    out1 = mx.sym.MakeLoss(-1.0*mx.symbol.log(d_out),grad_scale=1.0,normalization='null',name="loss1")
-    out2 = mx.sym.MakeLoss(-1.0*mx.symbol.log(1.0-d_out),grad_scale=1.0,normalization='null',name='loss2')
+    out1 = mx.sym.MakeLoss(-1.0*mx.symbol.log(d_out),grad_scale=1.0,normalization='batch',name="loss1")
+    out2 = mx.sym.MakeLoss(-1.0*mx.symbol.log(1.0-d_out),grad_scale=1.0,normalization='batch',name='loss2')
 
     group=mx.sym.Group([out1,out2])
 
@@ -296,10 +315,7 @@ def GAN(epoch,noise_size,batch_size,save_period):
     #'''
 
 if __name__ == "__main__":
-
     print "GAN_starting in main"
     GAN(epoch=100, noise_size=128, batch_size=128, save_period=100)
-
 else:
-
     print "GAN_imported"
