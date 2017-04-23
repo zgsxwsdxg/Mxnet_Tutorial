@@ -361,14 +361,11 @@ def DCGAN(epoch,noise_size,batch_size,save_period,dataset):
             elif dataset == 'ImageNet':
                 ax[j][i].imshow(result[i+j*column_size])
     plt.show()
-    #'''
 
-    #'''
     if dataset == "MNIST":
         plt.savefig("DCGAN_MNIST.png")
     elif dataset == 'ImageNet':
         plt.savefig("DCGAN_ImageNet.png")
-    #'''
 
 if __name__ == "__main__":
     print "GAN_starting in main"
