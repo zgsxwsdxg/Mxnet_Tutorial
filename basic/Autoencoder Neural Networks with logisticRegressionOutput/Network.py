@@ -137,25 +137,35 @@ def NeuralNet(epoch,batch_size,save_period):
     #test.set_params(arg_params, aux_params)
 
     '''test'''
-    result = test.predict(test_iter,num_batch=20).asnumpy()
+    column_size=10 ; row_size=10 #     column_size x row_size <= 10000
 
-    '''visualization'''
-    column_size=10
-    fig ,  ax = plt.subplots(2, column_size, figsize=(column_size, 2))
+    result = test.predict(test_iter,num_batch=column_size*row_size).asnumpy()
 
-    for i in xrange(column_size):
-        ax[0][i].set_axis_off()
-        ax[1][i].set_axis_off()
-        ax[0][i].imshow(np.reshape(result[i], (28, 28)),cmap='gray')
-        ax[1][i].imshow(np.reshape(result[i+10], (28, 28)),cmap='gray')
+    '''range adjustment 0 ~ 1 -> 0 ~ 255 '''
+    result = result*255.0
+
+    '''generator image visualization'''
+    fig_g ,  ax_g = plt.subplots(row_size, column_size, figsize=(column_size, row_size))
+    fig_g.suptitle('generator')
+    for j in xrange(row_size):
+        for i in xrange(column_size):
+            ax_g[j][i].set_axis_off()
+            ax_g[j][i].imshow(np.reshape(result[i+j*column_size],(28,28)),cmap='gray')
+
+    fig_g.savefig("generator.png")
+    '''real image visualization'''
+    fig_r ,  ax_r = plt.subplots(row_size, column_size, figsize=(column_size, row_size))
+    fig_r.suptitle('real')
+    for j in xrange(row_size):
+        for i in xrange(column_size):
+            ax_r[j][i].set_axis_off()
+            ax_r[j][i].imshow(test_img[i+j*column_size], cmap='gray')
+    fig_r.savefig("real.png")
 
     plt.show()
 
 if __name__ == "__main__":
-
     print "NeuralNet_starting in main"
     NeuralNet(epoch=100,batch_size=100,save_period=100)
-
 else:
-
     print "NeuralNet_imported"

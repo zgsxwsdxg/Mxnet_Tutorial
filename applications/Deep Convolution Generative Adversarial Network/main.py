@@ -7,4 +7,4 @@ import Network
 I initialized the Hyperparameters values introduced in 'DETAILS OF ADVERSORIAL TRAINING part'
 of 'UNSUPERVISED REPRESENTATION LEARNING WITH DEEP CONVOLUTIONAL GENERATIVE ADVERSARIAL NETWORKS' paper.
 '''
-Network.DCGAN(epoch=100, noise_size=128, batch_size=128, save_period=100,dataset='MNIST')
+Network.DCGAN(epoch=1, noise_size=128, batch_size=128, save_period=100,dataset='MNIST')

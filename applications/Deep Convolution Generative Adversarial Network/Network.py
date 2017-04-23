@@ -10,16 +10,21 @@ import cv2
 '''unsupervised learning -Convolution Neural Netowrks  Generative Adversarial Networks'''
 
 def to4d_tanh(img):
-    print np.shape(img)
-    '''range conversion  0 ~ 255 -> -1 ~ 1'''
-    #img=(img.reshape(img.shape[0], 1, 28, 28).astype(np.float32)/(255.0/2.0))-1.0
+
+    '''1.resize (60000,64,64) -> and transform from 1 channel (60000,1,64,64) to 3 channel (60000,3,64,64)'''
     img = np.asarray([cv2.resize(i,(64,64),interpolation=cv2.INTER_CUBIC) for i in img ])
-    print np.shape(img)
     img = img.reshape(img.shape[0], 1, 64, 64).astype(np.float32)
-    print np.shape(img)
-    cv2.imshow('orginal',img)
+    img = np.tile(img, (1, 3, 1, 1)) # to 3channel
+
+    #show image
+    '''
+    img = img.transpose((0, 2, 3, 1))
+    cv2.imshow('orginal',img[0])
     cv2.waitKey(0)
     cv2.destroyAllWindows()
+    '''
+
+    '''2. range conversion  0 ~ 255 -> -1 ~ 1 and '''
     img = (img/(255.0/2.0))-1.0
 
     return img
@@ -36,18 +41,22 @@ class NoiseIter(mx.io.DataIter):
         return True
 
     def getdata(self):
-        return [mx.random.uniform(low=0.0, high=1.0, shape=(self.batch_size, self.noize,1,1),ctx=mx.gpu(0))]
+        return [mx.random.uniform(low=0.0, high=1.0, shape=(self.batch_size, self.noise_size,1,1),ctx=mx.gpu(0))]
 
 def Mnist_Data_Processing(batch_size):
 
     '''In this Gan tutorial, we don't need the label data.'''
     (train_lbl_one_hot, train_lbl, train_img) = dd.read_data_from_file('train-labels-idx1-ubyte.gz','train-images-idx3-ubyte.gz')
     (test_lbl_one_hot, test_lbl, test_img) = dd.read_data_from_file('t10k-labels-idx1-ubyte.gz','t10k-images-idx3-ubyte.gz')
+
+    '''train image + test image'''
+    train_img = np.concatenate((train_img, test_img), axis=0)
+
     '''data loading referenced by Data Loading API '''
     train_iter = mx.io.NDArrayIter(data={'data': to4d_tanh(train_img)}, batch_size=batch_size, shuffle=True)  # training data
     return train_iter,len(train_img)
 
-def Generator(relu ='relu',tanh='tanh',fix_gamma=True,eps=0.0001,no_bias=True):
+def Generator(relu ='relu',tanh='tanh',fix_gamma=True,eps=0.001,no_bias=True):
 
     '''
     Deep convolution Generative Adversarial Networks
@@ -103,24 +112,24 @@ def Generator(relu ='relu',tanh='tanh',fix_gamma=True,eps=0.0001,no_bias=True):
 
     return g_out
 
-def Discriminator(leaky ='leaky',sigmoid='sigmoid',fix_gamma=True,eps=0,no_bias=True):
+def Discriminator(leaky ='leaky',sigmoid='sigmoid',fix_gamma=True,eps=0.001,no_bias=True):
 
     #discriminator neural networks
     data = mx.sym.Variable('data') #(128,3,64,64)
 
     ### not applying Batch Normalization to the discriminator input layer ###
-    d1 = mx.sym.Convolution(data, name='d1', kernel=(4,4), stride=(2,2), pad=(1,1), num_filter=64, no_bias=no_bias)
+    d1 = mx.sym.Convolution(data, name='d1', kernel=(4,4), stride=(2,2), pad=(1,1), num_filter=64, no_bias=no_bias) #weight ->  (num_filter, channel, kernel[0], kernel[1])
     dact1 = mx.sym.LeakyReLU(d1 , act_type=leaky, slope=0.2 , name='leaky1') #(128,64,32,32,)
 
-    d2 = mx.sym.Convolution(dact1, name='d2', kernel=(4,4), stride=(2,2), pad=(1,1), num_filter=128, no_bias=no_bias)
+    d2 = mx.sym.Convolution(dact1, name='d2', kernel=(4,4), stride=(2,2), pad=(1,1), num_filter=128, no_bias=no_bias) #weight ->  (num_filter, channel, kernel[0], kernel[1])
     dbn2 = mx.sym.BatchNorm(d2, name='dbn2', fix_gamma=fix_gamma, eps=eps)
     dact2 = mx.sym.LeakyReLU(dbn2 , act_type=leaky, slope=0.2 , name='leaky2') #(128,128,16,16)
 
-    d3 = mx.sym.Convolution(dact2, name='d3', kernel=(4,4), stride=(2,2), pad=(1,1), num_filter=256, no_bias=no_bias)
+    d3 = mx.sym.Convolution(dact2, name='d3', kernel=(4,4), stride=(2,2), pad=(1,1), num_filter=256, no_bias=no_bias) #weight ->  (num_filter, channel, kernel[0], kernel[1])
     dbn3 = mx.sym.BatchNorm(d3, name='dbn3', fix_gamma=fix_gamma, eps=eps)
     dact3 = mx.sym.LeakyReLU(dbn3 , act_type=leaky, slope=0.2 , name='leaky3') #(128,256,8,8)
 
-    d4 = mx.sym.Convolution(dact3, name='d4', kernel=(4,4), stride=(2,2), pad=(1,1), num_filter=512, no_bias=no_bias)
+    d4 = mx.sym.Convolution(dact3, name='d4', kernel=(4,4), stride=(2,2), pad=(1,1), num_filter=512, no_bias=no_bias) #weight ->  (num_filter, channel, kernel[0], kernel[1])
     dbn4 = mx.sym.BatchNorm(d4, name='dbn4', fix_gamma=fix_gamma, eps=eps)
     dact4 = mx.sym.LeakyReLU(dbn4 , act_type=leaky, slope=0.2 , name='leaky4') #(128,512,4,4)
 
@@ -149,11 +158,11 @@ def DCGAN(epoch,noise_size,batch_size,save_period,dataset):
 
 
     if dataset == "MNIST":
-        train_iter,train_data_number= Mnist_Data_Processing(batch_size)
+        train_iter,train_data_number = Mnist_Data_Processing(batch_size)
         noise_iter = NoiseIter(batch_size, noise_size)
         #No need, but must be declared.
         label =mx.nd.zeros((batch_size,))
-    elif dataset == 'imagenet':
+    elif dataset == 'ImageNet':
         pass
 
     '''Network'''
@@ -198,15 +207,6 @@ def DCGAN(epoch,noise_size,batch_size,save_period,dataset):
     # =============generate image=============
     test_mod = mx.mod.Module(symbol=generator, data_names=['noise'], label_names=None, context= mx.gpu(0))
 
-    '''load method2 - using the shared_module'''
-    """
-    Parameters
-    shared_module : Module
-        Default is `None`. This is used in bucketing. When not `None`, the shared module
-        essentially corresponds to a different bucket -- a module with different symbol
-        but with the same sets of parameters (e.g. unrolled RNNs with different lengths).
-    """
-    test_mod.bind(data_shapes=[mx.io.DataDesc(name='noise', shape=(column_size*row_size,noise_size,1,1))],label_shapes=None,shared_module=modG,for_training=False,grad_req='null')
 
     '''############Although not required, the following code should be declared.#################'''
 
@@ -242,12 +242,11 @@ def DCGAN(epoch,noise_size,batch_size,save_period,dataset):
 
     ####################################training loop############################################
     # =============train===============
-    for epoch in xrange(1,epoch+1,1):
+    for epoch in xrange(epoch):
         Max_cost_0=0
         Max_cost_1=0
         Min_cost=0
         total_batch_number = np.ceil(train_data_number/(batch_size*1.0))
-        print "epoch : {}".format(epoch)
         train_iter.reset()
         for batch in train_iter:
             ################################updating only parameters related to modD.########################################
@@ -306,16 +305,18 @@ def DCGAN(epoch,noise_size,batch_size,save_period,dataset):
         print "Max Discriminator Cost : {}".format(Max_C.mean())
         print "Min Generator Cost : {}".format(Min_C.mean())
 
+        print "epoch : {}".format(epoch+1)
+
         #Save the data
-        if epoch%save_period==0:
+        if (epoch+1)%save_period==0:
             print('Saving weights')
-            modG.save_params("Weights/modG-{}.params" .format(epoch))
-            modD_0.save_params("Weights/modD_0-{}.params"  .format(epoch))
+            modG.save_params("Weights/modG-{}.params" .format(epoch+1))
+            modD_0.save_params("Weights/modD_0-{}.params"  .format(epoch+1))
 
     print "Optimization complete."
 
     #################################Generating Image####################################
-    '''load method2 - load the training mod.get_params() directly'''
+    '''load method1 - load the training mod.get_params() directly'''
     #arg_params, aux_params = mod.get_params()
 
     '''Annotate only when running test data. and Uncomment only if it is 'load method2' '''
@@ -329,37 +330,48 @@ def DCGAN(epoch,noise_size,batch_size,save_period,dataset):
     result = result.asnumpy()
     print np.shape(result)
     '''
-
+    '''load method2 - using the shared_module'''
+    """
+    Parameters
+    shared_module : Module
+        Default is `None`. This is used in bucketing. When not `None`, the shared module
+        essentially corresponds to a different bucket -- a module with different symbol
+        but with the same sets of parameters (e.g. unrolled RNNs with different lengths).
+    """
     '''test_method-2'''
-    #'''
     column_size=10; row_size=3
+    test_mod.bind(data_shapes=[mx.io.DataDesc(name='noise', shape=(column_size*row_size,noise_size,1,1))],label_shapes=None,shared_module=modG,for_training=False,grad_req='null')
+
     test_mod.forward(data_batch=mx.io.DataBatch(data=[mx.random.uniform(low=0.0, high=1.0, shape=(column_size*row_size , noise_size, 1, 1))],label=None))
     result = test_mod.get_outputs()[0]
-    print result
     result = result.asnumpy()
+    '''range adjustment  -1 ~ 1 -> 0 ~ 1 -> 0 ~ 255 '''
+    result = ((result+1.0)/2.0)*255.0
+
+    result = result.transpose((0, 2, 3, 1))
 
     #'''
     #visualization
-    #fig ,  ax = plt.subplots(int(row_size/2.0), column_size, figsize=(column_size, int(row_size/2.0)))
     fig ,  ax = plt.subplots(row_size, column_size, figsize=(column_size, row_size))
-
-    for i in xrange(column_size):
-        #show 10 image
-        #ax[i].set_axis_off()
-        #ax[i].imshow(np.reshape(result[i],(28,28)))
-        #show 20 image
-        ax[0][i].set_axis_off()
-        ax[1][i].set_axis_off()
-        ax[2][i].set_axis_off()
-        ax[0][i].imshow(np.reshape(result[i], (28, 28)),cmap='gray')
-        ax[1][i].imshow(np.reshape(result[i+10], (28, 28)),cmap='gray')
-        ax[2][i].imshow(np.reshape(result[i+20], (28, 28)), cmap='gray')
+    for j in xrange(row_size):
+        for i in xrange(column_size):
+            ax[j][i].set_axis_off()
+            if dataset == "MNIST":
+                ax[j][i].imshow(result[i+j*column_size],cmap='gray')
+            elif dataset == 'ImageNet':
+                ax[j][i].imshow(result[i+j*column_size])
     plt.show()
+    #'''
+
+    #'''
+    if dataset == "MNIST":
+        plt.savefig("DCGAN_MNIST.png")
+    elif dataset == 'ImageNet':
+        plt.savefig("DCGAN_ImageNet.png")
     #'''
 
 if __name__ == "__main__":
     print "GAN_starting in main"
-    Mnist_Data_Processing(100)
-    #DCGAN(epoch=100, noise_size=100, batch_size=128, save_period=100)
+    DCGAN(epoch=5, noise_size=100, batch_size=128, save_period=100,dataset='MNIST')
 else:
     print "GAN_imported"

@@ -265,16 +265,6 @@ def GAN(epoch,noise_size,batch_size,save_period):
     '''load method1 - load the training mod.get_params() directly'''
     #arg_params, aux_params = mod.get_params()
 
-    '''load method2 - using the shared_module'''
-    """
-    Parameters
-    shared_module : Module
-        Default is `None`. This is used in bucketing. When not `None`, the shared module
-        essentially corresponds to a different bucket -- a module with different symbol
-        but with the same sets of parameters (e.g. unrolled RNNs with different lengths).
-    """
-
-    test_mod.bind(data_shapes=[mx.io.DataDesc(name='noise', shape=(column_size*row_size,noise_size))],label_shapes=None,shared_module=modG,for_training=False,grad_req='null')
 
     '''Annotate only when running test data. and Uncomment only if it is 'load method1' or 'load method2'''
     #test_mod.set_params(arg_params=arg_params, aux_params=aux_params)
@@ -287,32 +277,36 @@ def GAN(epoch,noise_size,batch_size,save_period):
     result = result.asnumpy()
     print np.shape(result)
     '''
-
+    '''load method2 - using the shared_module'''
+    """
+    Parameters
+    shared_module : Module
+        Default is `None`. This is used in bucketing. When not `None`, the shared module
+        essentially corresponds to a different bucket -- a module with different symbol
+        but with the same sets of parameters (e.g. unrolled RNNs with different lengths).
+    """
     '''test_method-2'''
+    column_size=10 ; row_size=10
+    test_mod.bind(data_shapes=[mx.io.DataDesc(name='noise', shape=(column_size*row_size,noise_size))],label_shapes=None,shared_module=modG,for_training=False,grad_req='null')
+
     #'''
     test_mod.forward(data_batch=mx.io.DataBatch(data=[mx.random.normal(0, 1.0, shape=(column_size*row_size, noise_size))],label=None))
     result = test_mod.get_outputs()[0]
-    print result
     result = result.asnumpy()
 
-    #'''
-    #visualization
-    #fig ,  ax = plt.subplots(int(row_size/2.0), column_size, figsize=(column_size, int(row_size/2.0)))
-    fig ,  ax = plt.subplots(row_size, column_size, figsize=(column_size, row_size))
+    '''range adjustment 0 ~ 1 -> 0 ~ 255 '''
+    result = result*255.0
 
-    for i in xrange(column_size):
-        #show 10 image
+    '''generator image visualization'''
+    fig_g ,  ax_g = plt.subplots(row_size, column_size, figsize=(column_size, row_size))
+    fig_g.suptitle('generator')
+    for j in xrange(row_size):
+        for i in xrange(column_size):
+            ax_g[j][i].set_axis_off()
+            ax_g[j][i].imshow(np.reshape(result[i+j*column_size],(28,28)),cmap='gray')
 
-        #ax[i].set_axis_off()
-        #ax[i].imshow(np.reshape(result[i],(28,28)))
-
-        #show 20 image
-        ax[0][i].set_axis_off()
-        ax[1][i].set_axis_off()
-        ax[0][i].imshow(np.reshape(result[i], (28, 28)),cmap='gray')
-        ax[1][i].imshow(np.reshape(result[i+10], (28, 28)),cmap='gray')
+    fig_g.savefig("generator.png")
     plt.show()
-    #'''
 
 if __name__ == "__main__":
     print "GAN_starting in main"
