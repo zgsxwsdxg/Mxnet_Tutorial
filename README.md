@@ -69,4 +69,5 @@ print mx.asnumpy(out)
 * mxnet-0.9.4 or mxnet-0.9.5
 * numpy-1.12.1
 * matplotlib-1.5.0rc3
+* opencv-3.2.0 (using **'import cv2'** in python)
 

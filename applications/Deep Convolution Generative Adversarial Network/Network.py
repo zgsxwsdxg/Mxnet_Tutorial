@@ -5,12 +5,23 @@ import data_download as dd
 import logging
 logging.basicConfig(level=logging.INFO)
 import matplotlib.pyplot as plt
+import cv2
 
 '''unsupervised learning -Convolution Neural Netowrks  Generative Adversarial Networks'''
 
 def to4d_tanh(img):
+    print np.shape(img)
     '''range conversion  0 ~ 255 -> -1 ~ 1'''
-    img=(img.reshape(img.shape[0], 1, 28, 28).astype(np.float32)/(255.0/2.0))-1.0
+    #img=(img.reshape(img.shape[0], 1, 28, 28).astype(np.float32)/(255.0/2.0))-1.0
+    img = np.asarray([cv2.resize(i,(64,64),interpolation=cv2.INTER_CUBIC) for i in img ])
+    print np.shape(img)
+    img = img.reshape(img.shape[0], 1, 64, 64).astype(np.float32)
+    print np.shape(img)
+    cv2.imshow('orginal',img)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
+    img = (img/(255.0/2.0))-1.0
+
     return img
 
 class NoiseIter(mx.io.DataIter):
@@ -32,7 +43,6 @@ def Mnist_Data_Processing(batch_size):
     '''In this Gan tutorial, we don't need the label data.'''
     (train_lbl_one_hot, train_lbl, train_img) = dd.read_data_from_file('train-labels-idx1-ubyte.gz','train-images-idx3-ubyte.gz')
     (test_lbl_one_hot, test_lbl, test_img) = dd.read_data_from_file('t10k-labels-idx1-ubyte.gz','t10k-images-idx3-ubyte.gz')
-
     '''data loading referenced by Data Loading API '''
     train_iter = mx.io.NDArrayIter(data={'data': to4d_tanh(train_img)}, batch_size=batch_size, shuffle=True)  # training data
     return train_iter,len(train_img)
@@ -96,25 +106,25 @@ def Generator(relu ='relu',tanh='tanh',fix_gamma=True,eps=0.0001,no_bias=True):
 def Discriminator(leaky ='leaky',sigmoid='sigmoid',fix_gamma=True,eps=0,no_bias=True):
 
     #discriminator neural networks
-    data = mx.sym.Variable('data')
+    data = mx.sym.Variable('data') #(128,3,64,64)
 
     ### not applying Batch Normalization to the discriminator input layer ###
     d1 = mx.sym.Convolution(data, name='d1', kernel=(4,4), stride=(2,2), pad=(1,1), num_filter=64, no_bias=no_bias)
-    dact1 = mx.sym.LeakyReLU(d1 , act_type=leaky, slope=0.2 , name='leaky1')
+    dact1 = mx.sym.LeakyReLU(d1 , act_type=leaky, slope=0.2 , name='leaky1') #(128,64,32,32,)
 
     d2 = mx.sym.Convolution(dact1, name='d2', kernel=(4,4), stride=(2,2), pad=(1,1), num_filter=128, no_bias=no_bias)
     dbn2 = mx.sym.BatchNorm(d2, name='dbn2', fix_gamma=fix_gamma, eps=eps)
-    dact2 = mx.sym.LeakyReLU(dbn2 , act_type=leaky, slope=0.2 , name='leaky2')
+    dact2 = mx.sym.LeakyReLU(dbn2 , act_type=leaky, slope=0.2 , name='leaky2') #(128,128,16,16)
 
     d3 = mx.sym.Convolution(dact2, name='d3', kernel=(4,4), stride=(2,2), pad=(1,1), num_filter=256, no_bias=no_bias)
     dbn3 = mx.sym.BatchNorm(d3, name='dbn3', fix_gamma=fix_gamma, eps=eps)
-    dact3 = mx.sym.LeakyReLU(dbn3 , act_type=leaky, slope=0.2 , name='leaky3')
+    dact3 = mx.sym.LeakyReLU(dbn3 , act_type=leaky, slope=0.2 , name='leaky3') #(128,256,8,8)
 
     d4 = mx.sym.Convolution(dact3, name='d4', kernel=(4,4), stride=(2,2), pad=(1,1), num_filter=512, no_bias=no_bias)
     dbn4 = mx.sym.BatchNorm(d4, name='dbn4', fix_gamma=fix_gamma, eps=eps)
-    dact4 = mx.sym.LeakyReLU(dbn4 , act_type=leaky, slope=0.2 , name='leaky4')
+    dact4 = mx.sym.LeakyReLU(dbn4 , act_type=leaky, slope=0.2 , name='leaky4') #(128,512,4,4)
 
-    d5 = mx.sym.Convolution(dact4, name='d5', kernel=(4,4), num_filter=1, no_bias=True)
+    d5 = mx.sym.Convolution(dact4, name='d5', kernel=(4,4), num_filter=1, no_bias=True) #(128,1,1,1)
 
     '''For the discriminator, the last convolution layer is flattened and then fed into a single sigmoid output. '''
     d_out = mx.sym.Flatten(d5)
@@ -349,6 +359,7 @@ def DCGAN(epoch,noise_size,batch_size,save_period,dataset):
 
 if __name__ == "__main__":
     print "GAN_starting in main"
-    DCGAN(epoch=100, noise_size=100, batch_size=128, save_period=100)
+    Mnist_Data_Processing(100)
+    #DCGAN(epoch=100, noise_size=100, batch_size=128, save_period=100)
 else:
     print "GAN_imported"
