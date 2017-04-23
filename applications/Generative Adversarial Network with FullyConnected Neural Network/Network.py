@@ -10,19 +10,6 @@ import matplotlib.pyplot as plt
 def to2d(img):
     return img.reshape(img.shape[0],784).astype(np.float32)/255.0
 
-class NoiseIter(mx.io.DataIter):
-
-    def __init__(self, batch_size, noise_size):
-        self.batch_size = batch_size
-        self.noise_size = noise_size
-        self.provide_data = [('noise', (batch_size, noise_size))]
-        self.provide_label = []
-
-    def iter_next(self):
-        return True
-
-    def getdata(self):
-        return [mx.random.normal(0, 1.0, shape=(self.batch_size, self.noise_size),ctx=mx.gpu(0))]
 
 def Data_Processing(batch_size):
 
@@ -65,11 +52,11 @@ def Discriminator():
     data = mx.sym.Variable('data') # The size of data is 784(28*28)
     d_affine1 = mx.sym.FullyConnected(data=data,name = 'd_affine1' , num_hidden=256)
     discriminator1 = mx.sym.Activation(data=d_affine1, name='d_sigmoid1', act_type='sigmoid')
-    discriminator1=mx.sym.Dropout(data=discriminator1,p=0.2,name='drop_out_1')
+    discriminator1=mx.sym.Dropout(data=discriminator1,p=0.3,name='drop_out_1')
 
     d_affine2 = mx.sym.FullyConnected(data=discriminator1,name = 'd_affine2' , num_hidden=128)
     discriminator2 = mx.sym.Activation(data=d_affine2, name='d_sigmoid2', act_type='sigmoid')
-    discriminator2 = mx.sym.Dropout(data=discriminator2,p=0.2,name='drop_out_2')
+    discriminator2 = mx.sym.Dropout(data=discriminator2,p=0.3,name='drop_out_2')
 
     d_affine3 = mx.sym.FullyConnected(data=discriminator2, name='d_affine3', num_hidden=1)
     d_out = mx.sym.Activation(data=d_affine3, name='d_sigmoid3', act_type='sigmoid')
@@ -82,6 +69,10 @@ def Discriminator():
     question? Why multiply the loss equation by -1?
     answer : for Maximizing the Loss function , and This is because mxnet only provides optimization techniques that minimize.
     '''
+    '''
+    Why two 'losses'?
+    If you put the label variable in the network, you can configure the loss to be one, but the network is not learning well. I do not know why.
+    '''
     out1 = mx.sym.MakeLoss(-1.0*mx.symbol.log(d_out),grad_scale=1.0,normalization='batch',name="loss1")
     out2 = mx.sym.MakeLoss(-1.0*mx.symbol.log(1.0-d_out),grad_scale=1.0,normalization='batch',name='loss2')
 
@@ -92,13 +83,8 @@ def Discriminator():
 def GAN(epoch,noise_size,batch_size,save_period):
 
     train_iter,train_data_number= Data_Processing(batch_size)
-    noise_iter = NoiseIter(batch_size, noise_size)
-
     #No need, but must be declared.
     label =mx.nd.zeros((batch_size,))
-
-    column_size=10
-    row_size=2
 
     '''
     Generative Adversarial Networks
@@ -120,13 +106,13 @@ def GAN(epoch,noise_size,batch_size,save_period):
 
     # =============module G=============
     modG = mx.mod.Module(symbol=generator, data_names=['noise'], label_names=None, context= mx.gpu(0))
-    modG.bind(data_shapes=noise_iter.provide_data,label_shapes=None,for_training=True)
+    modG.bind(data_shapes=[('noise', (batch_size, noise_size))], label_shapes=None, for_training=True)
 
     #load the saved modG data
     modG.load_params("Weights/modG-100.params")
 
     modG.init_params(initializer=mx.initializer.Xavier(rnd_type='uniform', factor_type='avg', magnitude=3))
-    modG.init_optimizer(optimizer='adam',optimizer_params={'learning_rate': 0.01})
+    modG.init_optimizer(optimizer='adam',optimizer_params={'learning_rate': 0.0001})
 
 
     # =============module discriminator[0],discriminator[1]=============
@@ -137,7 +123,7 @@ def GAN(epoch,noise_size,batch_size,save_period):
     modD_0.load_params("Weights/modD_0-100.params")
 
     modD_0.init_params(initializer=mx.initializer.Xavier(rnd_type='uniform', factor_type='avg', magnitude=3))
-    modD_0.init_optimizer(optimizer='adam',optimizer_params={'learning_rate': 0.01})
+    modD_0.init_optimizer(optimizer='adam',optimizer_params={'learning_rate': 0.0001})
 
     """
     Parameters
@@ -199,8 +185,8 @@ def GAN(epoch,noise_size,batch_size,save_period):
         for batch in train_iter:
             ################################updating only parameters related to modD.########################################
             # updating discriminator on real data
-            '''MAX : modD_0 : -mx.symbol.log(discriminator2)  real data Discriminator update , bigger and bigger discriminator2'''
-            modD_0.forward(batch, is_train=True)
+            '''MAX : modD_0 : -mx.symbol.log(discriminator)  real data Discriminator update , bigger and bigger discriminator'''
+            modD_0.forward(data_batch=batch, is_train=True)
             modD_0.backward()
             modD_0.update()
 
@@ -208,12 +194,12 @@ def GAN(epoch,noise_size,batch_size,save_period):
             Max_cost_0-=modD_0.get_outputs()[0].asnumpy()
 
             # update discriminator on noise data
-            '''MAX : modD_1 :-mx.symbol.log(1-discriminator2)  - noise data Discriminator update , bigger and bigger -> smaller and smaller discriminator2'''
-            noise = noise_iter.next()
-            modG.forward(noise, is_train=True)
+            '''MAX : modD_1 :-mx.symbol.log(1-discriminator)  - noise data Discriminator update , bigger and bigger -> smaller and smaller discriminator'''
+            noise = mx.random.uniform(0, 1.0, shape=(batch_size, noise_size), ctx=mx.gpu(0))
+            modG.forward(data_batch=mx.io.DataBatch(data=[noise],label=None), is_train=True)
             modG_output = modG.get_outputs()
 
-            modD_1.forward(mx.io.DataBatch(modG_output, None), is_train=True)
+            modD_1.forward(data_batch=mx.io.DataBatch(data=modG_output,label=None), is_train=True)
             modD_1.backward()
             modD_1.update()
 
@@ -222,8 +208,8 @@ def GAN(epoch,noise_size,batch_size,save_period):
 
             ################################updating only parameters related to modG.########################################
             # update generator on noise data
-            '''MIN : modD_0 : -mx.symbol.log(discriminator2) - noise data Discriminator update  , bigger and bigger discriminator2'''
-            modD_0.forward(mx.io.DataBatch(modG_output, None), is_train=True)
+            '''MIN : modD_0 : -mx.symbol.log(discriminator) - noise data Discriminator update  , bigger and bigger discriminator'''
+            modD_0.forward(data_batch=mx.io.DataBatch(data=modG_output, label=None), is_train=True)
             modD_0.backward()
             diff_v = modD_0.get_input_grads()
             modG.backward(diff_v)
@@ -265,7 +251,6 @@ def GAN(epoch,noise_size,batch_size,save_period):
     '''load method1 - load the training mod.get_params() directly'''
     #arg_params, aux_params = mod.get_params()
 
-
     '''Annotate only when running test data. and Uncomment only if it is 'load method1' or 'load method2'''
     #test_mod.set_params(arg_params=arg_params, aux_params=aux_params)
 
@@ -285,10 +270,11 @@ def GAN(epoch,noise_size,batch_size,save_period):
         essentially corresponds to a different bucket -- a module with different symbol
         but with the same sets of parameters (e.g. unrolled RNNs with different lengths).
     """
-    '''test_method-2'''
     column_size=10 ; row_size=10
     test_mod.bind(data_shapes=[mx.io.DataDesc(name='noise', shape=(column_size*row_size,noise_size))],label_shapes=None,shared_module=modG,for_training=False,grad_req='null')
 
+
+    '''test_method-2'''
     #'''
     test_mod.forward(data_batch=mx.io.DataBatch(data=[mx.random.normal(0, 1.0, shape=(column_size*row_size, noise_size))],label=None))
     result = test_mod.get_outputs()[0]
