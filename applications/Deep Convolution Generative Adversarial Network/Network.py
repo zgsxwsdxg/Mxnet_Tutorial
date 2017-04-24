@@ -125,8 +125,8 @@ def Discriminator(leaky ='leaky',sigmoid='sigmoid',fix_gamma=True,eps=0.001,no_b
     d_out=mx.sym.Activation(data=d_out,act_type=sigmoid,name="d_out")
 
     '''expression-1'''
-    out1 = mx.sym.MakeLoss(mx.symbol.log(d_out),grad_scale=-1.0,normalization='batch',name="loss1")
-    out2 = mx.sym.MakeLoss(mx.symbol.log(1.0-d_out),grad_scale=-1.0,normalization='batch',name='loss2')
+    #out1 = mx.sym.MakeLoss(mx.symbol.log(d_out),grad_scale=-1.0,normalization='batch',name="loss1")
+    #out2 = mx.sym.MakeLoss(mx.symbol.log(1.0-d_out),grad_scale=-1.0,normalization='batch',name='loss2')
 
     '''expression-2,
     question? Why multiply the loss equation by -1?
@@ -136,8 +136,8 @@ def Discriminator(leaky ='leaky',sigmoid='sigmoid',fix_gamma=True,eps=0.001,no_b
     Why two 'losses'?
     If you put the label variable in the network, you can configure the loss to be one, but the network is not learning well. I do not know why.
     '''
-    #out1 = mx.sym.MakeLoss(-1.0*mx.symbol.log(d_out),grad_scale=1.0,normalization='batch',name="loss1")
-    #out2 = mx.sym.MakeLoss(-1.0*mx.symbol.log(1.0-d_out),grad_scale=1.0,normalization='batch',name='loss2')
+    out1 = mx.sym.MakeLoss(-1.0*mx.symbol.log(d_out),grad_scale=1.0,normalization='batch',name="loss1")
+    out2 = mx.sym.MakeLoss(-1.0*mx.symbol.log(1.0-d_out),grad_scale=1.0,normalization='batch',name='loss2')
 
     group=mx.sym.Group([out1,out2])
 
@@ -164,7 +164,7 @@ def DCGAN(epoch,noise_size,batch_size,save_period,dataset):
     modG.bind(data_shapes=[('noise', (batch_size, noise_size,1,1))],label_shapes=None,for_training=True)
 
     #load the saved modG data
-    #modG.load_params("Weights/modG-100.params")
+    #modG.load_params("Weights/modG-50.params")
 
     modG.init_params(initializer=mx.initializer.Normal(sigma=0.02))
     modG.init_optimizer(optimizer='adam',optimizer_params={'learning_rate': 0.0002,'beta1' : 0.5})
@@ -175,7 +175,7 @@ def DCGAN(epoch,noise_size,batch_size,save_period,dataset):
     modD_0.bind(data_shapes=train_iter.provide_data,label_shapes=None,for_training=True,inputs_need_grad=True)
 
     # load the saved modD_O data
-    #modD_0.load_params("Weights/modD_0-100.params")
+    #modD_0.load_params("Weights/modD_0-50.params")
 
     modD_0.init_params(initializer=mx.initializer.Normal(sigma=0.02))
     modD_0.init_optimizer(optimizer='adam',optimizer_params={'learning_rate': 0.0002,'beta1' : 0.5})
@@ -336,11 +336,13 @@ def DCGAN(epoch,noise_size,batch_size,save_period,dataset):
     result = test_mod.get_outputs()[0]
     result = result.asnumpy()
 
-    '''range adjustment  -1 ~ 1 -> 0 ~ 1 -> 0 ~ 255 '''
-    result = ((result+1.0)/2.0)*255.0
+    print np.shape(result)
+    '''range adjustment  -1 ~ 1 -> 0 ~ 2 -> 0 ~1  -> 0 ~ 255 '''
+    #result = np.clip((result + 1.0) * (255.0 / 2.0), 0, 255).astype(np.uint8)
+    result = ((result+1.0)*127.5).astype(np.uint8)
 
     result = result.transpose((0, 2, 3, 1))
-
+    print np.shape(result)
     '''visualization'''
     fig ,  ax = plt.subplots(row_size, column_size, figsize=(column_size, row_size))
     fig.suptitle('generator')
@@ -360,6 +362,6 @@ def DCGAN(epoch,noise_size,batch_size,save_period,dataset):
 
 if __name__ == "__main__":
     print "GAN_starting in main"
-    DCGAN(epoch=5, noise_size=100, batch_size=128, save_period=100,dataset='MNIST')
+    DCGAN(epoch=50, noise_size=100, batch_size=128, save_period=50,dataset='MNIST')
 else:
     print "GAN_imported"
