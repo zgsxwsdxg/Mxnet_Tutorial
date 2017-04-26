@@ -5,7 +5,6 @@ import gzip
 import struct
 import mxnet as mx
 import matplotlib.pyplot as plt
-import matplotlib
 
 row_size = 5
 column_size = 5

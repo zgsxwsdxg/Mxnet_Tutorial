@@ -35,9 +35,8 @@ def to4d_tanh_three_channel(img,data_name):
         #img = np.asarray([[cv2.resize( i, None ,fx=2, fy=2, interpolation=cv2.INTER_CUBIC) for i in im] for im in img])
         '''resize (5000,3,64,64) method2'''
         img = np.asarray([[cv2.resize(i, None, fx=2, fy=2, interpolation=cv2.INTER_CUBIC) for i in im] for im in img])
-
     elif data_name=="ImageNet":
-        pass
+        img=img
 
     #show image
     '''
@@ -55,8 +54,8 @@ def Mnist_Data_Processing(batch_size):
 
     import data_download_MNIST as ddm
     '''In this Gan tutorial, we don't need the label data.'''
-    (train_lbl_one_hot, train_lbl, train_img) = ddm.read_data_from_file('train-labels-idx1-ubyte.gz','train-images-idx3-ubyte.gz')
-    (test_lbl_one_hot, test_lbl, test_img) = ddm.read_data_from_file('t10k-labels-idx1-ubyte.gz','t10k-images-idx3-ubyte.gz')
+    (train_lbl_one_hot, train_lbl, train_img) = ddm.read_data_from_file('MNIST/train-labels-idx1-ubyte.gz','MNIST/train-images-idx3-ubyte.gz')
+    (test_lbl_one_hot, test_lbl, test_img) = ddm.read_data_from_file('MNIST/t10k-labels-idx1-ubyte.gz','MNIST/t10k-images-idx3-ubyte.gz')
 
     '''train image + test image'''
     train_img = np.concatenate((train_img, test_img), axis=0)
@@ -73,8 +72,8 @@ def Image_Data_Processing(batch_size,data_name):
         train_iter = mx.io.NDArrayIter(data={'data': to4d_tanh_three_channel(train_img,"CIFAR10")}, batch_size=batch_size , shuffle=True)  # training data
     elif data_name=="ImageNet":
         import data_download_ImageNet as ddi
-
-
+        train_img=ddi.read_data_from_file()
+        train_iter = mx.io.NDArrayIter(data={'data': to4d_tanh_three_channel(train_img, "ImageNet")},batch_size=batch_size, shuffle=True)  # training data
     return train_iter,len(train_img)
 
 
@@ -204,8 +203,19 @@ def DCGAN(epoch,noise_size,batch_size,save_period,dataset):
     modG = mx.mod.Module(symbol=generator, data_names=['noise'], label_names=None, context=context)
     modG.bind(data_shapes=[('noise', (batch_size, noise_size,1,1))],label_shapes=None,for_training=True)
 
-    #load the saved modG data
-    #modG.load_params("CIFAR10_Weights/modG-300.params")
+    if dataset == 'MNIST':
+        # load the saved modG data
+        modG.load_params("MNIST_Weights/modG-100.params")
+
+    elif dataset =='CIFAR10':
+        pass
+        # load the saved modG data
+        #modG.load_params("CIFAR10_Weights/modG-100.params")
+
+    elif dataset == 'ImageNet':
+        #pass
+        # load the saved modG data
+        modG.load_params("ImageNet_Weights/modG-100.params")
 
     modG.init_params(initializer=mx.initializer.Normal(sigma=0.02))
     modG.init_optimizer(optimizer='adam',optimizer_params={'learning_rate': 0.0002,'beta1' : 0.5})
@@ -215,8 +225,20 @@ def DCGAN(epoch,noise_size,batch_size,save_period,dataset):
     modD_0 = mx.mod.Module(symbol=discriminator[0], data_names=['data'], label_names=None, context= context)
     modD_0.bind(data_shapes=train_iter.provide_data,label_shapes=None,for_training=True,inputs_need_grad=True)
 
-    # load the saved modD_O data
-    #modD_0.load_params("CIFAR10_Weights/modD_0-300.params")
+    if dataset == 'MNIST':
+        # load the saved modG data
+        modG.load_params("MNIST_Weights/modG-100.params")
+
+    elif dataset =='CIFAR10':
+        pass
+        # load the saved modG data
+        #modD_0.load_params("CIFAR10_Weights/modD_0-100.params")
+
+    elif dataset == 'ImageNet':
+        #pass
+        # load the saved modG data
+        modD_0.load_params("ImageNet_Weights/modD_0-100.params")
+
 
     modD_0.init_params(initializer=mx.initializer.Normal(sigma=0.02))
     modD_0.init_optimizer(optimizer='adam',optimizer_params={'learning_rate': 0.0002,'beta1' : 0.5})
@@ -378,7 +400,7 @@ def DCGAN(epoch,noise_size,batch_size,save_period,dataset):
     test_mod.bind(data_shapes=[mx.io.DataDesc(name='noise', shape=(column_size*row_size,noise_size,1,1))],label_shapes=None,shared_module=modG,for_training=False,grad_req='null')
 
     '''test_method-2'''
-    test = mx.random.uniform(low=0.0, high=1.0, shape=(batch_size, noise_size, 1, 1), ctx=context)
+    test = mx.random.uniform(low=0.0, high=1.0, shape=(column_size*row_size, noise_size, 1, 1), ctx=context)
     test_mod.forward(data_batch=mx.io.DataBatch(data=[test],label=None))
     result = test_mod.get_outputs()[0]
     result = result.asnumpy()
@@ -388,7 +410,7 @@ def DCGAN(epoch,noise_size,batch_size,save_period,dataset):
     result = ((result+1.0)*127.5).astype(np.uint8)
 
     '''Converting images to original size.'''
-    result = np.asarray([[cv2.resize(i, None, fx=0.5, fy=0.5, interpolation=cv2.INTER_AREA) for i in im] for im in result])
+    result = np.asarray([[cv2.resize(i, None, fx=2, fy=2, interpolation=cv2.INTER_AREA) for i in im] for im in result])
 
     result = result.transpose((0, 2, 3, 1))
     '''visualization'''
@@ -403,14 +425,14 @@ def DCGAN(epoch,noise_size,batch_size,save_period,dataset):
                 ax[j][i].imshow(result[i+j*column_size])
             elif dataset == 'ImageNet':
                 ax[j][i].imshow(result[i+j*column_size])
-    plt.show()
 
+    plt.show()
     if dataset == "MNIST":
-        fig.savefig("Generate_image/DCGAN_MNIST.png")
+        fig.savefig("Generate_Image/DCGAN_MNIST.png")
     elif dataset =="CIFAR10":
-        fig.savefig("Generate_image/DCGAN_CIFAR10.png")
+        fig.savefig("Generate_Image/DCGAN_CIFAR10.png")
     elif dataset == 'ImageNet':
-        fig.savefig("Generate_image/DCGAN_ImageNet.png")
+        fig.savefig("Generate_Image/DCGAN_ImageNet.png")
 
 if __name__ == "__main__":
     print "GAN_starting in main"
