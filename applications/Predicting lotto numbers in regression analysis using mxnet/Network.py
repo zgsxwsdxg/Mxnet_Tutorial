@@ -21,27 +21,27 @@ def LottoNet(epoch,batch_size,save_period):
     label = mx.sym.Variable('output')
 
     affine1 = mx.sym.FullyConnected(data=input,name='fc1',num_hidden=100)
-    affine1 = mx.sym.BatchNorm(affine1, fix_gamma=False,name='batch1')
+    #affine1 = mx.sym.BatchNorm(affine1, fix_gamma=False,name='batch1')
     hidden1 = mx.sym.Activation(data=affine1, name='sigmoid1', act_type='sigmoid')
 
     affine2 = mx.sym.FullyConnected(data=hidden1, name='fc2', num_hidden=100)
-    affine2 = mx.sym.BatchNorm(affine2, fix_gamma=False, name='batch2')
+    #affine2 = mx.sym.BatchNorm(affine2, fix_gamma=False, name='batch2')
     hidden2 = mx.sym.Activation(data=affine2, name='sigmoid2', act_type='sigmoid')
 
     affine3 = mx.sym.FullyConnected(data=hidden2, name='fc3', num_hidden=100)
-    affine3 = mx.sym.BatchNorm(affine3, fix_gamma=False, name='batch3')
+    #affine3 = mx.sym.BatchNorm(affine3, fix_gamma=False, name='batch3')
     hidden3 = mx.sym.Activation(data=affine3, name='sigmoid3', act_type='sigmoid')
 
     affine4 = mx.sym.FullyConnected(data=hidden3, name='fc4', num_hidden=100)
-    affine4 = mx.sym.BatchNorm(affine4, fix_gamma=False, name='batch4')
+    #affine4 = mx.sym.BatchNorm(affine4, fix_gamma=False, name='batch4')
     hidden4 = mx.sym.Activation(data=affine4, name='sigmoid4', act_type='sigmoid')
 
     affine5 = mx.sym.FullyConnected(data=hidden4, name='fc5', num_hidden=100)
-    affine5 = mx.sym.BatchNorm(affine5, fix_gamma=False, name='batch5')
+    #affine5 = mx.sym.BatchNorm(affine5, fix_gamma=False, name='batch5')
     hidden5 = mx.sym.Activation(data=affine5, name='sigmoid5', act_type='sigmoid')
 
     affine6 = mx.sym.FullyConnected(data=hidden5, name='fc6', num_hidden=100)
-    affine6 = mx.sym.BatchNorm(affine6, fix_gamma=False, name='batch6')
+    #affine6 = mx.sym.BatchNorm(affine6, fix_gamma=False, name='batch6')
     hidden6 = mx.sym.Activation(data=affine6, name='sigmoid6', act_type='sigmoid')
 
     out_affine = mx.sym.FullyConnected(data=hidden6, name='out_fc', num_hidden=6)
@@ -69,10 +69,10 @@ def LottoNet(epoch,batch_size,save_period):
 
     #'''
     # When you want to load the saved weights, uncomment the code below.
-    #symbol, arg_params, aux_params = mx.model.load_checkpoint(model_name, 50000)
+    symbol, arg_params, aux_params = mx.model.load_checkpoint(model_name, 50000)
 
     #the below code needs mod.bind, but If arg_params and aux_params is set in mod.fit, you do not need the code below, nor do you need mod.bind.
-    #mod.set_params(arg_params, aux_params)
+    mod.set_params(arg_params, aux_params)
     #'''
 
     mod.fit(train_iter,

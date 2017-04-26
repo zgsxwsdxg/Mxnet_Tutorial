@@ -56,7 +56,7 @@ print mx.asnumpy(out)
 
     * [***Generative Adversarial Networks with fullyConnected Neural Network : using the MNIST data***](https://github.com/JONGGON/Mxnet_Tutorial/tree/master/applications/Generative%20Adversarial%20Network%20with%20FullyConnected%20Neural%20Network)
 
-    * [***Deep Convolution Generative Adversarial Network : using MNIST and ImageNet data***](https://github.com/JONGGON/Mxnet_Tutorial/tree/master/applications/Deep%20Convolution%20Generative%20Adversarial%20Network)(**'Image net' is in progress**)
+    * [***Deep Convolution Generative Adversarial Network : using ImageNet,CIFAR10,MNIST data***](https://github.com/JONGGON/Mxnet_Tutorial/tree/master/applications/Deep%20Convolution%20Generative%20Adversarial%20Network)
 
     * [***word2vec : using undefined data***]()(***not yet***)
 

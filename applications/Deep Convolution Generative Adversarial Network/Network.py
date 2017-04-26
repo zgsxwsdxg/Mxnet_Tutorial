@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 import mxnet as mx
 import numpy as np
-import data_download as dd
 import logging
 logging.basicConfig(level=logging.INFO)
 import matplotlib.pyplot as plt
@@ -9,12 +8,36 @@ import cv2
 
 '''unsupervised learning -Convolution Neural Netowrks  Generative Adversarial Networks'''
 
-def to4d_tanh(img):
+def to4d_tanh_one_channel(img):
 
     '''1.resize (60000,64,64) -> and transform from 1 channel (60000,1,64,64) to 3 channel (60000,3,64,64)'''
     img = np.asarray([cv2.resize(i,(64,64),interpolation=cv2.INTER_CUBIC) for i in img ])
     img = img.reshape(img.shape[0], 1, 64, 64).astype(np.float32)
     img = np.tile(img, (1, 3, 1, 1)) # to 3channel
+
+    #show image
+    '''
+    img = img.transpose((0, 2, 3, 1))
+    cv2.imshow('orginal',img[0])
+    cv2.imshow('orginal',img[0])
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
+    '''
+    '''2. range conversion  0 ~ 255 -> -1 ~ 1 and '''
+    img = (img/(255.0/2.0))-1.0
+
+    return img
+
+def to4d_tanh_three_channel(img,data_name):
+
+    '''resize (5000,3,64,64) method1'''
+    if data_name=="CIFAR10":
+        #img = np.asarray([[cv2.resize( i, None ,fx=2, fy=2, interpolation=cv2.INTER_CUBIC) for i in im] for im in img])
+        '''resize (5000,3,64,64) method2'''
+        img = np.asarray([[cv2.resize(i, None, fx=2, fy=2, interpolation=cv2.INTER_CUBIC) for i in im] for im in img])
+
+    elif data_name=="ImageNet":
+        pass
 
     #show image
     '''
@@ -30,18 +53,32 @@ def to4d_tanh(img):
 
 def Mnist_Data_Processing(batch_size):
 
+    import data_download_MNIST as ddm
     '''In this Gan tutorial, we don't need the label data.'''
-    (train_lbl_one_hot, train_lbl, train_img) = dd.read_data_from_file('train-labels-idx1-ubyte.gz','train-images-idx3-ubyte.gz')
-    (test_lbl_one_hot, test_lbl, test_img) = dd.read_data_from_file('t10k-labels-idx1-ubyte.gz','t10k-images-idx3-ubyte.gz')
+    (train_lbl_one_hot, train_lbl, train_img) = ddm.read_data_from_file('train-labels-idx1-ubyte.gz','train-images-idx3-ubyte.gz')
+    (test_lbl_one_hot, test_lbl, test_img) = ddm.read_data_from_file('t10k-labels-idx1-ubyte.gz','t10k-images-idx3-ubyte.gz')
 
     '''train image + test image'''
     train_img = np.concatenate((train_img, test_img), axis=0)
 
     '''data loading referenced by Data Loading API '''
-    train_iter = mx.io.NDArrayIter(data={'data': to4d_tanh(train_img)}, batch_size=batch_size, shuffle=True)  # training data
+    train_iter = mx.io.NDArrayIter(data={'data': to4d_tanh_one_channel(train_img)}, batch_size=batch_size, shuffle=True)  # training data
     return train_iter,len(train_img)
 
-def Generator(relu ='relu',tanh='tanh',fix_gamma=True,eps=0.001,no_bias=True):
+def Image_Data_Processing(batch_size,data_name):
+
+    if data_name=="CIFAR10":
+        import data_download_CIFAR10 as ddc
+        train_img=ddc.data_processing()
+        train_iter = mx.io.NDArrayIter(data={'data': to4d_tanh_three_channel(train_img,"CIFAR10")}, batch_size=batch_size , shuffle=True)  # training data
+    elif data_name=="ImageNet":
+        import data_download_ImageNet as ddi
+
+
+    return train_iter,len(train_img)
+
+
+def Generator(relu ='relu',tanh='tanh',fix_gamma=True,eps=1e-5 + 1e-12,no_bias=True):
 
     '''
     Deep convolution Generative Adversarial Networks
@@ -73,31 +110,31 @@ def Generator(relu ='relu',tanh='tanh',fix_gamma=True,eps=0.001,no_bias=True):
     is flattened and then fed into a single sigmoid output. See Fig. 1 for a visualization of an example
     model architecture.
     '''
-    noise = mx.sym.Variable('noise') # The size of noise is 100.
+    noise = mx.sym.Variable('noise') # The size of noise is (128,100,1,1)
 
-    g1 = mx.sym.Deconvolution(noise, name='g1', kernel=(4,4), num_filter=512, no_bias=no_bias)
+    g1 = mx.sym.Deconvolution(noise, name='g1', kernel=(4,4), num_filter=512, no_bias=no_bias) #weight -> (100x512x4x4)
     gbn1 = mx.sym.BatchNorm(g1, name='gbn1', fix_gamma=fix_gamma, eps=eps)
-    gact1 = mx.sym.Activation(gbn1, name='gact1', act_type=relu)
+    gact1 = mx.sym.Activation(gbn1, name='gact1', act_type=relu) # (512,4,4)
 
-    g2 = mx.sym.Deconvolution(gact1, name='g2', kernel=(4,4), stride=(2,2), pad=(1,1), num_filter=256, no_bias=no_bias)
+    g2 = mx.sym.Deconvolution(gact1, name='g2', kernel=(4,4), stride=(2,2), pad=(1,1), num_filter=256, no_bias=no_bias) #weight -> (512x256x4x4)
     gbn2 = mx.sym.BatchNorm(g2, name='gbn2', fix_gamma=fix_gamma, eps=eps)
     gact2 = mx.sym.Activation(gbn2, name='gact2', act_type=relu)
 
-    g3 = mx.sym.Deconvolution(gact2, name='g3', kernel=(4,4), stride=(2,2), pad=(1,1), num_filter=128, no_bias=no_bias)
+    g3 = mx.sym.Deconvolution(gact2, name='g3', kernel=(4,4), stride=(2,2), pad=(1,1), num_filter=128, no_bias=no_bias) #weight -> (256x128x4x4)
     gbn3 = mx.sym.BatchNorm(g3, name='gbn3', fix_gamma=fix_gamma, eps=eps)
     gact3 = mx.sym.Activation(gbn3, name='gact3', act_type=relu)
 
-    g4 = mx.sym.Deconvolution(gact3, name='g4', kernel=(4,4), stride=(2,2), pad=(1,1), num_filter=64, no_bias=no_bias)
+    g4 = mx.sym.Deconvolution(gact3, name='g4', kernel=(4,4), stride=(2,2), pad=(1,1), num_filter=64, no_bias=no_bias) #weight -> (128x64x4x4)
     gbn4 = mx.sym.BatchNorm(g4, name='gbn4', fix_gamma=fix_gamma, eps=eps)
     gact4 = mx.sym.Activation(gbn4, name='gact4', act_type=relu)
 
     ### not applying Batch Normalization to the generator output layer ###
-    g5 = mx.sym.Deconvolution(gact4, name='g5', kernel=(4,4), stride=(2,2), pad=(1,1), num_filter=3, no_bias=True)
-    g_out = mx.sym.Activation(g5, name='g_out', act_type=tanh)
+    g5 = mx.sym.Deconvolution(gact4, name='g5', kernel=(4,4), stride=(2,2), pad=(1,1), num_filter=3, no_bias=True) #weight -> (64x3x4x4)
+    g_out = mx.sym.Activation(g5, name='g_out', act_type=tanh) #(128,3,64,64)
 
     return g_out
 
-def Discriminator(leaky ='leaky',sigmoid='sigmoid',fix_gamma=True,eps=0.001,no_bias=True):
+def Discriminator(leaky ='leaky',sigmoid='sigmoid',fix_gamma=True,eps=1e-5 + 1e-12,no_bias=True):
 
     #discriminator neural networks
     data = mx.sym.Variable('data') #(128,3,64,64)
@@ -145,37 +182,41 @@ def Discriminator(leaky ='leaky',sigmoid='sigmoid',fix_gamma=True,eps=0.001,no_b
 
 def DCGAN(epoch,noise_size,batch_size,save_period,dataset):
 
+    if dataset == 'MNIST':
+        train_iter,train_data_number = Mnist_Data_Processing(batch_size)#all
 
-    if dataset == "MNIST":
-        train_iter,train_data_number = Mnist_Data_Processing(batch_size)
-        #No need, but must be declared.
-        label =mx.nd.zeros((batch_size,))
+    elif dataset =='CIFAR10':
+        train_iter, train_data_number = Image_Data_Processing(batch_size,"CIFAR10")#class by class
+
     elif dataset == 'ImageNet':
-        pass
+        train_iter, train_data_number = Image_Data_Processing(batch_size,"ImageNet")#face
 
+    # No need, but must be declared.
+    label = mx.nd.zeros((batch_size,))
     '''Network'''
     generator=Generator()
     discriminator=Discriminator()
+    context=mx.gpu(0)
 
     '''In the code below, the 'inputs_need_grad' parameter in the 'mod.bind' function is very important.'''
 
     # =============module G=============
-    modG = mx.mod.Module(symbol=generator, data_names=['noise'], label_names=None, context= mx.gpu(0))
+    modG = mx.mod.Module(symbol=generator, data_names=['noise'], label_names=None, context=context)
     modG.bind(data_shapes=[('noise', (batch_size, noise_size,1,1))],label_shapes=None,for_training=True)
 
     #load the saved modG data
-    #modG.load_params("Weights/modG-50.params")
+    #modG.load_params("CIFAR10_Weights/modG-300.params")
 
     modG.init_params(initializer=mx.initializer.Normal(sigma=0.02))
     modG.init_optimizer(optimizer='adam',optimizer_params={'learning_rate': 0.0002,'beta1' : 0.5})
 
 
     # =============module discriminator[0],discriminator[1]=============
-    modD_0 = mx.mod.Module(symbol=discriminator[0], data_names=['data'], label_names=None, context= mx.gpu(0))
+    modD_0 = mx.mod.Module(symbol=discriminator[0], data_names=['data'], label_names=None, context= context)
     modD_0.bind(data_shapes=train_iter.provide_data,label_shapes=None,for_training=True,inputs_need_grad=True)
 
     # load the saved modD_O data
-    #modD_0.load_params("Weights/modD_0-50.params")
+    #modD_0.load_params("CIFAR10_Weights/modD_0-300.params")
 
     modD_0.init_params(initializer=mx.initializer.Normal(sigma=0.02))
     modD_0.init_optimizer(optimizer='adam',optimizer_params={'learning_rate': 0.0002,'beta1' : 0.5})
@@ -189,11 +230,11 @@ def DCGAN(epoch,noise_size,batch_size,save_period,dataset):
 
     In here, for sharing the Discriminator parameters, we must to use shared_module=modD_0
     """
-    modD_1 = mx.mod.Module(symbol=discriminator[1], data_names=['data'], label_names=None, context= mx.gpu(0))
+    modD_1 = mx.mod.Module(symbol=discriminator[1], data_names=['data'], label_names=None, context= context)
     modD_1.bind(data_shapes=train_iter.provide_data,label_shapes=None,for_training=True,inputs_need_grad=True,shared_module=modD_0)
 
     # =============generate image=============
-    test_mod = mx.mod.Module(symbol=generator, data_names=['noise'], label_names=None, context= mx.gpu(0))
+    test_mod = mx.mod.Module(symbol=generator, data_names=['noise'], label_names=None, context= context)
 
 
     '''############Although not required, the following code should be declared.#################'''
@@ -249,7 +290,7 @@ def DCGAN(epoch,noise_size,batch_size,save_period,dataset):
 
             # update discriminator on noise data
             '''MAX : modD_1 :-mx.symbol.log(1-discriminator2)  - noise data Discriminator update , bigger and bigger -> smaller and smaller discriminator2'''
-            noise = mx.random.uniform(low=0.0, high=1.0, shape=(batch_size, noise_size, 1, 1), ctx=mx.gpu(0))
+            noise = mx.random.uniform(low=0.0, high=1.0, shape=(batch_size, noise_size, 1, 1), ctx=context)
             modG.forward(data_batch=mx.io.DataBatch(data=[noise],label=None), is_train=True)
             modG_output = modG.get_outputs()
 
@@ -298,9 +339,15 @@ def DCGAN(epoch,noise_size,batch_size,save_period,dataset):
         #Save the data
         if (epoch+1)%save_period==0:
             print('Saving weights')
-            modG.save_params("Weights/modG-{}.params" .format(epoch+1))
-            modD_0.save_params("Weights/modD_0-{}.params"  .format(epoch+1))
-
+            if dataset == "MNIST":
+                modG.save_params("MNIST_Weights/modG-{}.params".format(epoch + 1))
+                modD_0.save_params("MNIST_Weights/modD_0-{}.params".format(epoch + 1))
+            elif dataset == "CIFAR10":
+                modG.save_params("CIFAR10_Weights/modG-{}.params".format(epoch + 1))
+                modD_0.save_params("CIFAR10_Weights/modD_0-{}.params".format(epoch + 1))
+            elif dataset == 'ImageNet':
+                modG.save_params("ImageNet_Weights/modG-{}.params".format(epoch + 1))
+                modD_0.save_params("ImageNet_Weights/modD_0-{}.params".format(epoch + 1))
     print "Optimization complete."
 
     #################################Generating Image####################################
@@ -331,18 +378,19 @@ def DCGAN(epoch,noise_size,batch_size,save_period,dataset):
     test_mod.bind(data_shapes=[mx.io.DataDesc(name='noise', shape=(column_size*row_size,noise_size,1,1))],label_shapes=None,shared_module=modG,for_training=False,grad_req='null')
 
     '''test_method-2'''
-    test = mx.random.uniform(low=0.0, high=1.0, shape=(batch_size, noise_size, 1, 1), ctx=mx.gpu(0))
+    test = mx.random.uniform(low=0.0, high=1.0, shape=(batch_size, noise_size, 1, 1), ctx=context)
     test_mod.forward(data_batch=mx.io.DataBatch(data=[test],label=None))
     result = test_mod.get_outputs()[0]
     result = result.asnumpy()
 
-    print np.shape(result)
     '''range adjustment  -1 ~ 1 -> 0 ~ 2 -> 0 ~1  -> 0 ~ 255 '''
     #result = np.clip((result + 1.0) * (255.0 / 2.0), 0, 255).astype(np.uint8)
     result = ((result+1.0)*127.5).astype(np.uint8)
 
+    '''Converting images to original size.'''
+    result = np.asarray([[cv2.resize(i, None, fx=0.5, fy=0.5, interpolation=cv2.INTER_AREA) for i in im] for im in result])
+
     result = result.transpose((0, 2, 3, 1))
-    print np.shape(result)
     '''visualization'''
     fig ,  ax = plt.subplots(row_size, column_size, figsize=(column_size, row_size))
     fig.suptitle('generator')
@@ -351,14 +399,18 @@ def DCGAN(epoch,noise_size,batch_size,save_period,dataset):
             ax[j][i].set_axis_off()
             if dataset == "MNIST":
                 ax[j][i].imshow(result[i+j*column_size],cmap='gray')
+            elif dataset == "CIFAR10":
+                ax[j][i].imshow(result[i+j*column_size])
             elif dataset == 'ImageNet':
                 ax[j][i].imshow(result[i+j*column_size])
     plt.show()
 
     if dataset == "MNIST":
-        plt.savefig("DCGAN_MNIST.png")
+        fig.savefig("Generate_image/DCGAN_MNIST.png")
+    elif dataset =="CIFAR10":
+        fig.savefig("Generate_image/DCGAN_CIFAR10.png")
     elif dataset == 'ImageNet':
-        plt.savefig("DCGAN_ImageNet.png")
+        fig.savefig("Generate_image/DCGAN_ImageNet.png")
 
 if __name__ == "__main__":
     print "GAN_starting in main"
