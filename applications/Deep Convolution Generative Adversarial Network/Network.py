@@ -208,9 +208,9 @@ def DCGAN(epoch,noise_size,batch_size,save_period,dataset):
         modG.load_params("MNIST_Weights/modG-100.params")
 
     elif dataset =='CIFAR10':
-        pass
+        #pass
         # load the saved modG data
-        #modG.load_params("CIFAR10_Weights/modG-100.params")
+        modG.load_params("CIFAR10_Weights/modG-100.params")
 
     elif dataset == 'ImageNet':
         #pass
@@ -230,9 +230,9 @@ def DCGAN(epoch,noise_size,batch_size,save_period,dataset):
         modG.load_params("MNIST_Weights/modG-100.params")
 
     elif dataset =='CIFAR10':
-        pass
+        #pass
         # load the saved modG data
-        #modD_0.load_params("CIFAR10_Weights/modD_0-100.params")
+        modD_0.load_params("CIFAR10_Weights/modD_0-100.params")
 
     elif dataset == 'ImageNet':
         #pass
