@@ -27,7 +27,7 @@ print mx.asnumpy(out)
 [[ 1.  1.  1.]
  [ 1.  1.  1.]
  [ 1.  1.  1.]]
-```        
+```      
 >## ***Topics***
 * ### ***Neural Networks basic***
     * [***Fully Connected Neural Network with LogisticRegressionOutput : Classifying the MNIST data using mxnet***](https://github.com/JONGGON/Mxnet_Tutorial/tree/master/basic/Fully%20Connected%20Neural%20Network%20with_LogisticRegressionOutput)
@@ -56,8 +56,10 @@ print mx.asnumpy(out)
 
     * [***Generative Adversarial Networks with fullyConnected Neural Network : using the MNIST data***](https://github.com/JONGGON/Mxnet_Tutorial/tree/master/applications/Generative%20Adversarial%20Network%20with%20FullyConnected%20Neural%20Network)
 
-    * [***Deep Convolution Generative Adversarial Network : using ImageNet,CIFAR10,MNIST data***](https://github.com/JONGGON/Mxnet_Tutorial/tree/master/applications/Deep%20Convolution%20Generative%20Adversarial%20Network)
-
+    * [***Deep Convolution Generative Adversarial Network : using ImageNet , CIFAR10 , MNIST data***](https://github.com/JONGGON/Mxnet_Tutorial/tree/master/applications/Deep%20Convolution%20Generative%20Adversarial%20Network)
+       ```cmd
+        <Code execution example>  
+        python main.py --state --epoch 100 --noise_size 100 --batch_size 200 --save_period 100 --dataset CIFAR10 
     * [***word2vec : using undefined data***]()(***not yet***)
 
 >## ***Development environment***
@@ -70,4 +72,4 @@ print mx.asnumpy(out)
 * numpy-1.12.1
 * matplotlib-1.5.0rc3
 * opencv-3.2.0 (using **'import cv2'** in python)
-
+* urllib , requests , struct , gzip , cPickle , os , argparse , logging , glob
