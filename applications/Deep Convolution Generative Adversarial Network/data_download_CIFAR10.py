@@ -68,12 +68,12 @@ def data_processing():
             CLASS[9].append(all_dataset[i][0])
 
     '''1. all data'''
-    return np.array(all_data).reshape(len(all_data),3,32,32)
+    #return np.array(all_data).reshape(len(all_data),3,32,32)
     '''airplane, automobile , bird , cat , deer , dog , frog , horse , ship ,truck
        CLASS[0] , CLASS[1]   ...          CLASS[4]        ...                CLASS[9]'''
 
     '''2. class by class data'''
-    #return np.array(CLASS[5]).reshape(len(CLASS[7]),3,32,32) # airplane
+    return np.array(CLASS[7]).reshape(len(CLASS[7]),3,32,32) # airplane
 
 if __name__ == "__main__":
     "Load the cifar10 data from inside"

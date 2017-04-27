@@ -135,6 +135,7 @@ def Generator(relu ='relu',tanh='tanh',fix_gamma=True,eps=1e-5 + 1e-12,no_bias=T
 
 def Discriminator(leaky ='leaky',sigmoid='sigmoid',fix_gamma=True,eps=1e-5 + 1e-12,no_bias=True):
 
+    zero_prevention=1e-12
     #discriminator neural networks
     data = mx.sym.Variable('data') #(128,3,64,64)
 
@@ -168,12 +169,13 @@ def Discriminator(leaky ='leaky',sigmoid='sigmoid',fix_gamma=True,eps=1e-5 + 1e-
     question? Why multiply the loss equation by -1?
     answer : for Maximizing the Loss function , and This is because mxnet only provides optimization techniques that minimize.
     '''
+
     '''
     Why two 'losses'?
-    If you put the label variable in the network, you can configure the loss to be one, but the network is not learning well. I do not know why.
+    To make it easier to implement than the reference.
     '''
-    out1 = mx.sym.MakeLoss(-1.0*mx.symbol.log(d_out),grad_scale=1.0,normalization='batch',name="loss1")
-    out2 = mx.sym.MakeLoss(-1.0*mx.symbol.log(1.0-d_out),grad_scale=1.0,normalization='batch',name='loss2')
+    out1 = mx.sym.MakeLoss(-1.0*mx.symbol.log(d_out+zero_prevention),grad_scale=1.0,normalization='batch',name="loss1")
+    out2 = mx.sym.MakeLoss(-1.0*mx.symbol.log(1.0-d_out+zero_prevention),grad_scale=1.0,normalization='batch',name='loss2')
 
     group=mx.sym.Group([out1,out2])
 
@@ -189,6 +191,8 @@ def DCGAN(epoch,noise_size,batch_size,save_period,dataset):
 
     elif dataset == 'ImageNet':
         train_iter, train_data_number = Image_Data_Processing(batch_size,"ImageNet")#face
+    else:
+        print "no input data!!!"
 
     # No need, but must be declared.
     label = mx.nd.zeros((batch_size,))
@@ -204,18 +208,27 @@ def DCGAN(epoch,noise_size,batch_size,save_period,dataset):
     modG.bind(data_shapes=[('noise', (batch_size, noise_size,1,1))],label_shapes=None,for_training=True)
 
     if dataset == 'MNIST':
-        # load the saved modG data
-        modG.load_params("MNIST_Weights/modG-100.params")
+        try:
+            # load the saved modG data
+            modG.load_params("MNIST_Weights/modG-100.params")
+        except:
+            pass
 
-    elif dataset =='CIFAR10':
-        #pass
-        # load the saved modG data
-        modG.load_params("CIFAR10_Weights/modG-100.params")
+    if dataset =='CIFAR10':
+        try:
+            # load the saved modG data
+            modG.load_params("CIFAR10_Weights/modG-100.params")
+        except:
+            pass
 
-    elif dataset == 'ImageNet':
-        #pass
-        # load the saved modG data
-        modG.load_params("ImageNet_Weights/modG-100.params")
+    if dataset == 'ImageNet':
+        try:
+            #pass
+            # load the saved modG data
+            modG.load_params("ImageNet_Weights/modG-100.params")
+        except:
+            pass
+
 
     modG.init_params(initializer=mx.initializer.Normal(sigma=0.02))
     modG.init_optimizer(optimizer='adam',optimizer_params={'learning_rate': 0.0002,'beta1' : 0.5})
@@ -226,19 +239,25 @@ def DCGAN(epoch,noise_size,batch_size,save_period,dataset):
     modD_0.bind(data_shapes=train_iter.provide_data,label_shapes=None,for_training=True,inputs_need_grad=True)
 
     if dataset == 'MNIST':
+        try:
+            # load the saved modG data
+            modD_0.load_params("MNIST_Weights/modD_0-100.params")
+        except:
+            pass
+    if dataset =='CIFAR10':
+        try:
         # load the saved modG data
-        modG.load_params("MNIST_Weights/modG-100.params")
+            modD_0.load_params("CIFAR10_Weights/modD_0-100.params")
+        except:
+            pass
 
-    elif dataset =='CIFAR10':
+    if dataset == 'ImageNet':
         #pass
+        try:
         # load the saved modG data
-        modD_0.load_params("CIFAR10_Weights/modD_0-100.params")
-
-    elif dataset == 'ImageNet':
-        #pass
-        # load the saved modG data
-        modD_0.load_params("ImageNet_Weights/modD_0-100.params")
-
+            modD_0.load_params("ImageNet_Weights/modD_0-100.params")
+        except:
+            pass
 
     modD_0.init_params(initializer=mx.initializer.Normal(sigma=0.02))
     modD_0.init_optimizer(optimizer='adam',optimizer_params={'learning_rate': 0.0002,'beta1' : 0.5})
@@ -300,40 +319,41 @@ def DCGAN(epoch,noise_size,batch_size,save_period,dataset):
         total_batch_number = np.ceil(train_data_number/(batch_size*1.0))
         train_iter.reset()
         for batch in train_iter:
-            ################################updating only parameters related to modD.########################################
-            # updating discriminator on real data
-            '''MAX : modD_0 : -mx.symbol.log(discriminator2)  real data Discriminator update , bigger and bigger discriminator2'''
-            modD_0.forward(data_batch=batch, is_train=True)
-            modD_0.backward()
-            modD_0.update()
 
-            '''Max_Cost of real data Discriminator'''
-            Max_cost_0-=modD_0.get_outputs()[0].asnumpy()
-
-            # update discriminator on noise data
-            '''MAX : modD_1 :-mx.symbol.log(1-discriminator2)  - noise data Discriminator update , bigger and bigger -> smaller and smaller discriminator2'''
             noise = mx.random.uniform(low=0.0, high=1.0, shape=(batch_size, noise_size, 1, 1), ctx=context)
             modG.forward(data_batch=mx.io.DataBatch(data=[noise],label=None), is_train=True)
             modG_output = modG.get_outputs()
 
+            ################################updating only parameters related to modD.########################################
+            # updating discriminator on real data
+
+            '''MAX : modD_0 : -mx.symbol.log(discriminator2) real data Discriminator update , bigger and bigger discriminator2'''
+            modD_0.forward(data_batch=batch, is_train=True)
+
+            '''Max_Cost of real data Discriminator'''
+            Max_cost_0+=modD_0.get_outputs()[0].asnumpy().astype(np.float32)
+            modD_0.backward()
+            modD_0.update()
+            # update discriminator on noise data
+            '''MAX : modD_1 :-mx.symbol.log(1-discriminator2)  - noise data Discriminator update , bigger and bigger -> smaller and smaller discriminator2'''
+
             modD_1.forward(data_batch=mx.io.DataBatch(data=modG_output,label=None), is_train=True)
-            modD_1.backward()
-            modD_1.update()
 
             '''Max_Cost of noise data Discriminator'''
-            Max_cost_1-=modD_0.get_outputs()[0].asnumpy()
+            Max_cost_1+=modD_1.get_outputs()[0].asnumpy().astype(np.float32)
+            modD_1.backward()
+            modD_1.update()
 
             ################################updating only parameters related to modG.########################################
             # update generator on noise data
             '''MIN : modD_0 : -mx.symbol.log(discriminator2) - noise data Discriminator update  , bigger and bigger discriminator2'''
             modD_0.forward(data_batch=mx.io.DataBatch(data=modG_output, label=None), is_train=True)
+            '''Max_Cost of noise data Generator'''
+            Min_cost+=modD_0.get_outputs()[0].asnumpy().astype(np.float32)
             modD_0.backward()
             diff_v = modD_0.get_input_grads()
             modG.backward(diff_v)
             modG.update()
-
-            '''Max_Cost of noise data Generator'''
-            Min_cost-=modG.get_outputs()[0].asnumpy()
 
             '''
             No need, but must be declared!!!
@@ -346,11 +366,11 @@ def DCGAN(epoch,noise_size,batch_size,save_period,dataset):
             '''make evaluation method 1 - Using existing ones'''
             #metric.update([label], modD_0.get_outputs())
             '''make evaluation method 2 - Making new things.'''
-            null.update([label], modD_0.get_outputs())
+            #null.update([label], modD_0.get_outputs())
 
-
-        Max_C=(Max_cost_0+Max_cost_1)/(total_batch_number*1.0)
-        Min_C=Max_cost_0/(total_batch_number*1.0)
+        print Max_cost_0+Max_cost_1
+        Max_C=(Max_cost_0+Max_cost_1)/total_batch_number*1.0
+        Min_C=Min_cost/total_batch_number*1.0
 
         #cost print
         print "Max Discriminator Cost : {}".format(Max_C.mean())

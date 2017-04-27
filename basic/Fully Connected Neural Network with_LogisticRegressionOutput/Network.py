@@ -54,13 +54,6 @@ def NeuralNet(epoch,batch_size,save_period):
     #LogisticRegressionOutput contains a sigmoid function internally. and It should be executed with xxxx_lbl_one_hot data.
     output = mx.sym.LogisticRegressionOutput(data=output_affine ,label=label)
 
-    '''
-    cost function  = Mean squaer error(MSE)
-    In my opinion, the code below should be executed properly.
-    However, if the learning rate is not reduced, it will not work at all.
-    '''
-    #output = mx.symbol.MakeLoss(mx.sym.square(output_act-label),name="cost")
-
     print output.list_arguments()
 
     # Fisrt optimization method

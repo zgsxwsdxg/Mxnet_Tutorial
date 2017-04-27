@@ -48,6 +48,7 @@ def Generator():
 
 def Discriminator():
 
+    zero_prevention=1e-12
     #discriminator neural networks
     data = mx.sym.Variable('data') # The size of data is 784(28*28)
     d_affine1 = mx.sym.FullyConnected(data=data,name = 'd_affine1' , num_hidden=256)
@@ -71,10 +72,10 @@ def Discriminator():
     '''
     '''
     Why two 'losses'?
-    If you put the label variable in the network, you can configure the loss to be one, but the network is not learning well. I do not know why.
+    To make it easier to implement than the reference.
     '''
-    out1 = mx.sym.MakeLoss(-1.0*mx.symbol.log(d_out),grad_scale=1.0,normalization='batch',name="loss1")
-    out2 = mx.sym.MakeLoss(-1.0*mx.symbol.log(1.0-d_out),grad_scale=1.0,normalization='batch',name='loss2')
+    out1 = mx.sym.MakeLoss(-1.0*mx.symbol.log(d_out+1e-12),grad_scale=1.0,normalization='batch',name="loss1")
+    out2 = mx.sym.MakeLoss(-1.0*mx.symbol.log(1.0-d_out+1e-12),grad_scale=1.0,normalization='batch',name='loss2')
 
     group=mx.sym.Group([out1,out2])
 
@@ -108,8 +109,11 @@ def GAN(epoch,noise_size,batch_size,save_period):
     modG = mx.mod.Module(symbol=generator, data_names=['noise'], label_names=None, context= mx.gpu(0))
     modG.bind(data_shapes=[('noise', (batch_size, noise_size))], label_shapes=None, for_training=True)
 
-    #load the saved modG data
-    modG.load_params("Weights/modG-100.params")
+    try:
+        # load the saved modG data
+        modG.load_params("Weights/modG-10.params")
+    except:
+        pass
 
     modG.init_params(initializer=mx.initializer.Xavier(rnd_type='uniform', factor_type='avg', magnitude=3))
     modG.init_optimizer(optimizer='adam',optimizer_params={'learning_rate': 0.0001})
@@ -119,8 +123,13 @@ def GAN(epoch,noise_size,batch_size,save_period):
     modD_0 = mx.mod.Module(symbol=discriminator[0], data_names=['data'], label_names=None, context= mx.gpu(0))
     modD_0.bind(data_shapes=train_iter.provide_data,label_shapes=None,for_training=True,inputs_need_grad=True)
 
-    # load the saved modD_O data
-    modD_0.load_params("Weights/modD_0-100.params")
+
+    try:
+        # load the saved modD_O data
+        modD_0.load_params("Weights/modD_0-10.params")
+    except:
+        pass
+
 
     modD_0.init_params(initializer=mx.initializer.Xavier(rnd_type='uniform', factor_type='avg', magnitude=3))
     modD_0.init_optimizer(optimizer='adam',optimizer_params={'learning_rate': 0.0001})
@@ -183,40 +192,41 @@ def GAN(epoch,noise_size,batch_size,save_period):
         print "epoch : {}".format(epoch)
         train_iter.reset()
         for batch in train_iter:
-            ################################updating only parameters related to modD.########################################
-            # updating discriminator on real data
-            '''MAX : modD_0 : -mx.symbol.log(discriminator)  real data Discriminator update , bigger and bigger discriminator'''
-            modD_0.forward(data_batch=batch, is_train=True)
-            modD_0.backward()
-            modD_0.update()
 
-            '''Max_Cost of real data Discriminator'''
-            Max_cost_0-=modD_0.get_outputs()[0].asnumpy()
-
-            # update discriminator on noise data
-            '''MAX : modD_1 :-mx.symbol.log(1-discriminator)  - noise data Discriminator update , bigger and bigger -> smaller and smaller discriminator'''
             noise = mx.random.uniform(0, 1.0, shape=(batch_size, noise_size), ctx=mx.gpu(0))
             modG.forward(data_batch=mx.io.DataBatch(data=[noise],label=None), is_train=True)
             modG_output = modG.get_outputs()
 
+            ################################updating only parameters related to modD.########################################
+            # updating discriminator on real data
+            '''MAX : modD_0 : -mx.symbol.log(discriminator)  real data Discriminator update , bigger and bigger discriminator'''
+            modD_0.forward(data_batch=batch, is_train=True)
+            '''Max_Cost of real data Discriminator'''
+            Max_cost_0+=modD_0.get_outputs()[0].asnumpy()
+
+            modD_0.backward()
+            modD_0.update()
+
+            # update discriminator on noise data
+            '''MAX : modD_1 :-mx.symbol.log(1-discriminator)  - noise data Discriminator update , bigger and bigger -> smaller and smaller discriminator'''
+
             modD_1.forward(data_batch=mx.io.DataBatch(data=modG_output,label=None), is_train=True)
+            '''Max_Cost of noise data Discriminator'''
+            Max_cost_1+=modD_1.get_outputs()[0].asnumpy().astype(np.float32)
             modD_1.backward()
             modD_1.update()
-
-            '''Max_Cost of noise data Discriminator'''
-            Max_cost_1-=modD_0.get_outputs()[0].asnumpy()
 
             ################################updating only parameters related to modG.########################################
             # update generator on noise data
             '''MIN : modD_0 : -mx.symbol.log(discriminator) - noise data Discriminator update  , bigger and bigger discriminator'''
             modD_0.forward(data_batch=mx.io.DataBatch(data=modG_output, label=None), is_train=True)
+            '''Max_Cost of noise data Generator'''
+            Min_cost+=modD_0.get_outputs()[0].asnumpy().astype(np.float32)
             modD_0.backward()
             diff_v = modD_0.get_input_grads()
             modG.backward(diff_v)
             modG.update()
 
-            '''Max_Cost of noise data Generator'''
-            Min_cost-=modG.get_outputs()[0].asnumpy()
 
             '''
             No need, but must be declared!!!
