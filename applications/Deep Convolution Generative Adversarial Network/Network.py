@@ -135,7 +135,7 @@ def Generator(relu ='relu',tanh='tanh',fix_gamma=True,eps=1e-5 + 1e-12,no_bias=T
 
 def Discriminator(leaky ='leaky',sigmoid='sigmoid',fix_gamma=True,eps=1e-5 + 1e-12,no_bias=True):
 
-    zero_prevention=1e-12
+    zero_prevention=0#1e-15
     #discriminator neural networks
     data = mx.sym.Variable('data') #(128,3,64,64)
 
@@ -181,7 +181,7 @@ def Discriminator(leaky ='leaky',sigmoid='sigmoid',fix_gamma=True,eps=1e-5 + 1e-
 
     return group
 
-def DCGAN(epoch,noise_size,batch_size,save_period,dataset):
+def DCGAN(epoch,noise_size,batch_size,save_period,show_period,dataset):
 
     if dataset == 'MNIST':
         train_iter,train_data_number = Mnist_Data_Processing(batch_size)#all
@@ -275,7 +275,9 @@ def DCGAN(epoch,noise_size,batch_size,save_period,dataset):
     modD_1.bind(data_shapes=train_iter.provide_data,label_shapes=None,for_training=True,inputs_need_grad=True,shared_module=modD_0)
 
     # =============generate image=============
+    column_size=10; row_size=10
     test_mod = mx.mod.Module(symbol=generator, data_names=['noise'], label_names=None, context= context)
+    test_mod.bind(data_shapes=[mx.io.DataDesc(name='noise', shape=(column_size*row_size,noise_size,1,1))],label_shapes=None,shared_module=modG,for_training=False,grad_req='null')
 
 
     '''############Although not required, the following code should be declared.#################'''
@@ -312,7 +314,7 @@ def DCGAN(epoch,noise_size,batch_size,save_period,dataset):
 
     ####################################training loop############################################
     # =============train===============
-    for epoch in xrange(epoch):
+    for epoch in xrange(1,epoch+1,1):
         Max_cost_0=0
         Max_cost_1=0
         Min_cost=0
@@ -325,17 +327,8 @@ def DCGAN(epoch,noise_size,batch_size,save_period,dataset):
             modG_output = modG.get_outputs()
 
             ################################updating only parameters related to modD.########################################
-            # updating discriminator on real data
-
-            '''MAX : modD_0 : -mx.symbol.log(discriminator2) real data Discriminator update , bigger and bigger discriminator2'''
-            modD_0.forward(data_batch=batch, is_train=True)
-
-            '''Max_Cost of real data Discriminator'''
-            Max_cost_0+=modD_0.get_outputs()[0].asnumpy().astype(np.float32)
-            modD_0.backward()
-            modD_0.update()
             # update discriminator on noise data
-            '''MAX : modD_1 :-mx.symbol.log(1-discriminator2)  - noise data Discriminator update , bigger and bigger -> smaller and smaller discriminator2'''
+            '''MAX : modD_1 : cost : (-mx.symbol.log(1-discriminator2))  - noise data Discriminator update , bigger and bigger -> smaller and smaller discriminator2'''
 
             modD_1.forward(data_batch=mx.io.DataBatch(data=modG_output,label=None), is_train=True)
 
@@ -344,13 +337,26 @@ def DCGAN(epoch,noise_size,batch_size,save_period,dataset):
             modD_1.backward()
             modD_1.update()
 
+            # updating discriminator on real data
+
+            '''MAX : modD_0 : cost: (-mx.symbol.log(discriminator2)) real data Discriminator update , bigger and bigger discriminator2'''
+            modD_0.forward(data_batch=batch, is_train=True)
+
+            '''Max_Cost of real data Discriminator'''
+            Max_cost_0+=modD_0.get_outputs()[0].asnumpy().astype(np.float32)
+            modD_0.backward()
+            modD_0.update()
+
+
             ################################updating only parameters related to modG.########################################
             # update generator on noise data
-            '''MIN : modD_0 : -mx.symbol.log(discriminator2) - noise data Discriminator update  , bigger and bigger discriminator2'''
+            '''MIN : modD_0 : cost : (-mx.symbol.log(discriminator2)) - noise data Discriminator update  , bigger and bigger discriminator2'''
             modD_0.forward(data_batch=mx.io.DataBatch(data=modG_output, label=None), is_train=True)
+            modD_0.backward()
+
             '''Max_Cost of noise data Generator'''
             Min_cost+=modD_0.get_outputs()[0].asnumpy().astype(np.float32)
-            modD_0.backward()
+
             diff_v = modD_0.get_input_grads()
             modG.backward(diff_v)
             modG.update()
@@ -366,9 +372,8 @@ def DCGAN(epoch,noise_size,batch_size,save_period,dataset):
             '''make evaluation method 1 - Using existing ones'''
             #metric.update([label], modD_0.get_outputs())
             '''make evaluation method 2 - Making new things.'''
-            #null.update([label], modD_0.get_outputs())
+            null.update([label], modD_0.get_outputs())
 
-        print Max_cost_0+Max_cost_1
         Max_C=(Max_cost_0+Max_cost_1)/total_batch_number*1.0
         Min_C=Min_cost/total_batch_number*1.0
 
@@ -376,20 +381,52 @@ def DCGAN(epoch,noise_size,batch_size,save_period,dataset):
         print "Max Discriminator Cost : {}".format(Max_C.mean())
         print "Min Generator Cost : {}".format(Min_C.mean())
 
-        print "epoch : {}".format(epoch+1)
+        print "epoch : {}".format(epoch)
 
         #Save the data
-        if (epoch+1)%save_period==0:
+        if (epoch) % save_period == 0:
             print('Saving weights')
             if dataset == "MNIST":
-                modG.save_params("MNIST_Weights/modG-{}.params".format(epoch + 1))
-                modD_0.save_params("MNIST_Weights/modD_0-{}.params".format(epoch + 1))
+                modG.save_params("MNIST_Weights/modG-{}.params".format(epoch))
+                modD_0.save_params("MNIST_Weights/modD_0-{}.params".format(epoch))
             elif dataset == "CIFAR10":
-                modG.save_params("CIFAR10_Weights/modG-{}.params".format(epoch + 1))
-                modD_0.save_params("CIFAR10_Weights/modD_0-{}.params".format(epoch + 1))
+                modG.save_params("CIFAR10_Weights/modG-{}.params".format(epoch))
+                modD_0.save_params("CIFAR10_Weights/modD_0-{}.params".format(epoch))
             elif dataset == 'ImageNet':
-                modG.save_params("ImageNet_Weights/modG-{}.params".format(epoch + 1))
-                modD_0.save_params("ImageNet_Weights/modD_0-{}.params".format(epoch + 1))
+                modG.save_params("ImageNet_Weights/modG-{}.params".format(epoch))
+                modD_0.save_params("ImageNet_Weights/modD_0-{}.params".format(epoch))
+
+        if epoch%save_period==0:
+            '''test_method-2'''
+            test = mx.random.uniform(low=0.0, high=1.0, shape=(column_size * row_size, noise_size, 1, 1), ctx=context)
+            test_mod.forward(data_batch=mx.io.DataBatch(data=[test], label=None))
+            result = test_mod.get_outputs()[0]
+            result = result.asnumpy()
+
+            '''range adjustment  -1 ~ 1 -> 0 ~ 2 -> 0 ~1  -> 0 ~ 255 '''
+            # result = np.clip((result + 1.0) * (255.0 / 2.0), 0, 255).astype(np.uint8)
+            result = ((result + 1.0) * 127.5).astype(np.uint8)
+
+            '''Converting images to original size.'''
+            result = np.asarray(
+                [[cv2.resize(i, None, fx=2, fy=2, interpolation=cv2.INTER_AREA) for i in im] for im in result])
+
+            result = result.transpose((0, 2, 3, 1))
+            '''visualization'''
+            fig, ax = plt.subplots(row_size, column_size, figsize=(column_size, row_size))
+            fig.suptitle('generator')
+            for j in xrange(row_size):
+                for i in xrange(column_size):
+                    ax[j][i].set_axis_off()
+                    if dataset == "MNIST":
+                        ax[j][i].imshow(result[i + j * column_size], cmap='gray')
+                    elif dataset == "CIFAR10":
+                        ax[j][i].imshow(result[i + j * column_size])
+                    elif dataset == 'ImageNet':
+                        ax[j][i].imshow(result[i + j * column_size])
+
+            plt.show()
+
     print "Optimization complete."
 
     #################################Generating Image####################################
@@ -415,10 +452,6 @@ def DCGAN(epoch,noise_size,batch_size,save_period,dataset):
         essentially corresponds to a different bucket -- a module with different symbol
         but with the same sets of parameters (e.g. unrolled RNNs with different lengths).
     """
-
-    column_size=10; row_size=10
-    test_mod.bind(data_shapes=[mx.io.DataDesc(name='noise', shape=(column_size*row_size,noise_size,1,1))],label_shapes=None,shared_module=modG,for_training=False,grad_req='null')
-
     '''test_method-2'''
     test = mx.random.uniform(low=0.0, high=1.0, shape=(column_size*row_size, noise_size, 1, 1), ctx=context)
     test_mod.forward(data_batch=mx.io.DataBatch(data=[test],label=None))

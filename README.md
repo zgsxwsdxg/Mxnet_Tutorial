@@ -54,7 +54,7 @@ print mx.asnumpy(out)
 * ### ***Neural Networks Applications***
     * [***Predicting lotto numbers in regression analysis using mxnet***](https://github.com/JONGGON/Mxnet_Tutorial/tree/master/applications/Predicting%20lotto%20numbers%20in%20regression%20analysis%20using%20mxnet)
 
-    * [***Generative Adversarial Networks with fullyConnected Neural Network : using the MNIST data***](https://github.com/JONGGON/Mxnet_Tutorial/tree/master/applications/Generative%20Adversarial%20Network%20with%20FullyConnected%20Neural%20Network)
+    * [***Generative Adversarial Networks with fullyConnected Neural Network : using MNIST data***](https://github.com/JONGGON/Mxnet_Tutorial/tree/master/applications/Generative%20Adversarial%20Network%20with%20FullyConnected%20Neural%20Network)
 
     * [***Deep Convolution Generative Adversarial Network : using ImageNet , CIFAR10 , MNIST data***](https://github.com/JONGGON/Mxnet_Tutorial/tree/master/applications/Deep%20Convolution%20Generative%20Adversarial%20Network)
        ```cmd
@@ -72,4 +72,4 @@ print mx.asnumpy(out)
 * numpy-1.12.1
 * matplotlib-1.5.0rc3
 * opencv-3.2.0 (using **'import cv2'** in python)
-* urllib , requests , struct , gzip , cPickle , os , argparse , logging , glob
+* urllib , requests , struct , gzip , cPickle , os , argparse , logging , glob , threading

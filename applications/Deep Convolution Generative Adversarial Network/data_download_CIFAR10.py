@@ -3,6 +3,7 @@ import numpy as np
 import cPickle
 import matplotlib.pyplot as plt
 
+
 '''cifar10 data'''
 
 path="CIFAR10/"
