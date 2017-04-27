@@ -17,7 +17,7 @@ parser.add_argument("-e","--epoch",type=int, help="Total number of learning")
 parser.add_argument("-n","--noise_size",type=int,help="Decide noise size!!!")
 parser.add_argument("-b","--batch_size",type=int,help="Decide batch_size!!!")
 parser.add_argument("-s","--save_period",type=int,help="Decide whether to store weights every few cycles")
-parser.add_argument("-i","--image_show_period",type=int,help="show the generated image for each epoch.")
+parser.add_argument("-sp","--show_period",type=int,help="show the generated image for each epoch.")
 parser.add_argument("-d","--dataset",type=str,help="select the dataset : MNIST? CIFAR10? ImageNet?")
 args = parser.parse_args()
 

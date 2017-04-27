@@ -59,7 +59,7 @@ print mx.asnumpy(out)
     * [***Deep Convolution Generative Adversarial Network : using ImageNet , CIFAR10 , MNIST data***](https://github.com/JONGGON/Mxnet_Tutorial/tree/master/applications/Deep%20Convolution%20Generative%20Adversarial%20Network)
        ```cmd
         <Code execution example>  
-        python main.py --state --epoch 100 --noise_size 100 --batch_size 200 --save_period 100 --dataset CIFAR10 
+        python main.py --state --epoch 100 --noise_size 100 --batch_size 200 --save_period 100 --show_period 5 --dataset CIFAR10
     * [***word2vec : using undefined data***]()(***not yet***)
 
 >## ***Development environment***
