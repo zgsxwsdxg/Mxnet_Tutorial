@@ -384,7 +384,7 @@ def DCGAN(epoch,noise_size,batch_size,save_period,show_period,dataset):
         print "epoch : {}".format(epoch)
 
         #Save the data
-        if (epoch) % save_period == 0:
+        if epoch % save_period == 0:
             print('Saving weights')
             if dataset == "MNIST":
                 modG.save_params("MNIST_Weights/modG-{}.params".format(epoch))
@@ -396,7 +396,7 @@ def DCGAN(epoch,noise_size,batch_size,save_period,show_period,dataset):
                 modG.save_params("ImageNet_Weights/modG-{}.params".format(epoch))
                 modD_0.save_params("ImageNet_Weights/modD_0-{}.params".format(epoch))
 
-        if epoch%save_period==0:
+        if epoch % show_period==0:
             '''test_method-2'''
             test = mx.random.uniform(low=0.0, high=1.0, shape=(column_size * row_size, noise_size, 1, 1), ctx=context)
             test_mod.forward(data_batch=mx.io.DataBatch(data=[test], label=None))
@@ -425,7 +425,12 @@ def DCGAN(epoch,noise_size,batch_size,save_period,show_period,dataset):
                     elif dataset == 'ImageNet':
                         ax[j][i].imshow(result[i + j * column_size])
 
-            plt.show()
+            if dataset == "MNIST":
+                fig.savefig("Generate_Image/DCGAN_MNIST_Epoch_{}.png".format(epoch))
+            elif dataset == "CIFAR10":
+                fig.savefig("Generate_Image/DCGAN_CIFAR10_Epoch_{}.png".format(epoch))
+            elif dataset == 'ImageNet':
+                fig.savefig("Generate_Image/DCGAN_ImageNet_Epoch_{}.png".format(epoch))
 
     print "Optimization complete."
 
@@ -480,12 +485,13 @@ def DCGAN(epoch,noise_size,batch_size,save_period,show_period,dataset):
                 ax[j][i].imshow(result[i+j*column_size])
 
     plt.show()
+    
     if dataset == "MNIST":
-        fig.savefig("Generate_Image/DCGAN_MNIST.png")
+        fig.savefig("Generate_Image/DCGAN_MNIST_Final.png")
     elif dataset =="CIFAR10":
-        fig.savefig("Generate_Image/DCGAN_CIFAR10.png")
+        fig.savefig("Generate_Image/DCGAN_CIFAR10_Final.png")
     elif dataset == 'ImageNet':
-        fig.savefig("Generate_Image/DCGAN_ImageNet.png")
+        fig.savefig("Generate_Image/DCGAN_ImageNet_Final.png")
 
 if __name__ == "__main__":
     print "GAN_starting in main"

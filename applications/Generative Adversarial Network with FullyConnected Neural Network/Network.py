@@ -48,7 +48,7 @@ def Generator():
 
 def Discriminator():
 
-    zero_prevention=1e-15
+    zero_prevention=0#1e-15
     #discriminator neural networks
     data = mx.sym.Variable('data') # The size of data is 784(28*28)
     d_affine1 = mx.sym.FullyConnected(data=data,name = 'd_affine1' , num_hidden=256)
@@ -270,7 +270,7 @@ def GAN(epoch,noise_size,batch_size,save_period,show_period):
         '''test_method-2'''
         # '''
         if epoch % show_period == 0:
-            test_mod.forward(data_batch=mx.io.DataBatch(data=[mx.random.normal(0, 1.0, shape=(column_size * row_size, noise_size))],abel=None))
+            test_mod.forward(data_batch=mx.io.DataBatch(data=[mx.random.normal(0, 1.0, shape=(column_size * row_size, noise_size))],label=None))
             result = test_mod.get_outputs()[0]
             result = result.asnumpy()
 
@@ -284,7 +284,8 @@ def GAN(epoch,noise_size,batch_size,save_period,show_period):
                 for i in xrange(column_size):
                     ax_g[j][i].set_axis_off()
                     ax_g[j][i].imshow(np.reshape(result[i + j * column_size], (28, 28)), cmap='gray')
-            plt.show()
+
+            fig_g.savefig("Generate_Image/generator_Epoch_{}.png".format(epoch))
 
     print "Optimization complete."
 
@@ -304,7 +305,7 @@ def GAN(epoch,noise_size,batch_size,save_period,show_period):
     print np.shape(result)
     '''
     '''load method2 - using the shared_module'''
-    test_mod.forward(data_batch=mx.io.DataBatch(data=[mx.random.normal(0, 1.0, shape=(column_size * row_size, noise_size))],abel=None))
+    test_mod.forward(data_batch=mx.io.DataBatch(data=[mx.random.normal(0, 1.0, shape=(column_size * row_size, noise_size))],label=None))
     result = test_mod.get_outputs()[0]
     result = result.asnumpy()
 
@@ -319,7 +320,7 @@ def GAN(epoch,noise_size,batch_size,save_period,show_period):
             ax_g[j][i].set_axis_off()
             ax_g[j][i].imshow(np.reshape(result[i + j * column_size], (28, 28)), cmap='gray')
 
-    fig_g.savefig("generator.png")
+    fig_g.savefig("Generate_Image/generator.png")
     plt.show()
 
 if __name__ == "__main__":

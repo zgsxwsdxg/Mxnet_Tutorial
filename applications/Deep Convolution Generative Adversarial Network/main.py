@@ -23,7 +23,7 @@ args = parser.parse_args()
 
 if args.state:
     print args.state
-    Network.DCGAN(epoch=args.epoch, noise_size=args.noise_size, batch_size=args.batch_size, save_period=args.save_period,show_period=args.image_show_period,dataset=args.dataset)
+    Network.DCGAN(epoch=args.epoch, noise_size=args.noise_size, batch_size=args.batch_size, save_period=args.save_period,show_period=args.show_period,dataset=args.dataset)
 else:
     #dataset : MNIST, CIFAR10 , Imagenet
-    Network.DCGAN(epoch=10, noise_size=100, batch_size=100, save_period=10,show_period=args.image_show_period,dataset='CIFAR10')
+    Network.DCGAN(epoch=5000, noise_size=100, batch_size=100, save_period=10,show_period=100,dataset='CIFAR10')
