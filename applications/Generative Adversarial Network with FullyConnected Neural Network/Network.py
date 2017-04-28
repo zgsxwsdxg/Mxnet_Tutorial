@@ -10,7 +10,6 @@ import matplotlib.pyplot as plt
 def to2d(img):
     return img.reshape(img.shape[0],784).astype(np.float32)/255.0
 
-
 def Data_Processing(batch_size):
 
     '''In this Gan tutorial, we don't need the label data.'''
@@ -48,16 +47,16 @@ def Generator():
 
 def Discriminator():
 
-    zero_prevention=0#1e-15
+    zero_prevention=0#1e-12
     #discriminator neural networks
     data = mx.sym.Variable('data') # The size of data is 784(28*28)
     d_affine1 = mx.sym.FullyConnected(data=data,name = 'd_affine1' , num_hidden=256)
     discriminator1 = mx.sym.Activation(data=d_affine1, name='d_sigmoid1', act_type='sigmoid')
-    discriminator1=mx.sym.Dropout(data=discriminator1,p=0.2,name='drop_out_1')
+    discriminator1=mx.sym.Dropout(data=discriminator1,p=0.25,name='drop_out_1')
 
     d_affine2 = mx.sym.FullyConnected(data=discriminator1,name = 'd_affine2' , num_hidden=128)
     discriminator2 = mx.sym.Activation(data=d_affine2, name='d_sigmoid2', act_type='sigmoid')
-    discriminator2 = mx.sym.Dropout(data=discriminator2,p=0.2,name='drop_out_2')
+    discriminator2 = mx.sym.Dropout(data=discriminator2,p=0.25,name='drop_out_2')
 
     d_affine3 = mx.sym.FullyConnected(data=discriminator2, name='d_affine3', num_hidden=1)
     d_out = mx.sym.Activation(data=d_affine3, name='d_sigmoid3', act_type='sigmoid')
@@ -81,7 +80,7 @@ def Discriminator():
 
     return group
 
-def GAN(epoch,noise_size,batch_size,save_period,show_period):
+def GAN(epoch,noise_size,batch_size,save_period):
 
     train_iter,train_data_number= Data_Processing(batch_size)
     #No need, but must be declared.
@@ -111,11 +110,11 @@ def GAN(epoch,noise_size,batch_size,save_period,show_period):
 
     try:
         # load the saved modG data
-        modG.load_params("Weights/modG-300.params")
+        modG.load_params("Weights/modG-50.params")
     except:
         pass
 
-    modG.init_params(initializer=mx.initializer.Xavier(rnd_type='uniform', factor_type='avg', magnitude=3))
+    modG.init_params(initializer=mx.initializer.Normal(sigma=0.01))
     modG.init_optimizer(optimizer='adam',optimizer_params={'learning_rate': 0.0001})
 
 
@@ -126,12 +125,11 @@ def GAN(epoch,noise_size,batch_size,save_period,show_period):
 
     try:
         # load the saved modD_O data
-        modD_0.load_params("Weights/modD_0-300.params")
+        modD_0.load_params("Weights/modD_0-50.params")
     except:
         pass
 
-
-    modD_0.init_params(initializer=mx.initializer.Xavier(rnd_type='uniform', factor_type='avg', magnitude=3))
+    modD_0.init_params(initializer=mx.initializer.Normal(sigma=0.01))
     modD_0.init_optimizer(optimizer='adam',optimizer_params={'learning_rate': 0.0001})
 
     """
@@ -193,7 +191,7 @@ def GAN(epoch,noise_size,batch_size,save_period,show_period):
         train_iter.reset()
         for batch in train_iter:
 
-            noise = mx.random.uniform(low=0.0, high=1.0, shape=(batch_size, noise_size), ctx=mx.gpu(0))
+            noise = mx.random.uniform(low=0.0, high=1.0, shape=(column_size*row_size,noise_size))
             modG.forward(data_batch=mx.io.DataBatch(data=[noise],label=None), is_train=True)
             modG_output = modG.get_outputs()
 
@@ -205,6 +203,7 @@ def GAN(epoch,noise_size,batch_size,save_period,show_period):
 
             '''Max_Cost of noise data Discriminator'''
             Max_cost_1+=modD_1.get_outputs()[0].asnumpy().astype(np.float32)
+
             modD_1.backward()
             modD_1.update()
 
@@ -230,6 +229,7 @@ def GAN(epoch,noise_size,batch_size,save_period,show_period):
 
             diff_v = modD_0.get_input_grads()
             modG.backward(diff_v)
+
             modG.update()
 
             '''
@@ -259,18 +259,16 @@ def GAN(epoch,noise_size,batch_size,save_period,show_period):
             modG.save_params("Weights/modG-{}.params" .format(epoch))
             modD_0.save_params("Weights/modD_0-{}.params"  .format(epoch))
 
-        """
-        Parameters
-        shared_module : Module
-            Default is `None`. This is used in bucketing. When not `None`, the shared module
-            essentially corresponds to a different bucket -- a module with different symbol
-            but with the same sets of parameters (e.g. unrolled RNNs with different lengths).
-        """
+            """
+            Parameters
+            shared_module : Module
+                Default is `None`. This is used in bucketing. When not `None`, the shared module
+                essentially corresponds to a different bucket -- a module with different symbol
+                but with the same sets of parameters (e.g. unrolled RNNs with different lengths).
+            """
 
-        '''test_method-2'''
-        # '''
-        if epoch % show_period == 0:
-            test_mod.forward(data_batch=mx.io.DataBatch(data=[mx.random.normal(0, 1.0, shape=(column_size * row_size, noise_size))],label=None))
+            '''test_method-2'''
+            test_mod.forward(data_batch=mx.io.DataBatch(data=[mx.random.uniform(low=0.0, high=1.0, shape=(column_size*row_size,noise_size))],label=None))
             result = test_mod.get_outputs()[0]
             result = result.asnumpy()
 
@@ -278,15 +276,15 @@ def GAN(epoch,noise_size,batch_size,save_period,show_period):
             result = result * 255.0
 
             '''generator image visualization'''
-            fig_g, ax_g = plt.subplots(row_size, column_size, figsize=(column_size, row_size))
-            fig_g.suptitle('generator')
+            fig, ax = plt.subplots(row_size, column_size, figsize=(column_size, row_size))
+            fig.suptitle('generator')
             for j in xrange(row_size):
                 for i in xrange(column_size):
-                    ax_g[j][i].set_axis_off()
-                    ax_g[j][i].imshow(np.reshape(result[i + j * column_size], (28, 28)), cmap='gray')
+                    ax[j][i].set_axis_off()
+                    ax[j][i].imshow(np.reshape(result[i + j * column_size], (28, 28)), cmap='gray')
 
-            fig_g.savefig("Generate_Image/generator_Epoch_{}.png".format(epoch))
-
+            fig.savefig("Generate_Image/generator_Epoch_{}.png".format(epoch))
+            plt.close(fig)
     print "Optimization complete."
 
     #################################Generating Image####################################
@@ -305,7 +303,7 @@ def GAN(epoch,noise_size,batch_size,save_period,show_period):
     print np.shape(result)
     '''
     '''load method2 - using the shared_module'''
-    test_mod.forward(data_batch=mx.io.DataBatch(data=[mx.random.normal(0, 1.0, shape=(column_size * row_size, noise_size))],label=None))
+    test_mod.forward(data_batch=mx.io.DataBatch(data=[mx.random.uniform(low=0.0, high=1.0, shape=(column_size*row_size,noise_size))],label=None))
     result = test_mod.get_outputs()[0]
     result = result.asnumpy()
 
@@ -313,15 +311,16 @@ def GAN(epoch,noise_size,batch_size,save_period,show_period):
     result = result * 255.0
 
     '''generator image visualization'''
-    fig_g, ax_g = plt.subplots(row_size, column_size, figsize=(column_size, row_size))
-    fig_g.suptitle('generator')
+    fig, ax = plt.subplots(row_size, column_size, figsize=(column_size, row_size))
+    fig.suptitle('generator')
     for j in xrange(row_size):
         for i in xrange(column_size):
-            ax_g[j][i].set_axis_off()
-            ax_g[j][i].imshow(np.reshape(result[i + j * column_size], (28, 28)), cmap='gray')
+            ax[j][i].set_axis_off()
+            ax[j][i].imshow(np.reshape(result[i + j * column_size], (28, 28)), cmap='gray')
 
-    fig_g.savefig("Generate_Image/generator.png")
+    fig.savefig("Generate_Image/Final_generator.png")
     plt.show()
+
 
 if __name__ == "__main__":
     print "GAN_starting in main"

@@ -74,7 +74,7 @@ def data_processing():
        CLASS[0] , CLASS[1]   ...          CLASS[4]        ...                CLASS[9]'''
 
     '''2. class by class data'''
-    return np.array(CLASS[7]).reshape(len(CLASS[7]),3,32,32) # airplane
+    return np.array(CLASS[1]).reshape(len(CLASS[1]),3,32,32) # airplane
 
 if __name__ == "__main__":
     "Load the cifar10 data from inside"

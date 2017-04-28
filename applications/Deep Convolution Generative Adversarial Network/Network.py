@@ -10,7 +10,7 @@ import cv2
 
 def to4d_tanh_one_channel(img):
 
-    '''1.resize (60000,64,64) -> and transform from 1 channel (60000,1,64,64) to 3 channel (60000,3,64,64)'''
+    '''1.resize to (60000,64,64) -> and transform from 1 channel (60000,1,64,64) to 3 channel (60000,3,64,64)'''
     img = np.asarray([cv2.resize(i,(64,64),interpolation=cv2.INTER_CUBIC) for i in img ])
     img = img.reshape(img.shape[0], 1, 64, 64).astype(np.float32)
     img = np.tile(img, (1, 3, 1, 1)) # to 3channel
@@ -91,11 +91,12 @@ def Generator(relu ='relu',tanh='tanh',fix_gamma=True,eps=1e-5 + 1e-12,no_bias=T
     5. in discriminator, Use LeakyReLU activation in the discriminator for all layers, except for the output, which uses sigmoid -> okay
 
     <Details of Adversarial Training>
-    1. noise data : uniform distribution -> okay
+    1. noise data : uniform distribution range (-1 ~ 1) same with 'tanh' range -> okay
     2. No pre-processing was applied to training images besides scaling to the range of the tanh activation function [-1, 1] -> okay
     3. Using adam optimizer , learning rate = 0.0002 , B1 term is 0.5 -> okay
     4. mini-batch size 128 -> okay
     5. In the LeakyReLU, the slope of the leak was set to 0.2 in all models. -> okay
+    6. All weights were initialized from a zero-centered Normal distribution with standard deviation 0.02. -> okay
 
     <Networks Structure>
     cost_function - MIN_MAX cost_function
@@ -135,7 +136,7 @@ def Generator(relu ='relu',tanh='tanh',fix_gamma=True,eps=1e-5 + 1e-12,no_bias=T
 
 def Discriminator(leaky ='leaky',sigmoid='sigmoid',fix_gamma=True,eps=1e-5 + 1e-12,no_bias=True):
 
-    zero_prevention=0#1e-15
+    zero_prevention=1e-12
     #discriminator neural networks
     data = mx.sym.Variable('data') #(128,3,64,64)
 
@@ -181,7 +182,7 @@ def Discriminator(leaky ='leaky',sigmoid='sigmoid',fix_gamma=True,eps=1e-5 + 1e-
 
     return group
 
-def DCGAN(epoch,noise_size,batch_size,save_period,show_period,dataset):
+def DCGAN(epoch,noise_size,batch_size,save_period,dataset):
 
     if dataset == 'MNIST':
         train_iter,train_data_number = Mnist_Data_Processing(batch_size)#all
@@ -210,7 +211,7 @@ def DCGAN(epoch,noise_size,batch_size,save_period,show_period,dataset):
     if dataset == 'MNIST':
         try:
             # load the saved modG data
-            modG.load_params("MNIST_Weights/modG-100.params")
+            modG.load_params("MNIST_Weights/modG-10.params")
         except:
             pass
 
@@ -241,7 +242,7 @@ def DCGAN(epoch,noise_size,batch_size,save_period,show_period,dataset):
     if dataset == 'MNIST':
         try:
             # load the saved modG data
-            modD_0.load_params("MNIST_Weights/modD_0-100.params")
+            modD_0.load_params("MNIST_Weights/modD_0-10.params")
         except:
             pass
     if dataset =='CIFAR10':
@@ -322,7 +323,7 @@ def DCGAN(epoch,noise_size,batch_size,save_period,show_period,dataset):
         train_iter.reset()
         for batch in train_iter:
 
-            noise = mx.random.uniform(low=0.0, high=1.0, shape=(batch_size, noise_size, 1, 1), ctx=context)
+            noise = mx.random.uniform(low=-1.0, high=1.0, shape=(batch_size, noise_size, 1, 1), ctx=context)
             modG.forward(data_batch=mx.io.DataBatch(data=[noise],label=None), is_train=True)
             modG_output = modG.get_outputs()
 
@@ -377,11 +378,10 @@ def DCGAN(epoch,noise_size,batch_size,save_period,show_period,dataset):
         Max_C=(Max_cost_0+Max_cost_1)/total_batch_number*1.0
         Min_C=Min_cost/total_batch_number*1.0
 
-        #cost print
+        # cost print
+        print "epoch : {}".format(epoch)
         print "Max Discriminator Cost : {}".format(Max_C.mean())
         print "Min Generator Cost : {}".format(Min_C.mean())
-
-        print "epoch : {}".format(epoch)
 
         #Save the data
         if epoch % save_period == 0:
@@ -396,9 +396,8 @@ def DCGAN(epoch,noise_size,batch_size,save_period,show_period,dataset):
                 modG.save_params("ImageNet_Weights/modG-{}.params".format(epoch))
                 modD_0.save_params("ImageNet_Weights/modD_0-{}.params".format(epoch))
 
-        if epoch % show_period==0:
             '''test_method-2'''
-            test = mx.random.uniform(low=0.0, high=1.0, shape=(column_size * row_size, noise_size, 1, 1), ctx=context)
+            test =mx.random.uniform(low=-1.0, high=1.0, shape=(column_size*row_size, noise_size,1, 1), ctx=context)
             test_mod.forward(data_batch=mx.io.DataBatch(data=[test], label=None))
             result = test_mod.get_outputs()[0]
             result = result.asnumpy()
@@ -407,7 +406,7 @@ def DCGAN(epoch,noise_size,batch_size,save_period,show_period,dataset):
             # result = np.clip((result + 1.0) * (255.0 / 2.0), 0, 255).astype(np.uint8)
             result = ((result + 1.0) * 127.5).astype(np.uint8)
 
-            '''Converting images to original size.'''
+            '''Convert the image size to 4 times'''
             result = np.asarray(
                 [[cv2.resize(i, None, fx=2, fy=2, interpolation=cv2.INTER_AREA) for i in im] for im in result])
 
@@ -432,6 +431,7 @@ def DCGAN(epoch,noise_size,batch_size,save_period,show_period,dataset):
             elif dataset == 'ImageNet':
                 fig.savefig("Generate_Image/DCGAN_ImageNet_Epoch_{}.png".format(epoch))
 
+            plt.close(fig)
     print "Optimization complete."
 
     #################################Generating Image####################################
@@ -457,8 +457,9 @@ def DCGAN(epoch,noise_size,batch_size,save_period,show_period,dataset):
         essentially corresponds to a different bucket -- a module with different symbol
         but with the same sets of parameters (e.g. unrolled RNNs with different lengths).
     """
+
     '''test_method-2'''
-    test = mx.random.uniform(low=0.0, high=1.0, shape=(column_size*row_size, noise_size, 1, 1), ctx=context)
+    test = mx.random.uniform(low=-1.0, high=1.0, shape=(column_size*row_size, noise_size, 1, 1), ctx=context)
     test_mod.forward(data_batch=mx.io.DataBatch(data=[test],label=None))
     result = test_mod.get_outputs()[0]
     result = result.asnumpy()
@@ -467,7 +468,7 @@ def DCGAN(epoch,noise_size,batch_size,save_period,show_period,dataset):
     #result = np.clip((result + 1.0) * (255.0 / 2.0), 0, 255).astype(np.uint8)
     result = ((result+1.0)*127.5).astype(np.uint8)
 
-    '''Converting images to original size.'''
+    '''Convert the image size to 4 times'''
     result = np.asarray([[cv2.resize(i, None, fx=2, fy=2, interpolation=cv2.INTER_AREA) for i in im] for im in result])
 
     result = result.transpose((0, 2, 3, 1))
@@ -484,8 +485,6 @@ def DCGAN(epoch,noise_size,batch_size,save_period,show_period,dataset):
             elif dataset == 'ImageNet':
                 ax[j][i].imshow(result[i+j*column_size])
 
-    plt.show()
-    
     if dataset == "MNIST":
         fig.savefig("Generate_Image/DCGAN_MNIST_Final.png")
     elif dataset =="CIFAR10":
@@ -493,8 +492,11 @@ def DCGAN(epoch,noise_size,batch_size,save_period,show_period,dataset):
     elif dataset == 'ImageNet':
         fig.savefig("Generate_Image/DCGAN_ImageNet_Final.png")
 
+    plt.show(fig)
+
 if __name__ == "__main__":
     print "GAN_starting in main"
-    DCGAN(epoch=50, noise_size=100, batch_size=128, save_period=50,dataset='MNIST')
+    DCGAN(epoch=100, noise_size=100, batch_size=128, save_period=100, dataset='ImageNet')
+
 else:
     print "GAN_imported"
