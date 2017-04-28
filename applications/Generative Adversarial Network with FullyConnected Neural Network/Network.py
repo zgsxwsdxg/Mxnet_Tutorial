@@ -37,26 +37,31 @@ def Generator():
     '''
 
     #generator neural networks
-    noise = mx.sym.Variable('noise') # The size of noise is 128.
-    g_affine1 = mx.sym.FullyConnected(data=noise, name='g_affine1', num_hidden=256)
-    generator1= mx.sym.Activation(data=g_affine1, name='g_sigmoid1', act_type='sigmoid')
+    noise = mx.sym.Variable('noise') # The size of noise is 100.
 
-    g_affine2 = mx.sym.FullyConnected(data=generator1, name='g_affine2', num_hidden=784)
-    g_out= mx.sym.Activation(data=g_affine2, name='g_sigmoid2', act_type='sigmoid')
+    g_affine1 = mx.sym.FullyConnected(data=noise, name='g_affine1', num_hidden=256)
+    generator1= mx.sym.Activation(data=g_affine1, name='g_sigmoid1', act_type='relu')
+
+    g_affine2 = mx.sym.FullyConnected(data=generator1, name='g_affine2', num_hidden=512)
+    generator2= mx.sym.Activation(data=g_affine2, name='g_sigmoid2', act_type='relu')
+
+    g_affine3 = mx.sym.FullyConnected(data=generator2, name='g_affine3', num_hidden=784)
+    g_out= mx.sym.Activation(data=g_affine3, name='g_sigmoid3', act_type='sigmoid')
     return g_out
 
 def Discriminator():
 
-    zero_prevention=0#1e-12
+    zero_prevention=1e-12
     #discriminator neural networks
     data = mx.sym.Variable('data') # The size of data is 784(28*28)
-    d_affine1 = mx.sym.FullyConnected(data=data,name = 'd_affine1' , num_hidden=256)
-    discriminator1 = mx.sym.Activation(data=d_affine1, name='d_sigmoid1', act_type='sigmoid')
-    discriminator1=mx.sym.Dropout(data=discriminator1,p=0.25,name='drop_out_1')
 
-    d_affine2 = mx.sym.FullyConnected(data=discriminator1,name = 'd_affine2' , num_hidden=128)
-    discriminator2 = mx.sym.Activation(data=d_affine2, name='d_sigmoid2', act_type='sigmoid')
-    discriminator2 = mx.sym.Dropout(data=discriminator2,p=0.25,name='drop_out_2')
+    d_affine1 = mx.sym.FullyConnected(data=data,name = 'd_affine1' , num_hidden=500)
+    discriminator1 = mx.sym.Activation(data=d_affine1, name='d_sigmoid1', act_type='relu')
+    discriminator1=mx.sym.Dropout(data=discriminator1,p=0.3,name='drop_out_1')
+
+    d_affine2 = mx.sym.FullyConnected(data=discriminator1,name = 'd_affine2' , num_hidden=100)
+    discriminator2 = mx.sym.Activation(data=d_affine2, name='d_sigmoid2', act_type='relu')
+    discriminator2 = mx.sym.Dropout(data=discriminator2,p=0.3,name='drop_out_2')
 
     d_affine3 = mx.sym.FullyConnected(data=discriminator2, name='d_affine3', num_hidden=1)
     d_out = mx.sym.Activation(data=d_affine3, name='d_sigmoid3', act_type='sigmoid')
@@ -90,9 +95,9 @@ def GAN(epoch,noise_size,batch_size,save_period):
     Generative Adversarial Networks
 
     <structure>
-    generator(size = 128) - 256 - (size = 784 : image generate)
+    generator(size = 128) - 256 - 512 - (size = 784 : image generate)
 
-    discriminator(size = 784) - 256 - 128 - (size=1 : Identifies whether the image is an actual image or not)
+    discriminator(size = 784) - 500 - 100 - (size=1 : Identifies whether the image is an actual image or not)
 
     cost_function - MIN_MAX cost_function
     '''
@@ -110,12 +115,12 @@ def GAN(epoch,noise_size,batch_size,save_period):
 
     try:
         # load the saved modG data
-        modG.load_params("Weights/modG-50.params")
+        modG.load_params("Weights/modG-100.params")
     except:
         pass
 
     modG.init_params(initializer=mx.initializer.Normal(sigma=0.01))
-    modG.init_optimizer(optimizer='adam',optimizer_params={'learning_rate': 0.0001})
+    modG.init_optimizer(optimizer='adam',optimizer_params={'learning_rate': 0.0002})
 
 
     # =============module discriminator[0],discriminator[1]=============
@@ -125,12 +130,12 @@ def GAN(epoch,noise_size,batch_size,save_period):
 
     try:
         # load the saved modD_O data
-        modD_0.load_params("Weights/modD_0-50.params")
+        modD_0.load_params("Weights/modD_0-100.params")
     except:
         pass
 
     modD_0.init_params(initializer=mx.initializer.Normal(sigma=0.01))
-    modD_0.init_optimizer(optimizer='adam',optimizer_params={'learning_rate': 0.0001})
+    modD_0.init_optimizer(optimizer='adam',optimizer_params={'learning_rate': 0.0002})
 
     """
     Parameters
@@ -191,8 +196,7 @@ def GAN(epoch,noise_size,batch_size,save_period):
         train_iter.reset()
         for batch in train_iter:
 
-            noise = mx.random.uniform(low=0.0, high=1.0, shape=(column_size*row_size,noise_size))
-            modG.forward(data_batch=mx.io.DataBatch(data=[noise],label=None), is_train=True)
+            modG.forward(data_batch=mx.io.DataBatch(data=[mx.random.normal(loc=0.0, scale=0.1, shape=(batch_size,noise_size))],label=None), is_train=True)
             modG_output = modG.get_outputs()
 
             ################################updating only parameters related to modD.########################################
@@ -268,7 +272,7 @@ def GAN(epoch,noise_size,batch_size,save_period):
             """
 
             '''test_method-2'''
-            test_mod.forward(data_batch=mx.io.DataBatch(data=[mx.random.uniform(low=0.0, high=1.0, shape=(column_size*row_size,noise_size))],label=None))
+            test_mod.forward(data_batch=mx.io.DataBatch(data=[mx.random.normal(loc=0.0, scale=0.1, shape=(column_size*row_size,noise_size))],label=None))
             result = test_mod.get_outputs()[0]
             result = result.asnumpy()
 
@@ -303,7 +307,7 @@ def GAN(epoch,noise_size,batch_size,save_period):
     print np.shape(result)
     '''
     '''load method2 - using the shared_module'''
-    test_mod.forward(data_batch=mx.io.DataBatch(data=[mx.random.uniform(low=0.0, high=1.0, shape=(column_size*row_size,noise_size))],label=None))
+    test_mod.forward(data_batch=mx.io.DataBatch(data=[mx.random.normal(loc=0.0, scale=0.1, shape=(column_size*row_size,noise_size))],label=None))
     result = test_mod.get_outputs()[0]
     result = result.asnumpy()
 
