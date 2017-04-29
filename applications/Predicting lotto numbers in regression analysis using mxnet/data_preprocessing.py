@@ -35,7 +35,7 @@ def data_preprocessing():
     training_data=zip(input,output)
 
     #test_data
-    test_data=np.array([[12,14,24,26,34,45],[1,2,15,19,24,36],[3,4,16,20,28,44]]).reshape(-1,Lotto_number)/normalization_factor
+    test_data=np.array([[1,2,15,19,24,36],[3,4,16,20,28,44],[4,16,20,33,40,43]]).reshape(-1,Lotto_number)/normalization_factor
     return training_data,test_data,normalization_factor
 
 if __name__=="__main__":

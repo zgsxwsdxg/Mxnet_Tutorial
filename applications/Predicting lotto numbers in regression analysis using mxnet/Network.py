@@ -65,7 +65,7 @@ def LottoNet(epoch,batch_size,save_period):
 
     '''if the below code already is declared by mod.fit function, thus we don't have to write it.
     but, when you load the saved weights, you must write the below code.'''
-    #mod.bind(data_shapes=train_iter.provide_data,label_shapes=train_iter.provide_label)
+    mod.bind(data_shapes=train_iter.provide_data,label_shapes=train_iter.provide_label)
 
     #'''
     # When you want to load the saved weights, uncomment the code below.
