@@ -10,7 +10,7 @@ def data_preprocessing():
     Lotto_number=6
 
     #show all data
-    np.set_printoptions(threshold=10000) #threshold 총갯수
+    np.set_printoptions(threshold=1000) #threshold 총갯수
 
     #lotto data
     data = pd.read_excel("lotto.xls")

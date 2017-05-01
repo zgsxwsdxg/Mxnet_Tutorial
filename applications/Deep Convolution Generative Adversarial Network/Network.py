@@ -110,27 +110,48 @@ def Generator(relu ='relu',tanh='tanh',fix_gamma=True,eps=1e-5 + 1e-12,no_bias=T
     is flattened and then fed into a single sigmoid output. See Fig. 1 for a visualization of an example
     model architecture.
     '''
+
+    '''Brief description of deconvolution.
+    I was embarrassed when I first heard about deconvolution,
+    but it was just the opposite of convolution.
+    The formula is as follows.
+
+    The convolution formula is  output_size = (input_size+2*pad-kernel_size/stride)
+
+    The Deconvolution formula is output_size = stride(input_size-1)+kernel-2*pad
+
+    '''
     noise = mx.sym.Variable('noise') # The size of noise is (128,100,1,1)
 
     g1 = mx.sym.Deconvolution(noise, name='g1', kernel=(4,4), num_filter=512, no_bias=no_bias) #weight -> (100x512x4x4)
     gbn1 = mx.sym.BatchNorm(g1, name='gbn1', fix_gamma=fix_gamma, eps=eps)
-    gact1 = mx.sym.Activation(gbn1, name='gact1', act_type=relu) # (512,4,4)
+    gact1 = mx.sym.Activation(gbn1, name='gact1', act_type=relu)
+
+    #RESULT -> 128,512,4,4 (Batch_size,filter,height,width)
 
     g2 = mx.sym.Deconvolution(gact1, name='g2', kernel=(4,4), stride=(2,2), pad=(1,1), num_filter=256, no_bias=no_bias) #weight -> (512x256x4x4)
     gbn2 = mx.sym.BatchNorm(g2, name='gbn2', fix_gamma=fix_gamma, eps=eps)
     gact2 = mx.sym.Activation(gbn2, name='gact2', act_type=relu)
 
+    #RESULT -> 128,256,8,8 (Batch_size,filter,height,width)
+
     g3 = mx.sym.Deconvolution(gact2, name='g3', kernel=(4,4), stride=(2,2), pad=(1,1), num_filter=128, no_bias=no_bias) #weight -> (256x128x4x4)
     gbn3 = mx.sym.BatchNorm(g3, name='gbn3', fix_gamma=fix_gamma, eps=eps)
     gact3 = mx.sym.Activation(gbn3, name='gact3', act_type=relu)
+
+    #RESULT -> 128,128,16,16 (Batch_size,filter,height,width)
 
     g4 = mx.sym.Deconvolution(gact3, name='g4', kernel=(4,4), stride=(2,2), pad=(1,1), num_filter=64, no_bias=no_bias) #weight -> (128x64x4x4)
     gbn4 = mx.sym.BatchNorm(g4, name='gbn4', fix_gamma=fix_gamma, eps=eps)
     gact4 = mx.sym.Activation(gbn4, name='gact4', act_type=relu)
 
+    #RESULT -> 128,64,32,32 (Batch_size,filter,height,width)
+
     ### not applying Batch Normalization to the generator output layer ###
     g5 = mx.sym.Deconvolution(gact4, name='g5', kernel=(4,4), stride=(2,2), pad=(1,1), num_filter=3, no_bias=True) #weight -> (64x3x4x4)
     g_out = mx.sym.Activation(g5, name='g_out', act_type=tanh) #(128,3,64,64)
+
+    #RESULT -> 128,3,64,64 (Batch_size,filter,height,width)
 
     return g_out
 

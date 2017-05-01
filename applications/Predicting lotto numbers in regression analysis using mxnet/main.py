@@ -4,6 +4,6 @@ import data_preprocessing as dp
 from Network import LottoNet
 
 '''implement'''
-net=LottoNet(epoch=50000,batch_size=50,save_period=1000)
+net=LottoNet(epoch=100,batch_size=100,save_period=100)
 print net[0]
-print net[1]
+#print net[1]

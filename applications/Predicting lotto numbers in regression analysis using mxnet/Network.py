@@ -65,11 +65,11 @@ def LottoNet(epoch,batch_size,save_period):
 
     '''if the below code already is declared by mod.fit function, thus we don't have to write it.
     but, when you load the saved weights, you must write the below code.'''
-    mod.bind(data_shapes=train_iter.provide_data,label_shapes=train_iter.provide_label)
+    mod.bind(data_shapes=train_iter.provide_data,label_shapes=train_iter.provide_label,for_training=True)
 
     #'''
     # When you want to load the saved weights, uncomment the code below.
-    symbol, arg_params, aux_params = mx.model.load_checkpoint(model_name, 50000)
+    symbol, arg_params, aux_params = mx.model.load_checkpoint(model_name,100)
 
     #the below code needs mod.bind, but If arg_params and aux_params is set in mod.fit, you do not need the code below, nor do you need mod.bind.
     mod.set_params(arg_params, aux_params)
@@ -77,7 +77,7 @@ def LottoNet(epoch,batch_size,save_period):
 
     mod.fit(train_iter,
             optimizer='adam',
-            optimizer_params={'learning_rate': 0.001},
+            optimizer_params={'learning_rate': 0.0009},
             initializer=mx.initializer.Xavier(rnd_type='gaussian', factor_type="avg", magnitude=1),
             eval_metric=mx.metric.MSE(),
             num_epoch=epoch,
@@ -117,9 +117,11 @@ def LottoNet(epoch,batch_size,save_period):
     #test.set_params(arg_params, aux_params)
 
     result= test.predict(test_iter)
+    original=normalization_factor * result
     result1 = mx.nd.round(normalization_factor*result)
     result2 = mx.nd.rint(normalization_factor*result)
 
+    print original.asnumpy()
     result1 = result1.asnumpy()
     result2 = result2.asnumpy()
     #print result1
@@ -129,7 +131,7 @@ def LottoNet(epoch,batch_size,save_period):
 
 if __name__=="__main__":
     print "NeuralNet_starting in main"
-    net = LottoNet(epoch=10000, batch_size=100, save_period=10000)
+    net = LottoNet(epoch=100, batch_size=100, save_period=100)
     print net[0]
     print net[1]
 else:
