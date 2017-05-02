@@ -1,6 +1,5 @@
 import cPickle
 import numpy as np
-import cPickle
 import matplotlib.pyplot as plt
 
 
