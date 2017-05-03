@@ -68,7 +68,7 @@ print mx.asnumpy(out)
 * pycharm Community Edition 2016.3.2 - (Also available in editors such as Spyder and Eclipse and so on.)
 
 >## ***Dependencies*** 
-* mxnet-0.9.4 or mxnet-0.9.5
+* mxnet-0.9.5
 * numpy-1.12.1
 * matplotlib-1.5.0rc3
 * opencv-3.2.0 (using **'import cv2'** in python)
