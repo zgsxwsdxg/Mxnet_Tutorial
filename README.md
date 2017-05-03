@@ -60,8 +60,9 @@ print mx.asnumpy(out)
        ```cmd
         <Code execution example>  
         python main.py --state --epoch 100 --noise_size 100 --batch_size 200 --save_period 100 --dataset CIFAR10
-    * [***word2vec : using undefined data***]()(***not yet***)
-
+    * [***word2vec : using undefined data***]()(***in progress***)
+    * [***Let's study t-SNE***]()(***in progress***)
+    
 >## ***Development environment***
 * window 8.1 64bit 
 * WinPython-64bit-2.7.10.3 - (Also available in Python package Library like Anaconda and so on)  
