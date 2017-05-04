@@ -50,6 +50,18 @@ print mx.asnumpy(out)
 
     * [***Autoencoder Neural Networks with logisticRegressionOutput*** *(flexible)* ***: Compressing the MNIST data using mxnet***](https://github.com/JONGGON/Mxnet_Tutorial/tree/master/basic/Autoencoder%20Neural%20Networks%20with%20logisticRegressionOutput(flexible%20to%20use%20the%20module))
 
+* ### ***Neural Networks basic with visualization***
+
+    * [***mxnet with graphviz library Only available on Linux***]()(***in progress***)
+        ```python
+        pip install graphviz' (don't write 'conda install grphviz')
+
+        import mxnet as mx
+        ...
+        ...
+        mx.viz.plot_network(symbol=mlp, shape=shape)
+    * [***mxnet with tensorboard Only available on Linux***]()(***in progress***)
+
 
 * ### ***Neural Networks Applications***
     * [***Predicting lotto numbers in regression analysis using mxnet***](https://github.com/JONGGON/Mxnet_Tutorial/tree/master/applications/Predicting%20lotto%20numbers%20in%20regression%20analysis%20using%20mxnet)
