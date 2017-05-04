@@ -2,16 +2,16 @@
 >## ***Mxnet?*** 
 * ***Flexible and Efficient Library for Deep Learning***
 * ***Symbolic programming or imperative programming***
-* ***Mixed programming available*** *(Symbolic + imperative)*
+* ***Mixed programming available*** *(`Symbolic + imperative`)*
  
 <image src="https://raw.githubusercontent.com/dmlc/web-data/master/mxnet/image/banner.png" width=800 height=200></image>
 >## ***Introduction*** 
 *   
-    It is a tutorial that can be helpful to those __who are new to the MXNET deep-learning framework__
+    It is a tutorial that can be helpful to those `who are new to the MXNET deep-learning framework`
 >## ***Official Homepage Tutorial***
 *
     The following LINK is a tutorial on the MXNET  official homepage
-    * Link : [mxnet homapage tutorials](http://mxnet.io/tutorials/index.html)
+    * `Link` : [mxnet homapage tutorials](http://mxnet.io/tutorials/index.html)
 >## ***Let's begin with***
 * Required library and very simple code
 ```python
@@ -56,13 +56,13 @@ print mx.asnumpy(out)
         ```python
         pip install graphviz' (don't write 'conda install grphviz')
 
-        import mxnet as mx
+        import mxnet as mx  
         ...
         ...
         mx.viz.plot_network(symbol=mlp, shape=shape)
     * [***mxnet with tensorboard Only available on Linux***]()(***in progress***)
-
-
+        ```python
+        pip install tensorboard   
 * ### ***Neural Networks Applications***
     * [***Predicting lotto numbers in regression analysis using mxnet***](https://github.com/JONGGON/Mxnet_Tutorial/tree/master/applications/Predicting%20lotto%20numbers%20in%20regression%20analysis%20using%20mxnet)
 
@@ -76,13 +76,15 @@ print mx.asnumpy(out)
     * [***Let's study t-SNE***]()(***in progress***)
     
 >## ***Development environment***
-* window 8.1 64bit 
-* WinPython-64bit-2.7.10.3 - (Also available in Python package Library like Anaconda and so on)  
-* pycharm Community Edition 2016.3.2 - (Also available in editors such as Spyder and Eclipse and so on.)
+* ```window 8.1 64bit``` and ```Ubuntu 16.04.2 LTS``` 
+* `WinPython-64bit-2.7.10.3` - (Also available in Python package Library like Anaconda and so on)  
+* `pycharm Community Edition 2016.3.2` - (Also available in editors such as Spyder and Eclipse and so on.)
 
 >## ***Dependencies*** 
 * mxnet-0.9.5
-* numpy-1.12.1
-* matplotlib-1.5.0rc3
-* opencv-3.2.0 (using **'import cv2'** in python)
-* urllib , requests , struct , gzip , cPickle , os , argparse , logging , glob , threading 
+* numpy-1.12.1, matplotlib-1.5.0rc3 ,tensorboard , graphviz -> (`Visualization`)
+* opencv-3.2.0, struct , gzip , os , glob , threading -> (`Data preprocessing`)
+* cPickle -> (`Data save and restore`)
+* logging -> (`Observation during learning`)
+* argparse -> (`Command line input from user`)
+* urllib , requests -> (`Web crawling`) 
