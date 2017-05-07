@@ -80,6 +80,9 @@ def NeuralNet(epoch,batch_size,save_period):
     affine2 = mx.sym.FullyConnected(data=act1, num_hidden=class_number, name = 'affine2')
     output = mx.sym.SoftmaxOutput(data=affine2, label=label, name='softmax')
 
+    # We visualize the network structure with output size (the batch_size is ignored.)
+    shape = {"data": (time_step,batch_size,28)}
+    mx.viz.plot_network(symbol=output,shape=shape)#The diagram can be found on the Jupiter notebook.
     print output.list_arguments()
 
     # training mod

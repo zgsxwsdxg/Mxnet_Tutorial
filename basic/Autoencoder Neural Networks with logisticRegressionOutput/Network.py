@@ -60,6 +60,9 @@ def NeuralNet(epoch,batch_size,save_period):
     #LogisticRegressionOutput contains a sigmoid function internally. and It should be executed with xxxx_lbl_one_hot data.
     result = mx.sym.LogisticRegressionOutput(data=result ,label=output)
 
+    # We visualize the network structure with output size (the batch_size is ignored.)
+    shape = {"input": (batch_size,784)}
+    mx.viz.plot_network(symbol=result,shape=shape)#The diagram can be found on the Jupiter notebook.
     print result.list_arguments()
 
     # Fisrt optimization method

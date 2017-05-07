@@ -80,6 +80,10 @@ def NeuralNet(epoch,batch_size,save_period):
     affine2 = mx.sym.FullyConnected(data=act1, num_hidden=class_number, name = 'affine2')
     output = mx.sym.SoftmaxOutput(data=affine2, label=label, name='softmax')
 
+
+    # We visualize the network structure with output size (the batch_size is ignored.)
+    shape = {"data": (time_step,batch_size,28)}
+    mx.viz.plot_network(symbol=output,shape=shape)#The diagram can be found on the Jupiter notebook.
     print output.list_arguments()
 
     # training mod
@@ -88,7 +92,7 @@ def NeuralNet(epoch,batch_size,save_period):
     mod.bind(data_shapes=train_iter.provide_data,label_shapes=train_iter.provide_label)
 
     #load the saved mod data
-    mod.load_params("Weights/mod-100.params")
+    mod.load_params("weights/Neural_Net-100.params")
 
     mod.init_params(initializer=mx.initializer.Xavier(rnd_type='gaussian', factor_type='avg', magnitude=1))
     mod.init_optimizer(optimizer='adam',optimizer_params={'learning_rate': 0.001})
@@ -180,7 +184,7 @@ def NeuralNet(epoch,batch_size,save_period):
         #Save the data
         if epoch%save_period==0:
             print('Saving weights')
-            mod.save_params("Weights/mod-{}.params" .format(epoch))
+            mod.save_params("weights/Neural_Net" .format(epoch))
 
     # Network information print
     print mod.data_shapes

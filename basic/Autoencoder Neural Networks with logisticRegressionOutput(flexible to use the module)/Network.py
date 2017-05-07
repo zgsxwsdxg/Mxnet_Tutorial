@@ -60,6 +60,9 @@ def NeuralNet(epoch,batch_size,save_period):
     #LogisticRegressionOutput contains a sigmoid function internally. and It should be executed with xxxx_lbl_one_hot data.
     result = mx.sym.LogisticRegressionOutput(data=result ,label=output)
 
+    # We visualize the network structure with output size (the batch_size is ignored.)
+    shape = {"input": (batch_size,784)}
+    mx.viz.plot_network(symbol=result,shape=shape)#The diagram can be found on the Jupiter notebook.
     print result.list_arguments()
 
     #training mod
@@ -67,7 +70,7 @@ def NeuralNet(epoch,batch_size,save_period):
     mod.bind(data_shapes=train_iter.provide_data,label_shapes=train_iter.provide_label)
 
     #load the saved mod data
-    mod.load_params("Weights/mod-100.params")
+    mod.load_params("weights/mod-100.params")
 
     mod.init_params(initializer=mx.initializer.Xavier(rnd_type='uniform', factor_type='avg', magnitude=3))
     mod.init_optimizer(optimizer='adam',optimizer_params={'learning_rate': 0.01})
@@ -156,7 +159,7 @@ def NeuralNet(epoch,batch_size,save_period):
         #Save the data
         if epoch%save_period==0:
             print('Saving weights')
-            mod.save_params("Weights/mod-{}.params" .format(epoch))
+            mod.save_params("weights/mod-{}.params" .format(epoch))
 
     # Network information print
     print mod.data_shapes

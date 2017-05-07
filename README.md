@@ -56,13 +56,18 @@ print mx.asnumpy(out)
         ```python
         pip install graphviz' (don't write 'conda install grphviz')
 
+        'jupyter notebook'   
+
         import mxnet as mx  
         ...
+
         ...
         mx.viz.plot_network(symbol=mlp, shape=shape)
     * [***mxnet with tensorboard Only available on Linux***]()(***in progress***)
         ```python
         pip install tensorboard   
+        ```
+
 * ### ***Neural Networks Applications***
     * [***Predicting lotto numbers in regression analysis using mxnet***](https://github.com/JONGGON/Mxnet_Tutorial/tree/master/applications/Predicting%20lotto%20numbers%20in%20regression%20analysis%20using%20mxnet)
 

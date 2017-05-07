@@ -61,6 +61,10 @@ def NeuralNet(epoch,batch_size,save_period):
 
     output=mx.sym.SoftmaxOutput(data=output_affine,label=label)
 
+
+    # We visualize the network structure with output size (the batch_size is ignored.)
+    shape = {"data": (batch_size,1,28,28)}
+    mx.viz.plot_network(symbol=output,shape=shape)#The diagram can be found on the Jupiter notebook.
     print output.list_arguments()
 
     # Fisrt optimization method

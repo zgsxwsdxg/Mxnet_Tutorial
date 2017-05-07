@@ -50,6 +50,10 @@ def NeuralNet(epoch,batch_size,save_period):
 
     output=mx.sym.SoftmaxOutput(data=output_affine,label=label)
 
+    # We visualize the network structure with output size (the batch_size is ignored.)
+    shape = {"data": (batch_size,784)}
+    mx.viz.plot_network(symbol=output,shape=shape)#The diagram can be found on the Jupiter notebook.
+
     print output.list_arguments()
 
     # training mod
@@ -149,7 +153,7 @@ def NeuralNet(epoch,batch_size,save_period):
         #Save the data
         if epoch%save_period==0:
             print('Saving weights')
-            mod.save_params("Weights/mod-{}.params" .format(epoch))
+            mod.save_params("weights/mod-{}.params" .format(epoch))
 
     # Network information print
     print mod.data_shapes
