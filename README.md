@@ -52,17 +52,20 @@ print mx.asnumpy(out)
 
 * ### ***Neural Networks basic with visualization***
 
-    * [***mxnet with graphviz library Only available on Linux***]()(***in progress***)
+    * [***mxnet with graphviz library Only available on Linux***](https://github.com/JONGGON/Mxnet_Tutorial/tree/master/visualization)
         ```python
         pip install graphviz' (don't write 'conda install grphviz')
 
-        'jupyter notebook'   
+        Must be run on 'jupyter notebook'   
 
         import mxnet as mx  
         ...
 
         ...
         mx.viz.plot_network(symbol=mlp, shape=shape)
+        ```
+        * `To view only the results, run the xxx.html file in the path above`
+        
     * [***mxnet with tensorboard Only available on Linux***]()(***in progress***)
         ```python
         pip install tensorboard   
@@ -78,7 +81,6 @@ print mx.asnumpy(out)
         <Code execution example>  
         python main.py --state --epoch 100 --noise_size 100 --batch_size 200 --save_period 100 --dataset CIFAR10
     * [***word2vec : using undefined data***]()(***in progress***)
-    * [***Let's study t-SNE***]()(***in progress***)
     
 >## ***Development environment***
 * ```window 8.1 64bit``` and ```Ubuntu 16.04.2 LTS``` 
