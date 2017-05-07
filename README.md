@@ -54,7 +54,7 @@ print mx.asnumpy(out)
 
     * [***mxnet with graphviz library Only available on Linux***](https://github.com/JONGGON/Mxnet_Tutorial/tree/master/visualization)
         ```python
-        pip install graphviz' (don't write 'conda install grphviz')
+        pip install graphviz' (Don't write 'conda install graphviz')
 
         Must be run on 'jupyter notebook'   
 
