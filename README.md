@@ -64,7 +64,7 @@ print mx.asnumpy(out)
         ...
         mx.viz.plot_network(symbol=mlp, shape=shape)
         ```
-        * `To view only the results, run the xxx.html file in the path above`
+        * `To view only the results, run the 'xxx.html' file with 'Chrome' or 'Explorer'`
         
     * [***mxnet with tensorboard Only available on Linux***]()(***in progress***)
         ```python
