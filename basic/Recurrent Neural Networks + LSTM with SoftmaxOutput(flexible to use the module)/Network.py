@@ -165,7 +165,8 @@ def NeuralNet(epoch,batch_size,save_period):
             in mxnet,If you do not use one of the following two statements, the memory usage becomes 100 percent and the computer crashes.
             It is not necessary for actual calculation, but the above phenomenon does not occur when it is necessary to write it.
             I do not know why. Just think of it as meaningless.
-
+            
+            In linux(ubuntu 16.04), below code is not necessary.
             '''
             '''make evaluation method 1 - Using existing ones'''
             #mod.update_metric(null, batch.label)

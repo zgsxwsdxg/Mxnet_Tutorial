@@ -108,11 +108,10 @@ def download_data_from_internet_in_requests(path,save_path):
 
 def read_data_from_file():
     train_data=[]
-    data_list=glob.glob("ImageNet/Imagenet_face/*")#return list of data_address
+    data_list=glob.glob("ImageNet/ImageNet_face/*")#return list of data_address
 
     '''1. fetch the data from 'ImageNet' folder'''
     train_data.append([cv2.imread(dl,cv2.IMREAD_COLOR) for dl in data_list])
-
     '''2. BGR - > RGB '''
     for i in xrange(len(train_data[0])):
         b,g,r=cv2.split(train_data[0][i])
@@ -127,9 +126,9 @@ if __name__ == "__main__":
     url_woman = 'http://image-net.org/api/text/imagenet.synset.geturls?wnid=n09619168'
 
     '''ImageNet data'''
-    path1 = "Imagenet/Imagenet_face/{}.jpg"
-    path2 = "Imagenet/Imagenet_celebrity/{}.jpg"
-    path3 = "Imagenet/Imagenet_woman/{}.jpg"
+    path1 = "ImageNet/ImageNet_face/{}.jpg"
+    path2 = "ImageNet/ImageNet_celebrity/{}.jpg"
+    path3 = "ImageNet/ImageNet_woman/{}.jpg"
 
     download_data=False
 

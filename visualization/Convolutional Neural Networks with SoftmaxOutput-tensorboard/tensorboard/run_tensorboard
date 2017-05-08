@@ -1,0 +1,3 @@
+tensorboard --logdir=tensorboard --logdir=/tmp/sample --port=6006
+
+
