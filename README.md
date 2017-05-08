@@ -66,7 +66,7 @@ print mx.asnumpy(out)
         ```
         * `To view only the results, run the 'xxx.html' file with 'Chrome' or 'Explorer'`
         
-    * [***mxnet with tensorboard Only available on Linux***]()(***in progress***)
+    * [***mxnet with tensorboard Only available on Linux***](https://github.com/JONGGON/Mxnet_Tutorial/tree/master/visualization/Convolutional%20Neural%20Networks%20with%20SoftmaxOutput-tensorboard)
         ```python
         pip install tensorboard   
         ```
