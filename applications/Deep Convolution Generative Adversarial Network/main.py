@@ -25,4 +25,4 @@ if args.state:
     Network.DCGAN(epoch=args.epoch, noise_size=args.noise_size, batch_size=args.batch_size, save_period=args.save_period,dataset=args.dataset)
 else:
     #dataset : MNIST, CIFAR10 , Imagenet
-    Network.DCGAN(epoch=1, noise_size=100, batch_size=128, save_period=100,dataset='ImageNet')
+    Network.DCGAN(epoch=100, noise_size=100, batch_size=128, save_period=100,dataset='MNIST')

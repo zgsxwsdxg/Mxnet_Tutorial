@@ -73,7 +73,6 @@ def Image_Data_Processing(batch_size,data_name):
     elif data_name=="ImageNet":
         import data_download_ImageNet as ddi
         train_img=ddi.read_data_from_file()
-        print np.shape(train_img)
         train_iter = mx.io.NDArrayIter(data={'data': to4d_tanh_three_channel(train_img, "ImageNet")},batch_size=batch_size, shuffle=True)  # training data
     return train_iter,len(train_img)
 
@@ -329,7 +328,6 @@ def DCGAN(epoch,noise_size,batch_size,save_period,dataset):
     •allow_extra_outputs (bool) – If true, the prediction outputs can have extra outputs.
     This is useful in RNN, where the states are also produced in outputs for forwarding.
     '''
-
     def zero(label, pred):
         return 0
 
@@ -383,20 +381,6 @@ def DCGAN(epoch,noise_size,batch_size,save_period,dataset):
             diff_v = modD_0.get_input_grads()
             modG.backward(diff_v)
             modG.update()
-
-            '''
-            No need, but must be declared!!!
-
-            in mxnet,If you do not use one of the following two statements, the memory usage becomes 100 percent and the computer crashes.
-            It is not necessary for actual calculation, but the above phenomenon does not occur when it is necessary to write it.
-            I do not know why. Just think of it as meaningless.
-            
-            In linux(ubuntu 16.04), below code is not necessary.
-            '''
-            '''make evaluation method 1 - Using existing ones'''
-            #metric.update([label], modD_0.get_outputs())
-            '''make evaluation method 2 - Making new things.'''
-            null.update([label], modD_0.get_outputs())
 
         Max_C=(Max_cost_0+Max_cost_1)/total_batch_number*1.0
         Min_C=Min_cost/total_batch_number*1.0
