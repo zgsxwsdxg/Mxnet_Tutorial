@@ -88,8 +88,7 @@ print mx.asnumpy(out)
             if os.path.isdir(module_space):
                 return module_space
         ```
-        * If you want to see the results immediately, 
-        `Write the following script in the terminal window` where the event file exists.
+        * If you want to see the results immediately,`write the following script in the terminal window` where the event file exists.
         
             * `tensorboard --logdir=tensorboard --logdir=./ --port=6006`
 
