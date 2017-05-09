@@ -79,7 +79,7 @@ print mx.asnumpy(out)
         ```
         ```python
         '''Issue'''
-        The 80th line of the tensorboard file in the path '/home/user/anaconda2/bin' should be modified as shown below.
+        The '80's' line of the tensorboard file in the path '/home/user/anaconda2/bin' should be modified as shown below.
         ```
         ```python
         <code>
