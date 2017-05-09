@@ -51,8 +51,7 @@ print mx.asnumpy(out)
     * [***Autoencoder Neural Networks with logisticRegressionOutput*** *(flexible)* ***: Compressing the MNIST data using mxnet***](https://github.com/JONGGON/Mxnet_Tutorial/tree/master/basic/Autoencoder%20Neural%20Networks%20with%20logisticRegressionOutput(flexible%20to%20use%20the%20module))
 
 * ### ***Neural Networks basic with visualization***
-
-    * [***mxnet with graphviz library***](https://github.com/JONGGON/Mxnet_Tutorial/tree/master/visualization)
+    * [***mxnet with graphviz library***](https://github.com/JONGGON/Mxnet_Tutorial/tree/master/visualization/visualization)
         ```cmd
         <linux>
         pip install graphviz(in anaconda Command Prompt) 
@@ -73,8 +72,7 @@ print mx.asnumpy(out)
         mx.viz.plot_network(symbol=mlp, shape=shape)
         ```
         * `To view only the results, run the 'xxx.html' file with 'Chrome' or 'Explorer'`
-        
-    * [***mxnet with tensorboard Only available on Linux***](https://github.com/JONGGON/Mxnet_Tutorial/tree/master/visualization/Convolutional%20Neural%20Networks%20with%20SoftmaxOutput-tensorboard)
+    * [***mxnet with tensorboard Only available on Linux***](https://github.com/JONGGON/Mxnet_Tutorial/tree/master/visualization/tensorboard/Convolutional%20Neural%20Networks%20with%20SoftmaxOutput-tensorboard)
         
         ```python
         pip install tensorboard   
