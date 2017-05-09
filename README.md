@@ -52,9 +52,16 @@ print mx.asnumpy(out)
 
 * ### ***Neural Networks basic with visualization***
 
-    * [***mxnet with graphviz library Only available on Linux***](https://github.com/JONGGON/Mxnet_Tutorial/tree/master/visualization)
-        ```python
-        pip install graphviz ('Do not write conda install graphviz')
+    * [***mxnet with graphviz library***](https://github.com/JONGGON/Mxnet_Tutorial/tree/master/visualization)
+        ```cmd
+        <linux>
+        pip install graphviz(in anaconda Command Prompt) 
+
+        <window>
+        1. 'pip install graphviz'(in winpython Command Prompt) 
+        2. download 'graphviz-2.38.msi' at 'http://www.graphviz.org/Download_windows.php'
+        3. Install to 'C:\Program Files (x86)\'
+        4. add 'C:\Program Files (x86)\Graphviz2.38\bin' to the environment variable PATH
         ```
         ```python
         Must be run on 'jupyter notebook'   
@@ -75,8 +82,9 @@ print mx.asnumpy(out)
         ```python
         '''Issue'''
 
-        The 80th line of the tensorboard file in the path '/ home / jg / anaconda2 / bin' should be modified as shown below.
+        The 80th line of the tensorboard file in the path '/home/user/anaconda2/bin' should be modified as shown below.
 
+        <code>
         for mod in package_path:
             module_space = mod + '/tensorboard/tensorboard' + '.runfiles'
             if os.path.isdir(module_space):
@@ -101,14 +109,14 @@ print mx.asnumpy(out)
     * [***word2vec : using undefined data***]()(***in progress***)
     
 >## ***Development environment***
-* ```window 8.1 64bit``` and ```Ubuntu 16.04.2 LTS``` 
-* `WinPython-64bit-2.7.10.3` - (Also available in Python package Library like Anaconda and so on)  
+* ```window 8.1 64bit``` and ```Ubuntu linux 16.04.2 LTS``` 
+* `WinPython-64bit-2.7.10.3(window) and anaconda2 4.3.1(linux)` 
 * `pycharm Community Edition 2016.3.2` - (Also available in editors such as Spyder and Eclipse and so on.)
 
 >## ***Dependencies*** 
 * mxnet-0.9.5
-* numpy-1.12.1 , matplotlib-1.5.0rc3 , tensorboard , graphviz -> (`Visualization`)
-* opencv-3.2.0 , struct , gzip , os , glob , threading -> (`Data preprocessing`)
+* numpy-1.12.1, matplotlib-2.0.1 , tensorboard(linux) , graphviz -> (`Visualization`)
+* opencv-3.2.0(window) , opencv-3.1.0(linux) , struct , gzip , os , glob , threading -> (`Data preprocessing`)
 * cPickle -> (`Data save and restore`)
 * logging -> (`Observation during learning`)
 * argparse -> (`Command line input from user`)

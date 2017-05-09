@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<!-- saved from url=(0046)http://localhost:8888/notebooks/Untitled.ipynb -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+
+    <title>Untitled</title>
+    <link rel="shortcut icon" type="image/x-icon" href="http://localhost:8888/static/base/images/favicon.ico?v=30780f272ab4aac64aa073a841546240">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <link rel="stylesheet" href="./Untitled_files/jquery-ui.min.css" type="text/css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    
+
+
+<script type="text/javascript" src="./Untitled_files/MathJax.js.다운로드" charset="utf-8"></script>
+
+<script type="text/javascript">
+// MathJax disabled, set as null to distingish from *missing* MathJax,
+// where it will be undefined, and should prompt a dialog later.
+window.mathjax_url = "/static/components/MathJax/MathJax.js";
+</script>
+
+<link rel="stylesheet" href="./Untitled_files/bootstrap-tour.min.css" type="text/css">
+<link rel="stylesheet" href="./Untitled_files/codemirror.css">
+
+
+    <link rel="stylesheet" href="./Untitled_files/style.min.css" type="text/css">
+    
+
+<link rel="stylesheet" href="./Untitled_files/override.css" type="text/css">
+<link rel="stylesheet" href="http://localhost:8888/notebooks/Untitled.ipynb" id="kernel-css" type="text/css">
+
+
+    <link rel="stylesheet" href="./Untitled_files/custom.css" type="text/css">
+    <script src="./Untitled_files/promise.min.js.다운로드" type="text/javascript" charset="utf-8"></script>
+    <script src="./Untitled_files/require.js.다운로드" type="text/javascript" charset="utf-8"></script>
+    <script>
+      require.config({
+          
+          urlArgs: "v=20170509220241",
+          
+          baseUrl: '/static/',
+          paths: {
+            'auth/js/main': 'auth/js/main.min',
+            custom : '/custom',
+            nbextensions : '/nbextensions',
+            widgets : '/deprecatedwidgets',
+            kernelspecs : '/kernelspecs',
+            underscore : 'components/underscore/underscore-min',
+            backbone : 'components/backbone/backbone-min',
+            jquery: 'components/jquery/jquery.min',
+            bootstrap: 'components/bootstrap/js/bootstrap.min',
+            bootstraptour: 'components/bootstrap-tour/build/js/bootstrap-tour.min',
+            jqueryui: 'components/jquery-ui/ui/minified/jquery-ui.min',
+            moment: 'components/moment/moment',
+            codemirror: 'components/codemirror',
+            termjs: 'components/term.js/src/term',
+          },
+          shim: {
+            underscore: {
+              exports: '_'
+            },
+            backbone: {
+              deps: ["underscore", "jquery"],
+              exports: "Backbone"
+            },
+            bootstrap: {
+              deps: ["jquery"],
+              exports: "bootstrap"
+            },
+            bootstraptour: {
+              deps: ["bootstrap"],
+              exports: "Tour"
+            },
+            jqueryui: {
+              deps: ["jquery"],
+              exports: "$"
+            }
+          }
+      });
+
+      require.config({
+          map: {
+              '*':{
+                'contents': 'services/contents',
+              }
+          }
+      });
+    </script>
+
+    
+    
+
+<script type="text/javascript" charset="utf-8" async="" data-requirecontext="_" data-requiremodule="services/contents" src="./Untitled_files/contents.js.다운로드"></script><script type="text/javascript" charset="utf-8" async="" data-requirecontext="_" data-requiremodule="custom/custom" src="./Untitled_files/custom.js.다운로드"></script><style type="text/css">.MathJax_Hover_Frame {border-radius: .25em; -webkit-border-radius: .25em; -moz-border-radius: .25em; -khtml-border-radius: .25em; box-shadow: 0px 0px 15px #83A; -webkit-box-shadow: 0px 0px 15px #83A; -moz-box-shadow: 0px 0px 15px #83A; -khtml-box-shadow: 0px 0px 15px #83A; border: 1px solid #A6D ! important; display: inline-block; position: absolute}
+.MathJax_Hover_Arrow {position: absolute; width: 15px; height: 11px; cursor: pointer}
+</style><style type="text/css">#MathJax_About {position: fixed; left: 50%; width: auto; text-align: center; border: 3px outset; padding: 1em 2em; background-color: #DDDDDD; color: black; cursor: default; font-family: message-box; font-size: 120%; font-style: normal; text-indent: 0; text-transform: none; line-height: normal; letter-spacing: normal; word-spacing: normal; word-wrap: normal; white-space: nowrap; float: none; z-index: 201; border-radius: 15px; -webkit-border-radius: 15px; -moz-border-radius: 15px; -khtml-border-radius: 15px; box-shadow: 0px 10px 20px #808080; -webkit-box-shadow: 0px 10px 20px #808080; -moz-box-shadow: 0px 10px 20px #808080; -khtml-box-shadow: 0px 10px 20px #808080; filter: progid:DXImageTransform.Microsoft.dropshadow(OffX=2, OffY=2, Color='gray', Positive='true')}
+.MathJax_Menu {position: absolute; background-color: white; color: black; width: auto; padding: 2px; border: 1px solid #CCCCCC; margin: 0; cursor: default; font: menu; text-align: left; text-indent: 0; text-transform: none; line-height: normal; letter-spacing: normal; word-spacing: normal; word-wrap: normal; white-space: nowrap; float: none; z-index: 201; box-shadow: 0px 10px 20px #808080; -webkit-box-shadow: 0px 10px 20px #808080; -moz-box-shadow: 0px 10px 20px #808080; -khtml-box-shadow: 0px 10px 20px #808080; filter: progid:DXImageTransform.Microsoft.dropshadow(OffX=2, OffY=2, Color='gray', Positive='true')}
+.MathJax_MenuItem {padding: 2px 2em; background: transparent}
+.MathJax_MenuArrow {position: absolute; right: .5em; color: #666666}
+.MathJax_MenuActive .MathJax_MenuArrow {color: white}
+.MathJax_MenuArrow.RTL {left: .5em; right: auto}
+.MathJax_MenuCheck {position: absolute; left: .7em}
+.MathJax_MenuCheck.RTL {right: .7em; left: auto}
+.MathJax_MenuRadioCheck {position: absolute; left: 1em}
+.MathJax_MenuRadioCheck.RTL {right: 1em; left: auto}
+.MathJax_MenuLabel {padding: 2px 2em 4px 1.33em; font-style: italic}
+.MathJax_MenuRule {border-top: 1px solid #CCCCCC; margin: 4px 1px 0px}
+.MathJax_MenuDisabled {color: GrayText}
+.MathJax_MenuActive {background-color: Highlight; color: HighlightText}
+.MathJax_Menu_Close {position: absolute; width: 31px; height: 31px; top: -15px; left: -15px}
+</style><style type="text/css">.MathJax_Preview .MJXc-math {color: inherit!important}
+</style><style type="text/css">#MathJax_Zoom {position: absolute; background-color: #F0F0F0; overflow: auto; display: block; z-index: 301; padding: .5em; border: 1px solid black; margin: 0; font-weight: normal; font-style: normal; text-align: left; text-indent: 0; text-transform: none; line-height: normal; letter-spacing: normal; word-spacing: normal; word-wrap: normal; white-space: nowrap; float: none; box-shadow: 5px 5px 15px #AAAAAA; -webkit-box-shadow: 5px 5px 15px #AAAAAA; -moz-box-shadow: 5px 5px 15px #AAAAAA; -khtml-box-shadow: 5px 5px 15px #AAAAAA; filter: progid:DXImageTransform.Microsoft.dropshadow(OffX=2, OffY=2, Color='gray', Positive='true')}
+#MathJax_ZoomOverlay {position: absolute; left: 0; top: 0; z-index: 300; display: inline-block; width: 100%; height: 100%; border: 0; padding: 0; margin: 0; background-color: white; opacity: 0; filter: alpha(opacity=0)}
+#MathJax_ZoomFrame {position: relative; display: inline-block; height: 0; width: 0}
+#MathJax_ZoomEventTrap {position: absolute; left: 0; top: 0; z-index: 302; display: inline-block; border: 0; padding: 0; margin: 0; background-color: white; opacity: 0; filter: alpha(opacity=0)}
+</style><style type="text/css">.MathJax_Preview {color: #888}
+#MathJax_Message {position: fixed; left: 1em; bottom: 1.5em; background-color: #E6E6E6; border: 1px solid #959595; margin: 0px; padding: 2px 8px; z-index: 102; color: black; font-size: 80%; width: auto; white-space: nowrap}
+#MathJax_MSIE_Frame {position: absolute; top: 0; left: 0; width: 0px; z-index: 101; border: 0px; margin: 0px; padding: 0px}
+.MathJax_Error {color: #CC0000; font-style: italic}
+</style><script type="text/javascript" charset="utf-8" async="" data-requirecontext="_" data-requiremodule="nbextensions/widgets/notebook/js/extension" src="./Untitled_files/extension.js.다운로드"></script><style type="text/css">.MJXc-script {font-size: .8em}
+.MJXc-right {-webkit-transform-origin: right; -moz-transform-origin: right; -ms-transform-origin: right; -o-transform-origin: right; transform-origin: right}
+.MJXc-bold {font-weight: bold}
+.MJXc-italic {font-style: italic}
+.MJXc-scr {font-family: MathJax_Script,'Times New Roman',Times,STIXGeneral,serif}
+.MJXc-frak {font-family: MathJax_Fraktur,'Times New Roman',Times,STIXGeneral,serif}
+.MJXc-sf {font-family: MathJax_SansSerif,'Times New Roman',Times,STIXGeneral,serif}
+.MJXc-cal {font-family: MathJax_Caligraphic,'Times New Roman',Times,STIXGeneral,serif}
+.MJXc-mono {font-family: MathJax_Typewriter,'Times New Roman',Times,STIXGeneral,serif}
+.MJXc-largeop {font-size: 150%}
+.MJXc-largeop.MJXc-int {vertical-align: -.2em}
+.MJXc-math {display: inline-block; line-height: 1.2; text-indent: 0; font-family: 'Times New Roman',Times,STIXGeneral,serif; white-space: nowrap; border-collapse: collapse}
+.MJXc-display {display: block; text-align: center; margin: 1em 0}
+.MJXc-math span {display: inline-block}
+.MJXc-box {display: block!important; text-align: center}
+.MJXc-box:after {content: " "}
+.MJXc-rule {display: block!important; margin-top: .1em}
+.MJXc-char {display: block!important}
+.MJXc-mo {margin: 0 .15em}
+.MJXc-mfrac {margin: 0 .125em; vertical-align: .25em}
+.MJXc-denom {display: inline-table!important; width: 100%}
+.MJXc-denom > * {display: table-row!important}
+.MJXc-surd {vertical-align: top}
+.MJXc-surd > * {display: block!important}
+.MJXc-script-box > *  {display: table!important; height: 50%}
+.MJXc-script-box > * > * {display: table-cell!important; vertical-align: top}
+.MJXc-script-box > *:last-child > * {vertical-align: bottom}
+.MJXc-script-box > * > * > * {display: block!important}
+.MJXc-mphantom {visibility: hidden}
+.MJXc-munderover {display: inline-table!important}
+.MJXc-over {display: inline-block!important; text-align: center}
+.MJXc-over > * {display: block!important}
+.MJXc-munderover > * {display: table-row!important}
+.MJXc-mtable {vertical-align: .25em; margin: 0 .125em}
+.MJXc-mtable > * {display: inline-table!important; vertical-align: middle}
+.MJXc-mtr {display: table-row!important}
+.MJXc-mtd {display: table-cell!important; text-align: center; padding: .5em 0 0 .5em}
+.MJXc-mtr > .MJXc-mtd:first-child {padding-left: 0}
+.MJXc-mtr:first-child > .MJXc-mtd {padding-top: 0}
+.MJXc-mlabeledtr {display: table-row!important}
+.MJXc-mlabeledtr > .MJXc-mtd:first-child {padding-left: 0}
+.MJXc-mlabeledtr:first-child > .MJXc-mtd {padding-top: 0}
+.MJXc-merror {background-color: #FFFF88; color: #CC0000; border: 1px solid #CC0000; padding: 1px 3px; font-style: normal; font-size: 90%}
+.MJXc-scale0 {-webkit-transform: scaleX(.0); -moz-transform: scaleX(.0); -ms-transform: scaleX(.0); -o-transform: scaleX(.0); transform: scaleX(.0)}
+.MJXc-scale1 {-webkit-transform: scaleX(.1); -moz-transform: scaleX(.1); -ms-transform: scaleX(.1); -o-transform: scaleX(.1); transform: scaleX(.1)}
+.MJXc-scale2 {-webkit-transform: scaleX(.2); -moz-transform: scaleX(.2); -ms-transform: scaleX(.2); -o-transform: scaleX(.2); transform: scaleX(.2)}
+.MJXc-scale3 {-webkit-transform: scaleX(.3); -moz-transform: scaleX(.3); -ms-transform: scaleX(.3); -o-transform: scaleX(.3); transform: scaleX(.3)}
+.MJXc-scale4 {-webkit-transform: scaleX(.4); -moz-transform: scaleX(.4); -ms-transform: scaleX(.4); -o-transform: scaleX(.4); transform: scaleX(.4)}
+.MJXc-scale5 {-webkit-transform: scaleX(.5); -moz-transform: scaleX(.5); -ms-transform: scaleX(.5); -o-transform: scaleX(.5); transform: scaleX(.5)}
+.MJXc-scale6 {-webkit-transform: scaleX(.6); -moz-transform: scaleX(.6); -ms-transform: scaleX(.6); -o-transform: scaleX(.6); transform: scaleX(.6)}
+.MJXc-scale7 {-webkit-transform: scaleX(.7); -moz-transform: scaleX(.7); -ms-transform: scaleX(.7); -o-transform: scaleX(.7); transform: scaleX(.7)}
+.MJXc-scale8 {-webkit-transform: scaleX(.8); -moz-transform: scaleX(.8); -ms-transform: scaleX(.8); -o-transform: scaleX(.8); transform: scaleX(.8)}
+.MJXc-scale9 {-webkit-transform: scaleX(.9); -moz-transform: scaleX(.9); -ms-transform: scaleX(.9); -o-transform: scaleX(.9); transform: scaleX(.9)}
+.MathJax_CHTML .noError {vertical-align: ; font-size: 90%; text-align: left; color: black; padding: 1px 3px; border: 1px solid}
+</style><style type="text/css">.MathJax_Display {text-align: center; margin: 0; position: relative; display: block!important; text-indent: 0; max-width: none; max-height: none; min-width: 0; min-height: 0; width: 100%}
+.MathJax .merror {background-color: #FFFF88; color: #CC0000; border: 1px solid #CC0000; padding: 1px 3px; font-style: normal; font-size: 90%}
+.MathJax .MJX-monospace {font-family: monospace}
+.MathJax .MJX-sans-serif {font-family: sans-serif}
+#MathJax_Tooltip {background-color: InfoBackground; color: InfoText; border: 1px solid black; box-shadow: 2px 2px 5px #AAAAAA; -webkit-box-shadow: 2px 2px 5px #AAAAAA; -moz-box-shadow: 2px 2px 5px #AAAAAA; -khtml-box-shadow: 2px 2px 5px #AAAAAA; filter: progid:DXImageTransform.Microsoft.dropshadow(OffX=2, OffY=2, Color='gray', Positive='true'); padding: 3px 4px; z-index: 401; position: absolute; left: 0; top: 0; width: auto; height: auto; display: none}
+.MathJax {display: inline; font-style: normal; font-weight: normal; line-height: normal; font-size: 100%; font-size-adjust: none; text-indent: 0; text-align: left; text-transform: none; letter-spacing: normal; word-spacing: normal; word-wrap: normal; white-space: nowrap; float: none; direction: ltr; max-width: none; max-height: none; min-width: 0; min-height: 0; border: 0; padding: 0; margin: 0}
+.MathJax img, .MathJax nobr, .MathJax a {border: 0; padding: 0; margin: 0; max-width: none; max-height: none; min-width: 0; min-height: 0; vertical-align: 0; line-height: normal; text-decoration: none}
+img.MathJax_strut {border: 0!important; padding: 0!important; margin: 0!important; vertical-align: 0!important}
+.MathJax span {display: inline; position: static; border: 0; padding: 0; margin: 0; vertical-align: 0; line-height: normal; text-decoration: none}
+.MathJax nobr {white-space: nowrap!important}
+.MathJax img {display: inline!important; float: none!important}
+.MathJax * {transition: none; -webkit-transition: none; -moz-transition: none; -ms-transition: none; -o-transition: none}
+.MathJax_Processing {visibility: hidden; position: fixed; width: 0; height: 0; overflow: hidden}
+.MathJax_Processed {display: none!important}
+.MathJax_ExBox {display: block!important; overflow: hidden; width: 1px; height: 60ex; min-height: 0; max-height: none}
+.MathJax .MathJax_EmBox {display: block!important; overflow: hidden; width: 1px; height: 60em; min-height: 0; max-height: none}
+.MathJax .MathJax_HitBox {cursor: text; background: white; opacity: 0; filter: alpha(opacity=0)}
+.MathJax .MathJax_HitBox * {filter: none; opacity: 1; background: transparent}
+#MathJax_Tooltip * {filter: none; opacity: 1; background: transparent}
+@font-face {font-family: MathJax_Blank; src: url('about:blank')}
+.MathJax .noError {vertical-align: ; font-size: 90%; text-align: left; color: black; padding: 1px 3px; border: 1px solid}
+</style><script type="text/javascript" charset="utf-8" async="" data-requirecontext="_" data-requiremodule="nbextensions/widgets/widgets/js/init" src="./Untitled_files/init.js.다운로드"></script><script type="text/javascript" charset="utf-8" async="" data-requirecontext="_" data-requiremodule="nbextensions/widgets/notebook/js/widgetarea" src="./Untitled_files/widgetarea.js.다운로드"></script><script type="text/javascript" charset="utf-8" async="" data-requirecontext="_" data-requiremodule="nbextensions/widgets/widgets/js/manager" src="./Untitled_files/manager.js.다운로드"></script><script type="text/javascript" charset="utf-8" async="" data-requirecontext="_" data-requiremodule="nbextensions/widgets/widgets/js/widget" src="./Untitled_files/widget.js.다운로드"></script><script type="text/javascript" charset="utf-8" async="" data-requirecontext="_" data-requiremodule="nbextensions/widgets/widgets/js/widget_link" src="./Untitled_files/widget_link.js.다운로드"></script><script type="text/javascript" charset="utf-8" async="" data-requirecontext="_" data-requiremodule="nbextensions/widgets/widgets/js/widget_bool" src="./Untitled_files/widget_bool.js.다운로드"></script><script type="text/javascript" charset="utf-8" async="" data-requirecontext="_" data-requiremodule="nbextensions/widgets/widgets/js/widget_button" src="./Untitled_files/widget_button.js.다운로드"></script><script type="text/javascript" charset="utf-8" async="" data-requirecontext="_" data-requiremodule="nbextensions/widgets/widgets/js/widget_box" src="./Untitled_files/widget_box.js.다운로드"></script><script type="text/javascript" charset="utf-8" async="" data-requirecontext="_" data-requiremodule="nbextensions/widgets/widgets/js/widget_float" src="./Untitled_files/widget_float.js.다운로드"></script><script type="text/javascript" charset="utf-8" async="" data-requirecontext="_" data-requiremodule="nbextensions/widgets/widgets/js/widget_image" src="./Untitled_files/widget_image.js.다운로드"></script><script type="text/javascript" charset="utf-8" async="" data-requirecontext="_" data-requiremodule="nbextensions/widgets/widgets/js/widget_int" src="./Untitled_files/widget_int.js.다운로드"></script><script type="text/javascript" charset="utf-8" async="" data-requirecontext="_" data-requiremodule="nbextensions/widgets/widgets/js/widget_color" src="./Untitled_files/widget_color.js.다운로드"></script><script type="text/javascript" charset="utf-8" async="" data-requirecontext="_" data-requiremodule="nbextensions/widgets/widgets/js/widget_output" src="./Untitled_files/widget_output.js.다운로드"></script><script type="text/javascript" charset="utf-8" async="" data-requirecontext="_" data-requiremodule="nbextensions/widgets/widgets/js/widget_selection" src="./Untitled_files/widget_selection.js.다운로드"></script><script type="text/javascript" charset="utf-8" async="" data-requirecontext="_" data-requiremodule="nbextensions/widgets/widgets/js/widget_selectioncontainer" src="./Untitled_files/widget_selectioncontainer.js.다운로드"></script><script type="text/javascript" charset="utf-8" async="" data-requirecontext="_" data-requiremodule="nbextensions/widgets/widgets/js/widget_string" src="./Untitled_files/widget_string.js.다운로드"></script><script type="text/javascript" charset="utf-8" async="" data-requirecontext="_" data-requiremodule="nbextensions/widgets/widgets/js/widget_controller" src="./Untitled_files/widget_controller.js.다운로드"></script><script type="text/javascript" charset="utf-8" async="" data-requirecontext="_" data-requiremodule="backbone" src="./Untitled_files/backbone-min.js.다운로드"></script><link rel="stylesheet" type="text/css" href="./Untitled_files/widgets.min.css"></head>
+
+<body class="notebook_app command_mode" data-project="" data-base-url="/" data-ws-url="" data-notebook-name="Untitled.ipynb" data-notebook-path="Untitled.ipynb"><div style="visibility: hidden; overflow: hidden; position: absolute; top: 0px; height: 1px; width: auto; padding: 0px; border: 0px; margin: 0px; text-align: left; text-indent: 0px; text-transform: none; line-height: normal; letter-spacing: normal; word-spacing: normal;"><div id="MathJax_Hidden"></div></div><div id="MathJax_Message" style="display: none;"></div>
+
+<noscript>
+    &lt;div id='noscript'&gt;
+      IPython Notebook requires JavaScript.&lt;br&gt;
+      Please enable it to proceed.
+  &lt;/div&gt;
+</noscript>
+
+<div id="header" style="display: block;">
+  <div id="header-container" class="container">
+  <div id="ipython_notebook" class="nav navbar-brand pull-left"><a href="http://localhost:8888/tree" title="dashboard"><img src="./Untitled_files/logo.png" alt="Jupyter Notebook"></a></div>
+
+  
+  
+  
+
+    <span id="login_widget">
+      
+    </span>
+
+  
+
+  
+
+  
+
+
+<span id="save_widget" class="pull-left save_widget">
+    <span id="notebook_name" class="filename">Untitled</span>
+    <span class="checkpoint_status" title="Tue, May 9, 2017 10:07 PM">Last Checkpoint: a few seconds ago</span>
+    <span class="autosave_status">(autosaved)</span>
+</span>
+
+<span id="kernel_logo_widget">
+  <img class="current_kernel_logo" src="./Untitled_files/logo-64x64.png" style="display: inline;">
+</span>
+
+
+  </div>
+  <div class="header-bar"></div>
+
+  
+<div id="menubar-container" class="container">
+<div id="menubar">
+    <div id="menus" class="navbar navbar-default" role="navigation">
+        <div class="container-fluid">
+            <button type="button" class="btn btn-default navbar-btn navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+              <i class="fa fa-bars"></i>
+              <span class="navbar-text">Menu</span>
+            </button>
+            <p id="kernel_indicator" class="navbar-text indicator_area">
+              <span class="kernel_indicator_name">Python 2</span>
+              <i id="kernel_indicator_icon" class="kernel_idle_icon" title="Kernel Idle"></i>
+            </p>
+            <i id="readonly-indicator" class="navbar-text" title="This notebook is read-only" style="display: none;">
+                <span class="fa-stack">
+                    <i class="fa fa-save fa-stack-1x"></i>
+                    <i class="fa fa-ban fa-stack-2x text-danger"></i>
+                </span>
+            </i>
+            <i id="modal_indicator" class="navbar-text modal_indicator" title="Command Mode"></i>
+            <span id="notification_area"><div id="notification_kernel" class="notification_widget btn btn-xs navbar-btn undefined info" style="display: none;"><span></span></div><div id="notification_notebook" class="notification_widget btn btn-xs navbar-btn" style="display: none;"><span></span></div></span>
+            <div class="navbar-collapse collapse">
+              <ul class="nav navbar-nav">
+                <li class="dropdown"><a href="http://localhost:8888/notebooks/Untitled.ipynb#" class="dropdown-toggle" data-toggle="dropdown">File</a>
+                    <ul id="file_menu" class="dropdown-menu">
+                        <li id="new_notebook" class="dropdown-submenu">
+                            <a href="http://localhost:8888/notebooks/Untitled.ipynb#">New Notebook</a>
+                            <ul class="dropdown-menu" id="menu-new-notebook-submenu"><li id="new-notebook-submenu-python2"><a href="http://localhost:8888/notebooks/Untitled.ipynb#">Python 2</a></li></ul>
+                        </li>
+                        <li id="open_notebook" title="Opens a new window with the Dashboard view">
+                            <a href="http://localhost:8888/notebooks/Untitled.ipynb#">Open...</a></li>
+                        <!-- <hr/> -->
+                        <li class="divider"></li>
+                        <li id="copy_notebook" title="Open a copy of this notebook&#39;s contents and start a new kernel">
+                            <a href="http://localhost:8888/notebooks/Untitled.ipynb#">Make a Copy...</a></li>
+                        <li id="rename_notebook"><a href="http://localhost:8888/notebooks/Untitled.ipynb#">Rename...</a></li>
+                        <li id="save_checkpoint"><a href="http://localhost:8888/notebooks/Untitled.ipynb#">Save and Checkpoint</a></li>
+                        <!-- <hr/> -->
+                        <li class="divider"></li>
+                        <li id="restore_checkpoint" class="dropdown-submenu"><a href="http://localhost:8888/notebooks/Untitled.ipynb#">Revert to Checkpoint</a>
+                          <ul class="dropdown-menu"><li><a href="http://localhost:8888/notebooks/Untitled.ipynb#">Tuesday, May 9, 2017 10:07 PM</a></li></ul>
+                        </li>
+                        <li class="divider"></li>
+                        <li id="print_preview"><a href="http://localhost:8888/notebooks/Untitled.ipynb#">Print Preview</a></li>
+                        <li class="dropdown-submenu"><a href="http://localhost:8888/notebooks/Untitled.ipynb#">Download as</a>
+                            <ul class="dropdown-menu">
+                                <li id="download_ipynb"><a href="http://localhost:8888/notebooks/Untitled.ipynb#">IPython Notebook (.ipynb)</a></li>
+                                <li id="download_script"><a href="http://localhost:8888/notebooks/Untitled.ipynb#">Python (.py)</a></li>
+                                <li id="download_html"><a href="http://localhost:8888/notebooks/Untitled.ipynb#">HTML (.html)</a></li>
+                                <li id="download_markdown"><a href="http://localhost:8888/notebooks/Untitled.ipynb#">Markdown (.md)</a></li>
+                                <li id="download_rst"><a href="http://localhost:8888/notebooks/Untitled.ipynb#">reST (.rst)</a></li>
+                                <li id="download_pdf"><a href="http://localhost:8888/notebooks/Untitled.ipynb#">PDF via LaTeX (.pdf)</a></li>
+                            </ul>
+                        </li>
+                        <li class="divider"></li>
+                        <li id="trust_notebook" title="Trust the output of this notebook" class="disabled">
+                            <a href="http://localhost:8888/notebooks/Untitled.ipynb#">Trusted Notebook</a></li>
+                        <li class="divider"></li>
+                        <li id="kill_and_exit" title="Shutdown this notebook&#39;s kernel, and close this window">
+                            <a href="http://localhost:8888/notebooks/Untitled.ipynb#">Close and Halt</a></li>
+                    </ul>
+                </li>
+                <li class="dropdown"><a href="http://localhost:8888/notebooks/Untitled.ipynb#" class="dropdown-toggle" data-toggle="dropdown">Edit</a>
+                    <ul id="edit_menu" class="dropdown-menu">
+                        <li id="cut_cell"><a href="http://localhost:8888/notebooks/Untitled.ipynb#">Cut Cell</a></li>
+                        <li id="copy_cell"><a href="http://localhost:8888/notebooks/Untitled.ipynb#">Copy Cell</a></li>
+                        <li id="paste_cell_above" class="disabled"><a href="http://localhost:8888/notebooks/Untitled.ipynb#">Paste Cell Above</a></li>
+                        <li id="paste_cell_below" class="disabled"><a href="http://localhost:8888/notebooks/Untitled.ipynb#">Paste Cell Below</a></li>
+                        <li id="paste_cell_replace" class="disabled"><a href="http://localhost:8888/notebooks/Untitled.ipynb#">Paste Cell &amp; Replace</a></li>
+                        <li id="delete_cell"><a href="http://localhost:8888/notebooks/Untitled.ipynb#">Delete Cell</a></li>
+                        <li id="undelete_cell" class="disabled"><a href="http://localhost:8888/notebooks/Untitled.ipynb#">Undo Delete Cell</a></li>
+                        <li class="divider"></li>
+                        <li id="split_cell"><a href="http://localhost:8888/notebooks/Untitled.ipynb#">Split Cell</a></li>
+                        <li id="merge_cell_above"><a href="http://localhost:8888/notebooks/Untitled.ipynb#">Merge Cell Above</a></li>
+                        <li id="merge_cell_below"><a href="http://localhost:8888/notebooks/Untitled.ipynb#">Merge Cell Below</a></li>
+                        <li class="divider"></li>
+                        <li id="move_cell_up"><a href="http://localhost:8888/notebooks/Untitled.ipynb#">Move Cell Up</a></li>
+                        <li id="move_cell_down"><a href="http://localhost:8888/notebooks/Untitled.ipynb#">Move Cell Down</a></li>
+                        <li class="divider"></li>
+                        <li id="edit_nb_metadata"><a href="http://localhost:8888/notebooks/Untitled.ipynb#">Edit Notebook Metadata</a></li>
+                    </ul>
+                </li>
+                <li class="dropdown"><a href="http://localhost:8888/notebooks/Untitled.ipynb#" class="dropdown-toggle" data-toggle="dropdown">View</a>
+                    <ul id="view_menu" class="dropdown-menu">
+                        <li id="toggle_header" title="Show/Hide the IPython Notebook logo and notebook title (above menu bar)">
+                            <a href="http://localhost:8888/notebooks/Untitled.ipynb#">Toggle Header</a></li>
+                        <li id="toggle_toolbar" title="Show/Hide the action icons (below menu bar)">
+                            <a href="http://localhost:8888/notebooks/Untitled.ipynb#">Toggle Toolbar</a></li>
+                    </ul>
+                </li>
+                <li class="dropdown"><a href="http://localhost:8888/notebooks/Untitled.ipynb#" class="dropdown-toggle" data-toggle="dropdown">Insert</a>
+                    <ul id="insert_menu" class="dropdown-menu">
+                        <li id="insert_cell_above" title="Insert an empty Code cell above the currently active cell">
+                            <a href="http://localhost:8888/notebooks/Untitled.ipynb#">Insert Cell Above</a></li>
+                        <li id="insert_cell_below" title="Insert an empty Code cell below the currently active cell">
+                            <a href="http://localhost:8888/notebooks/Untitled.ipynb#">Insert Cell Below</a></li>
+                    </ul>
+                </li>
+                <li class="dropdown"><a href="http://localhost:8888/notebooks/Untitled.ipynb#" class="dropdown-toggle" data-toggle="dropdown">Cell</a>
+                    <ul id="cell_menu" class="dropdown-menu">
+                        <li id="run_cell" title="Run this cell, and move cursor to the next one">
+                            <a href="http://localhost:8888/notebooks/Untitled.ipynb#">Run</a></li>
+                        <li id="run_cell_select_below" title="Run this cell, select below">
+                            <a href="http://localhost:8888/notebooks/Untitled.ipynb#">Run and Select Below</a></li>
+                        <li id="run_cell_insert_below" title="Run this cell, insert below">
+                            <a href="http://localhost:8888/notebooks/Untitled.ipynb#">Run and Insert Below</a></li>
+                        <li id="run_all_cells" title="Run all cells in the notebook">
+                            <a href="http://localhost:8888/notebooks/Untitled.ipynb#">Run All</a></li>
+                        <li id="run_all_cells_above" title="Run all cells above (but not including) this cell">
+                            <a href="http://localhost:8888/notebooks/Untitled.ipynb#">Run All Above</a></li>
+                        <li id="run_all_cells_below" title="Run this cell and all cells below it">
+                            <a href="http://localhost:8888/notebooks/Untitled.ipynb#">Run All Below</a></li>
+                        <li class="divider"></li>
+                        <li id="change_cell_type" class="dropdown-submenu" title="All cells in the notebook have a cell type. By default, new cells are created as &#39;Code&#39; cells">
+                            <a href="http://localhost:8888/notebooks/Untitled.ipynb#">Cell Type</a>
+                            <ul class="dropdown-menu">
+                              <li id="to_code" title="Contents will be sent to the kernel for execution, and output will display in the footer of cell">
+                                  <a href="http://localhost:8888/notebooks/Untitled.ipynb#">Code</a></li>
+                              <li id="to_markdown" title="Contents will be rendered as HTML and serve as explanatory text">
+                                  <a href="http://localhost:8888/notebooks/Untitled.ipynb#">Markdown</a></li>
+                              <li id="to_raw" title="Contents will pass through nbconvert unmodified">
+                                  <a href="http://localhost:8888/notebooks/Untitled.ipynb#">Raw NBConvert</a></li>
+                            </ul>
+                        </li>
+                        <li class="divider"></li>
+                        <li id="current_outputs" class="dropdown-submenu"><a href="http://localhost:8888/notebooks/Untitled.ipynb#">Current Output</a>
+                            <ul class="dropdown-menu">
+                                <li id="toggle_current_output" title="Hide/Show the output of the current cell">
+                                    <a href="http://localhost:8888/notebooks/Untitled.ipynb#">Toggle</a>
+                                </li>
+                                <li id="toggle_current_output_scroll" title="Scroll the output of the current cell">
+                                    <a href="http://localhost:8888/notebooks/Untitled.ipynb#">Toggle Scrolling</a>
+                                </li>
+                                <li id="clear_current_output" title="Clear the output of the current cell">
+                                    <a href="http://localhost:8888/notebooks/Untitled.ipynb#">Clear</a>
+                                </li>
+                            </ul>
+                        </li>
+                        <li id="all_outputs" class="dropdown-submenu"><a href="http://localhost:8888/notebooks/Untitled.ipynb#">All Output</a>
+                            <ul class="dropdown-menu">
+                                <li id="toggle_all_output" title="Hide/Show the output of all cells">
+                                    <a href="http://localhost:8888/notebooks/Untitled.ipynb#">Toggle</a>
+                                </li>
+                                <li id="toggle_all_output_scroll" title="Scroll the output of all cells">
+                                    <a href="http://localhost:8888/notebooks/Untitled.ipynb#">Toggle Scrolling</a>
+                                </li>
+                                <li id="clear_all_output" title="Clear the output of all cells">
+                                    <a href="http://localhost:8888/notebooks/Untitled.ipynb#">Clear</a>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+                <li class="dropdown"><a href="http://localhost:8888/notebooks/Untitled.ipynb#" class="dropdown-toggle" data-toggle="dropdown">Kernel</a>
+                    <ul id="kernel_menu" class="dropdown-menu">
+                        <li id="int_kernel" title="Send KeyboardInterrupt (CTRL-C) to the Kernel">
+                            <a href="http://localhost:8888/notebooks/Untitled.ipynb#">Interrupt</a>
+                        </li>
+                        <li id="restart_kernel" title="Restart the Kernel">
+                            <a href="http://localhost:8888/notebooks/Untitled.ipynb#">Restart</a>
+                        </li>
+                        <li id="reconnect_kernel" title="Reconnect to the Kernel">
+                            <a href="http://localhost:8888/notebooks/Untitled.ipynb#">Reconnect</a>
+                        </li>
+                        <li class="divider"></li>
+                        <li id="menu-change-kernel" class="dropdown-submenu">
+                            <a href="http://localhost:8888/notebooks/Untitled.ipynb#">Change kernel</a>
+                            <ul class="dropdown-menu" id="menu-change-kernel-submenu"><li id="kernel-submenu-python2"><a href="http://localhost:8888/notebooks/Untitled.ipynb#">Python 2</a></li></ul>
+                        </li>
+                    </ul>
+                </li>
+                <li class="dropdown"><a href="http://localhost:8888/notebooks/Untitled.ipynb#" class="dropdown-toggle" data-toggle="dropdown">Help</a>
+                    <ul id="help_menu" class="dropdown-menu">
+                        <li id="notebook_tour" title="A quick tour of the notebook user interface"><a href="http://localhost:8888/notebooks/Untitled.ipynb#">User Interface Tour</a></li>
+                        <li id="keyboard_shortcuts" title="Opens a tooltip with all keyboard shortcuts"><a href="http://localhost:8888/notebooks/Untitled.ipynb#">Keyboard Shortcuts</a></li>
+                        <li class="divider"></li>
+                        
+
+                        
+                            
+                                <li><a href="http://nbviewer.ipython.org/github/ipython/ipython/blob/3.x/examples/Notebook/Index.ipynb" target="&quot;_blank&quot;" title="&quot;Opens" in="" a="" new="" window&#34;="">
+                                
+                                    <i class="fa fa-external-link menu-icon pull-right"></i>
+                                
+
+                                Notebook Help
+                                </a></li>
+                            
+                                <li><a href="https://help.github.com/articles/markdown-basics/" target="&quot;_blank&quot;" title="&quot;Opens" in="" a="" new="" window&#34;="">
+                                
+                                    <i class="fa fa-external-link menu-icon pull-right"></i>
+                                
+
+                                Markdown
+                                </a></li>
+                            
+                            
+                        
+                        <li id="kernel-help-links" class="divider"></li><li><a target="_blank" title="Opens in a new window" href="http://docs.python.org/2.7"><i class="fa fa-external-link menu-icon pull-right"></i><span>Python</span></a></li><li><a target="_blank" title="Opens in a new window" href="http://ipython.org/documentation.html"><i class="fa fa-external-link menu-icon pull-right"></i><span>IPython</span></a></li><li><a target="_blank" title="Opens in a new window" href="http://docs.scipy.org/doc/numpy/reference/"><i class="fa fa-external-link menu-icon pull-right"></i><span>NumPy</span></a></li><li><a target="_blank" title="Opens in a new window" href="http://docs.scipy.org/doc/scipy/reference/"><i class="fa fa-external-link menu-icon pull-right"></i><span>SciPy</span></a></li><li><a target="_blank" title="Opens in a new window" href="http://matplotlib.org/contents.html"><i class="fa fa-external-link menu-icon pull-right"></i><span>Matplotlib</span></a></li><li><a target="_blank" title="Opens in a new window" href="http://docs.sympy.org/latest/index.html"><i class="fa fa-external-link menu-icon pull-right"></i><span>SymPy</span></a></li><li><a target="_blank" title="Opens in a new window" href="http://pandas.pydata.org/pandas-docs/stable/"><i class="fa fa-external-link menu-icon pull-right"></i><span>pandas</span></a></li><li class="divider"></li>
+                        <li title="About IPython Notebook"><a id="notebook_about" href="http://localhost:8888/notebooks/Untitled.ipynb#">About</a></li>
+                    </ul>
+                </li>
+              </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="maintoolbar" class="navbar">
+  <div class="toolbar-inner navbar-inner navbar-nobg">
+    <div id="maintoolbar-container" class="container toolbar"><div class="btn-group" id="save-notbook"><button class="btn btn-default" title="Save and Checkpoint" data-jupyter-action="ipython.save-notebook"><i class="fa-save fa"></i></button></div><div class="btn-group" id="insert_above_below"><button class="btn btn-default" title="insert cell below" data-jupyter-action="ipython.insert-cell-after"><i class="fa-plus fa"></i></button></div><div class="btn-group" id="cut_copy_paste"><button class="btn btn-default" title="cut selected cell" data-jupyter-action="ipython.cut-selected-cell"><i class="fa-cut fa"></i></button><button class="btn btn-default" title="copy selected cell" data-jupyter-action="ipython.copy-selected-cell"><i class="fa-copy fa"></i></button><button class="btn btn-default" title="paste cell below" data-jupyter-action="ipython.paste-cell-after"><i class="fa-paste fa"></i></button></div><div class="btn-group" id="move_up_down"><button class="btn btn-default" title="move selected cell up" data-jupyter-action="ipython.move-selected-cell-up"><i class="fa-arrow-up fa"></i></button><button class="btn btn-default" title="move selected cell down" data-jupyter-action="ipython.move-selected-cell-down"><i class="fa-arrow-down fa"></i></button></div><div class="btn-group" id="run_int"><button class="btn btn-default" title="run cell, select below" data-jupyter-action="ipython.run-select-next"><i class="fa-step-forward fa"></i></button><button class="btn btn-default" title="interrupt kernel" data-jupyter-action="ipython.interrupt-kernel"><i class="fa-stop fa"></i></button><button class="btn btn-default" title="restart kernel" data-jupyter-action="ipython.restart-kernel"><i class="fa-repeat fa"></i></button></div><select id="cell_type" class="form-control select-xs"><option value="code">Code</option><option value="markdown">Markdown</option><option value="raw">Raw NBConvert</option><option value="heading">Heading</option></select><div class="btn-group"><span class="navbar-text">Cell Toolbar:</span><select id="ctb_select" class="form-control select-xs"><option value="">None</option><option value="Edit Metadata">Edit Metadata</option><option value="Raw Cell Format">Raw Cell Format</option><option value="Slideshow">Slideshow</option></select></div></div>
+  </div>
+</div>
+</div>
+
+<div class="lower-header-bar"></div>
+
+</div>
+
+<div id="site" style="height: 736px; display: block;">
+
+
+<div id="ipython-main-app">
+    <div id="notebook_panel">
+        <div id="notebook" tabindex="-1"><div class="container" id="notebook-container"><div class="cell code_cell rendered selected" tabindex="2"><div class="input"><div class="prompt input_prompt">In&nbsp;[2]:</div><div class="inner_cell"><div class="ctb_hideshow"><div class="celltoolbar"></div></div><div class="input_area"><div class="CodeMirror cm-s-ipython"><div style="overflow: hidden; position: relative; width: 3px; height: 0px; top: 480.142px; left: 257.486px;"><textarea autocorrect="off" autocapitalize="off" spellcheck="false" tabindex="0" style="position: absolute; padding: 0px; width: 1000px; height: 1em; outline: none;"></textarea></div><div class="CodeMirror-vscrollbar" cm-not-content="true" style="bottom: 0px;"><div style="min-width: 1px; height: 0px;"></div></div><div class="CodeMirror-hscrollbar" cm-not-content="true"><div style="height: 100%; min-height: 1px; width: 0px;"></div></div><div class="CodeMirror-scrollbar-filler" cm-not-content="true"></div><div class="CodeMirror-gutter-filler" cm-not-content="true"></div><div class="CodeMirror-scroll" tabindex="-1" draggable="false"><div class="CodeMirror-sizer" style="margin-left: 0px; min-width: 765.784px; margin-bottom: -16px; border-right-width: 14px; min-height: 518px; padding-right: 0px; padding-bottom: 0px;"><div style="position: relative; top: 0px;"><div class="CodeMirror-lines"><div style="position: relative; outline: none;"><div class="CodeMirror-measure"></div><div class="CodeMirror-measure"></div><div style="position: relative; z-index: 1;"></div><div class="CodeMirror-cursors"><div class="CodeMirror-cursor" style="left: 251.889px; top: 474.546px; height: 16.3636px;">&nbsp;</div></div><div class="CodeMirror-code"><pre class=" CodeMirror-line "><span style="padding-right: 0.1px;"><span class="cm-keyword">import</span> <span class="cm-variable">mxnet</span> <span class="cm-keyword">as</span> <span class="cm-variable">mx</span></span></pre><pre class=" CodeMirror-line "><span style="padding-right: 0.1px;"><span cm-text="">​</span></span></pre><pre class=" CodeMirror-line "><span style="padding-right: 0.1px;"><span class="cm-variable">time_step</span>=<span class="cm-number">28</span></span></pre><pre class=" CodeMirror-line "><span style="padding-right: 0.1px;"><span class="cm-variable">hidden_unit_number1</span> = <span class="cm-number">100</span></span></pre><pre class=" CodeMirror-line "><span style="padding-right: 0.1px;"><span class="cm-variable">hidden_unit_number2</span> = <span class="cm-number">100</span></span></pre><pre class=" CodeMirror-line "><span style="padding-right: 0.1px;"><span class="cm-variable">fc_number</span>=<span class="cm-number">100</span></span></pre><pre class=" CodeMirror-line "><span style="padding-right: 0.1px;"><span class="cm-variable">class_number</span>=<span class="cm-number">10</span></span></pre><pre class=" CodeMirror-line "><span style="padding-right: 0.1px;"><span cm-text="">​</span></span></pre><pre class=" CodeMirror-line "><span style="padding-right: 0.1px;"><span class="cm-variable">data</span> = <span class="cm-variable">mx</span>.<span class="cm-variable">sym</span>.<span class="cm-variable">Variable</span>(<span class="cm-string">'data'</span>)</span></pre><pre class=" CodeMirror-line "><span style="padding-right: 0.1px;"><span class="cm-variable">label</span> = <span class="cm-variable">mx</span>.<span class="cm-variable">sym</span>.<span class="cm-variable">Variable</span>(<span class="cm-string">'label'</span>)</span></pre><pre class=" CodeMirror-line "><span style="padding-right: 0.1px;"><span class="cm-variable">data</span> = <span class="cm-variable">mx</span>.<span class="cm-variable">sym</span>.<span class="cm-variable">transpose</span>(<span class="cm-variable">data</span>, <span class="cm-variable">axes</span>=(<span class="cm-number">1</span>, <span class="cm-number">0</span>, <span class="cm-number">2</span>))  <span class="cm-comment"># (time,batch,column)</span></span></pre><pre class=" CodeMirror-line "><span style="padding-right: 0.1px;"><span cm-text="">​</span></span></pre><pre class=" CodeMirror-line "><span style="padding-right: 0.1px;"><span class="cm-variable">lstm1</span> = <span class="cm-variable">mx</span>.<span class="cm-variable">rnn</span>.<span class="cm-variable">FusedRNNCell</span>(<span class="cm-variable">num_hidden</span>=<span class="cm-variable">hidden_unit_number1</span>, <span class="cm-variable">mode</span>=<span class="cm-string">"lstm"</span>, <span class="cm-variable">prefix</span>=<span class="cm-string">"lstm1_"</span>,<span class="cm-variable">get_next_state</span>=<span class="cm-builtin">True</span>)</span></pre><pre class=" CodeMirror-line "><span style="padding-right: 0.1px;"><span class="cm-variable">lstm2</span> = <span class="cm-variable">mx</span>.<span class="cm-variable">rnn</span>.<span class="cm-variable">FusedRNNCell</span>(<span class="cm-variable">num_hidden</span>=<span class="cm-variable">hidden_unit_number2</span>, <span class="cm-variable">mode</span>=<span class="cm-string">"lstm"</span>, <span class="cm-variable">prefix</span>=<span class="cm-string">"lstm2_"</span>,<span class="cm-variable">get_next_state</span>=<span class="cm-builtin">True</span>)</span></pre><pre class=" CodeMirror-line "><span style="padding-right: 0.1px;"><span cm-text="">​</span></span></pre><pre class=" CodeMirror-line "><span style="padding-right: 0.1px;"><span class="cm-comment">#if you see the unroll function</span></span></pre><pre class=" CodeMirror-line "><span style="padding-right: 0.1px;"><span class="cm-variable">layer1</span>, <span class="cm-variable">state1</span>= <span class="cm-variable">lstm1</span>.<span class="cm-variable">unroll</span>(<span class="cm-variable">length</span>=<span class="cm-variable">time_step</span>, <span class="cm-variable">inputs</span>=<span class="cm-variable">data</span>, <span class="cm-variable">merge_outputs</span>=<span class="cm-builtin">True</span>, <span class="cm-variable">layout</span>=<span class="cm-string">'TNC'</span>)</span></pre><pre class=" CodeMirror-line "><span style="padding-right: 0.1px;"><span class="cm-variable">layer1</span> = <span class="cm-variable">mx</span>.<span class="cm-variable">sym</span>.<span class="cm-variable">Dropout</span>(<span class="cm-variable">layer1</span>, <span class="cm-variable">p</span>=<span class="cm-number">0.3</span>)</span></pre><pre class=" CodeMirror-line "><span style="padding-right: 0.1px;"><span class="cm-variable">layer2</span>, <span class="cm-variable">state2</span> = <span class="cm-variable">lstm2</span>.<span class="cm-variable">unroll</span>(<span class="cm-variable">length</span>=<span class="cm-variable">time_step</span>, <span class="cm-variable">inputs</span>=<span class="cm-variable">layer1</span>, <span class="cm-variable">merge_outputs</span>=<span class="cm-builtin">True</span>,<span class="cm-variable">layout</span>=<span class="cm-string">"TNC"</span>)</span></pre><pre class=" CodeMirror-line "><span style="padding-right: 0.1px;"><span class="cm-variable">rnn_output</span>= <span class="cm-variable">mx</span>.<span class="cm-variable">sym</span>.<span class="cm-variable">Reshape</span>(<span class="cm-variable">state2</span>[<span class="cm-operator">-</span><span class="cm-number">1</span>], <span class="cm-variable">shape</span>=(<span class="cm-operator">-</span><span class="cm-number">1</span>,<span class="cm-variable">hidden_unit_number1</span>))</span></pre><pre class=" CodeMirror-line "><span style="padding-right: 0.1px;"><span cm-text="">​</span></span></pre><pre class=" CodeMirror-line "><span style="padding-right: 0.1px;"><span class="cm-string">'''FullyConnected Layer'''</span></span></pre><pre class=" CodeMirror-line "><span style="padding-right: 0.1px;"><span class="cm-variable">affine1</span> = <span class="cm-variable">mx</span>.<span class="cm-variable">sym</span>.<span class="cm-variable">FullyConnected</span>(<span class="cm-variable">data</span>=<span class="cm-variable">rnn_output</span>, <span class="cm-variable">num_hidden</span>=<span class="cm-variable">fc_number</span>, <span class="cm-variable">name</span>=<span class="cm-string">'affine1'</span>)</span></pre><pre class=" CodeMirror-line "><span style="padding-right: 0.1px;"><span class="cm-variable">act1</span> = <span class="cm-variable">mx</span>.<span class="cm-variable">sym</span>.<span class="cm-variable">Activation</span>(<span class="cm-variable">data</span>=<span class="cm-variable">affine1</span>, <span class="cm-variable">act_type</span>=<span class="cm-string">'sigmoid'</span>, <span class="cm-variable">name</span>=<span class="cm-string">'sigmoid1'</span>)</span></pre><pre class=" CodeMirror-line "><span style="padding-right: 0.1px;"><span class="cm-variable">affine2</span> = <span class="cm-variable">mx</span>.<span class="cm-variable">sym</span>.<span class="cm-variable">FullyConnected</span>(<span class="cm-variable">data</span>=<span class="cm-variable">act1</span>, <span class="cm-variable">num_hidden</span>=<span class="cm-variable">class_number</span>, <span class="cm-variable">name</span> = <span class="cm-string">'affine2'</span>)</span></pre><pre class=" CodeMirror-line "><span style="padding-right: 0.1px;"><span class="cm-variable">output</span> = <span class="cm-variable">mx</span>.<span class="cm-variable">sym</span>.<span class="cm-variable">SoftmaxOutput</span>(<span class="cm-variable">data</span>=<span class="cm-variable">affine2</span>, <span class="cm-variable">label</span>=<span class="cm-variable">label</span>, <span class="cm-variable">name</span>=<span class="cm-string">'softmax'</span>)</span></pre><pre class=" CodeMirror-line "><span style="padding-right: 0.1px;"><span cm-text="">​</span></span></pre><pre class=" CodeMirror-line "><span style="padding-right: 0.1px;"><span cm-text="">​</span></span></pre><pre class=" CodeMirror-line "><span style="padding-right: 0.1px;"><span class="cm-comment"># We visualize the network structure with output size (the batch_size is ignored.)</span></span></pre><pre class=" CodeMirror-line "><span style="padding-right: 0.1px;"><span class="cm-variable">shape</span> = <span class=" CodeMirror-matchingbracket">{</span><span class="cm-string">"data"</span>: (<span class="cm-variable">time_step</span>,<span class="cm-number">100</span>,<span class="cm-number">28</span>)<span class=" CodeMirror-matchingbracket">}</span></span></pre><pre class=" CodeMirror-line "><span style="padding-right: 0.1px;"><span class="cm-variable">mx</span>.<span class="cm-variable">viz</span>.<span class="cm-variable">plot_network</span>(<span class="cm-variable">symbol</span>=<span class="cm-variable">output</span>,<span class="cm-variable">shape</span>=<span class="cm-variable">shape</span>)<span class="cm-comment">#The diagram can be found on the Jupiter notebook.</span></span></pre></div></div></div></div></div><div style="position: absolute; height: 14px; width: 1px; top: 518px;"></div><div class="CodeMirror-gutters" style="display: none; height: 533px;"></div></div></div></div></div></div><div class="widget-area" style="display: none;"><div class="prompt"><button class="close">×</button></div><div class="widget-subarea"></div></div><div class="output_wrapper"><div class="out_prompt_overlay prompt" title="click to scroll output; double click to hide" style=""></div><div class="output" style=""><div class="output_area"><div class="prompt output_prompt">Out[2]:</div><div class="output_subarea output_svg output_result"><div style="width: 606pt; height: 1047pt;"><svg width="606pt" height="1047pt" viewBox="0.00 0.00 606.00 1047.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" style="width: 100%; height: 100%;">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 1043)">
+<title>plot</title>
+<polygon fill="white" stroke="none" points="-4,4 -4,-1043 602,-1043 602,4 -4,4"></polygon>
+<!-- data -->
+<g id="node1" class="node"><title>data</title>
+<ellipse fill="#8dd3c7" stroke="black" cx="47" cy="-29" rx="47" ry="29"></ellipse>
+<text text-anchor="middle" x="47" y="-25.3" font-family="Times New Roman,serif" font-size="14.00">data</text>
+</g>
+<!-- transpose1 -->
+<g id="node2" class="node"><title>transpose1</title>
+<polygon fill="#fccde5" stroke="black" points="94,-167 -7.10543e-015,-167 -7.10543e-015,-109 94,-109 94,-167"></polygon>
+<text text-anchor="middle" x="47" y="-134.3" font-family="Times New Roman,serif" font-size="14.00">transpose1</text>
+</g>
+<!-- transpose1&#45;&gt;data -->
+<g id="edge1" class="edge"><title>transpose1-&gt;data</title>
+<path fill="none" stroke="black" d="M47,-98.5824C47,-85.2841 47,-70.632 47,-58.2967"></path>
+<polygon fill="black" stroke="black" points="47,-108.887 42.5001,-98.887 47,-103.887 47.0001,-98.887 47.0001,-98.887 47.0001,-98.887 47,-103.887 51.5001,-98.8871 47,-108.887 47,-108.887"></polygon>
+<text text-anchor="middle" x="67.5" y="-79.8" font-family="Times New Roman,serif" font-size="14.00">100x28</text>
+</g>
+<!-- lstm1_parameters -->
+<g id="node3" class="node"><title>lstm1_parameters</title>
+<ellipse fill="#8dd3c7" stroke="black" cx="159" cy="-138" rx="47" ry="29"></ellipse>
+<text text-anchor="middle" x="159" y="-134.3" font-family="Times New Roman,serif" font-size="14.00">lstm1_parameters</text>
+</g>
+<!-- lstm1_begin_state_0 -->
+<g id="node4" class="node"><title>lstm1_begin_state_0</title>
+<polygon fill="#fccde5" stroke="black" points="318,-167 224,-167 224,-109 318,-109 318,-167"></polygon>
+<text text-anchor="middle" x="271" y="-134.3" font-family="Times New Roman,serif" font-size="14.00">lstm1_begin_state_0</text>
+</g>
+<!-- lstm1_begin_state_1 -->
+<g id="node5" class="node"><title>lstm1_begin_state_1</title>
+<polygon fill="#fccde5" stroke="black" points="430,-167 336,-167 336,-109 430,-109 430,-167"></polygon>
+<text text-anchor="middle" x="383" y="-134.3" font-family="Times New Roman,serif" font-size="14.00">lstm1_begin_state_1</text>
+</g>
+<!-- lstm1_rnn -->
+<g id="node6" class="node"><title>lstm1_rnn</title>
+<polygon fill="#fccde5" stroke="black" points="262,-276 168,-276 168,-218 262,-218 262,-276"></polygon>
+<text text-anchor="middle" x="215" y="-243.3" font-family="Times New Roman,serif" font-size="14.00">lstm1_rnn</text>
+</g>
+<!-- lstm1_rnn&#45;&gt;transpose1 -->
+<g id="edge2" class="edge"><title>lstm1_rnn-&gt;transpose1</title>
+<path fill="none" stroke="black" d="M162.29,-212.429C139.423,-197.864 112.946,-181.001 91.1366,-167.111"></path>
+<polygon fill="black" stroke="black" points="170.86,-217.887 160.008,-216.311 166.643,-215.201 162.425,-212.515 162.425,-212.515 162.425,-212.515 166.643,-215.201 164.843,-208.719 170.86,-217.887 170.86,-217.887"></polygon>
+<text text-anchor="middle" x="159" y="-188.8" font-family="Times New Roman,serif" font-size="14.00">28x28</text>
+</g>
+<!-- lstm1_rnn&#45;&gt;lstm1_parameters -->
+<g id="edge3" class="edge"><title>lstm1_rnn-&gt;lstm1_parameters</title>
+<path fill="none" stroke="black" d="M195.567,-208.87C188.153,-194.704 179.853,-178.844 173.036,-165.819"></path>
+<polygon fill="black" stroke="black" points="200.287,-217.887 191.663,-211.114 197.968,-213.457 195.65,-209.027 195.65,-209.027 195.65,-209.027 197.968,-213.457 199.637,-206.94 200.287,-217.887 200.287,-217.887"></polygon>
+</g>
+<!-- lstm1_rnn&#45;&gt;lstm1_begin_state_0 -->
+<g id="edge4" class="edge"><title>lstm1_rnn-&gt;lstm1_begin_state_0</title>
+<path fill="none" stroke="black" d="M234.488,-208.764C241.61,-195.157 249.543,-179.998 256.19,-167.297"></path>
+<polygon fill="black" stroke="black" points="229.713,-217.887 230.363,-206.94 232.032,-213.457 234.35,-209.027 234.35,-209.027 234.35,-209.027 232.032,-213.457 238.337,-211.114 229.713,-217.887 229.713,-217.887"></polygon>
+<text text-anchor="middle" x="267.5" y="-188.8" font-family="Times New Roman,serif" font-size="14.00">28x100</text>
+</g>
+<!-- lstm1_rnn&#45;&gt;lstm1_begin_state_1 -->
+<g id="edge5" class="edge"><title>lstm1_rnn-&gt;lstm1_begin_state_1</title>
+<path fill="none" stroke="black" d="M271.006,-213.006C278.107,-208.687 285.247,-204.276 292,-200 308.551,-189.519 326.514,-177.597 342.075,-167.091"></path>
+<polygon fill="black" stroke="black" points="262.065,-218.411 268.295,-209.387 266.344,-215.825 270.623,-213.238 270.623,-213.238 270.623,-213.238 266.344,-215.825 272.951,-217.089 262.065,-218.411 262.065,-218.411"></polygon>
+<text text-anchor="middle" x="335.5" y="-188.8" font-family="Times New Roman,serif" font-size="14.00">28x100</text>
+</g>
+<!-- dropout0 -->
+<g id="node7" class="node"><title>dropout0</title>
+<polygon fill="#fccde5" stroke="black" points="262,-385 168,-385 168,-327 262,-327 262,-385"></polygon>
+<text text-anchor="middle" x="215" y="-352.3" font-family="Times New Roman,serif" font-size="14.00">dropout0</text>
+</g>
+<!-- dropout0&#45;&gt;lstm1_rnn -->
+<g id="edge6" class="edge"><title>dropout0-&gt;lstm1_rnn</title>
+<path fill="none" stroke="black" d="M215,-316.582C215,-303.284 215,-288.632 215,-276.297"></path>
+<polygon fill="black" stroke="black" points="215,-326.887 210.5,-316.887 215,-321.887 215,-316.887 215,-316.887 215,-316.887 215,-321.887 219.5,-316.887 215,-326.887 215,-326.887"></polygon>
+<text text-anchor="middle" x="235.5" y="-297.8" font-family="Times New Roman,serif" font-size="14.00">28x100</text>
+</g>
+<!-- lstm2_parameters -->
+<g id="node8" class="node"><title>lstm2_parameters</title>
+<ellipse fill="#8dd3c7" stroke="black" cx="327" cy="-356" rx="47" ry="29"></ellipse>
+<text text-anchor="middle" x="327" y="-352.3" font-family="Times New Roman,serif" font-size="14.00">lstm2_parameters</text>
+</g>
+<!-- lstm2_begin_state_0 -->
+<g id="node9" class="node"><title>lstm2_begin_state_0</title>
+<polygon fill="#fccde5" stroke="black" points="486,-385 392,-385 392,-327 486,-327 486,-385"></polygon>
+<text text-anchor="middle" x="439" y="-352.3" font-family="Times New Roman,serif" font-size="14.00">lstm2_begin_state_0</text>
+</g>
+<!-- lstm2_begin_state_1 -->
+<g id="node10" class="node"><title>lstm2_begin_state_1</title>
+<polygon fill="#fccde5" stroke="black" points="598,-385 504,-385 504,-327 598,-327 598,-385"></polygon>
+<text text-anchor="middle" x="551" y="-352.3" font-family="Times New Roman,serif" font-size="14.00">lstm2_begin_state_1</text>
+</g>
+<!-- lstm2_rnn -->
+<g id="node11" class="node"><title>lstm2_rnn</title>
+<polygon fill="#fccde5" stroke="black" points="430,-494 336,-494 336,-436 430,-436 430,-494"></polygon>
+<text text-anchor="middle" x="383" y="-461.3" font-family="Times New Roman,serif" font-size="14.00">lstm2_rnn</text>
+</g>
+<!-- lstm2_rnn&#45;&gt;dropout0 -->
+<g id="edge7" class="edge"><title>lstm2_rnn-&gt;dropout0</title>
+<path fill="none" stroke="black" d="M327.186,-430.578C320.36,-426.385 313.503,-422.122 307,-418 290.489,-407.536 272.53,-395.726 256.898,-385.305"></path>
+<polygon fill="black" stroke="black" points="335.786,-435.836 324.907,-434.459 331.52,-433.228 327.254,-430.62 327.254,-430.62 327.254,-430.62 331.52,-433.228 329.601,-426.781 335.786,-435.836 335.786,-435.836"></polygon>
+<text text-anchor="middle" x="327.5" y="-406.8" font-family="Times New Roman,serif" font-size="14.00">28x100</text>
+</g>
+<!-- lstm2_rnn&#45;&gt;lstm2_parameters -->
+<g id="edge8" class="edge"><title>lstm2_rnn-&gt;lstm2_parameters</title>
+<path fill="none" stroke="black" d="M363.567,-426.87C356.153,-412.704 347.853,-396.844 341.036,-383.819"></path>
+<polygon fill="black" stroke="black" points="368.287,-435.887 359.663,-429.114 365.968,-431.457 363.65,-427.027 363.65,-427.027 363.65,-427.027 365.968,-431.457 367.637,-424.94 368.287,-435.887 368.287,-435.887"></polygon>
+</g>
+<!-- lstm2_rnn&#45;&gt;lstm2_begin_state_0 -->
+<g id="edge9" class="edge"><title>lstm2_rnn-&gt;lstm2_begin_state_0</title>
+<path fill="none" stroke="black" d="M402.488,-426.764C409.61,-413.157 417.543,-397.998 424.19,-385.297"></path>
+<polygon fill="black" stroke="black" points="397.713,-435.887 398.363,-424.94 400.032,-431.457 402.35,-427.027 402.35,-427.027 402.35,-427.027 400.032,-431.457 406.337,-429.114 397.713,-435.887 397.713,-435.887"></polygon>
+<text text-anchor="middle" x="435.5" y="-406.8" font-family="Times New Roman,serif" font-size="14.00">28x100</text>
+</g>
+<!-- lstm2_rnn&#45;&gt;lstm2_begin_state_1 -->
+<g id="edge10" class="edge"><title>lstm2_rnn-&gt;lstm2_begin_state_1</title>
+<path fill="none" stroke="black" d="M439.006,-431.006C446.107,-426.687 453.247,-422.276 460,-418 476.551,-407.519 494.514,-395.597 510.075,-385.091"></path>
+<polygon fill="black" stroke="black" points="430.065,-436.411 436.295,-427.387 434.344,-433.825 438.623,-431.238 438.623,-431.238 438.623,-431.238 434.344,-433.825 440.951,-435.089 430.065,-436.411 430.065,-436.411"></polygon>
+<text text-anchor="middle" x="502.5" y="-406.8" font-family="Times New Roman,serif" font-size="14.00">28x100</text>
+</g>
+<!-- reshape0 -->
+<g id="node12" class="node"><title>reshape0</title>
+<polygon fill="#fdb462" stroke="black" points="430,-603 336,-603 336,-545 430,-545 430,-603"></polygon>
+<text text-anchor="middle" x="383" y="-570.3" font-family="Times New Roman,serif" font-size="14.00">reshape0</text>
+</g>
+<!-- reshape0&#45;&gt;lstm2_rnn -->
+<g id="edge11" class="edge"><title>reshape0-&gt;lstm2_rnn</title>
+<path fill="none" stroke="black" d="M383,-534.582C383,-521.284 383,-506.632 383,-494.297"></path>
+<polygon fill="black" stroke="black" points="383,-544.887 378.5,-534.887 383,-539.887 383,-534.887 383,-534.887 383,-534.887 383,-539.887 387.5,-534.887 383,-544.887 383,-544.887"></polygon>
+<text text-anchor="middle" x="403.5" y="-515.8" font-family="Times New Roman,serif" font-size="14.00">28x100</text>
+</g>
+<!-- affine1 -->
+<g id="node13" class="node"><title>affine1</title>
+<polygon fill="#fb8072" stroke="black" points="430,-712 336,-712 336,-654 430,-654 430,-712"></polygon>
+<text text-anchor="middle" x="383" y="-686.8" font-family="Times New Roman,serif" font-size="14.00">FullyConnected</text>
+<text text-anchor="middle" x="383" y="-671.8" font-family="Times New Roman,serif" font-size="14.00">100</text>
+</g>
+<!-- affine1&#45;&gt;reshape0 -->
+<g id="edge12" class="edge"><title>affine1-&gt;reshape0</title>
+<path fill="none" stroke="black" d="M383,-643.582C383,-630.284 383,-615.632 383,-603.297"></path>
+<polygon fill="black" stroke="black" points="383,-653.887 378.5,-643.887 383,-648.887 383,-643.887 383,-643.887 383,-643.887 383,-648.887 387.5,-643.887 383,-653.887 383,-653.887"></polygon>
+<text text-anchor="middle" x="393.5" y="-624.8" font-family="Times New Roman,serif" font-size="14.00">100</text>
+</g>
+<!-- sigmoid1 -->
+<g id="node14" class="node"><title>sigmoid1</title>
+<polygon fill="#ffffb3" stroke="black" points="430,-821 336,-821 336,-763 430,-763 430,-821"></polygon>
+<text text-anchor="middle" x="383" y="-795.8" font-family="Times New Roman,serif" font-size="14.00">Activation</text>
+<text text-anchor="middle" x="383" y="-780.8" font-family="Times New Roman,serif" font-size="14.00">sigmoid</text>
+</g>
+<!-- sigmoid1&#45;&gt;affine1 -->
+<g id="edge13" class="edge"><title>sigmoid1-&gt;affine1</title>
+<path fill="none" stroke="black" d="M383,-752.582C383,-739.284 383,-724.632 383,-712.297"></path>
+<polygon fill="black" stroke="black" points="383,-762.887 378.5,-752.887 383,-757.887 383,-752.887 383,-752.887 383,-752.887 383,-757.887 387.5,-752.887 383,-762.887 383,-762.887"></polygon>
+<text text-anchor="middle" x="393.5" y="-733.8" font-family="Times New Roman,serif" font-size="14.00">100</text>
+</g>
+<!-- affine2 -->
+<g id="node15" class="node"><title>affine2</title>
+<polygon fill="#fb8072" stroke="black" points="430,-930 336,-930 336,-872 430,-872 430,-930"></polygon>
+<text text-anchor="middle" x="383" y="-904.8" font-family="Times New Roman,serif" font-size="14.00">FullyConnected</text>
+<text text-anchor="middle" x="383" y="-889.8" font-family="Times New Roman,serif" font-size="14.00">10</text>
+</g>
+<!-- affine2&#45;&gt;sigmoid1 -->
+<g id="edge14" class="edge"><title>affine2-&gt;sigmoid1</title>
+<path fill="none" stroke="black" d="M383,-861.582C383,-848.284 383,-833.632 383,-821.297"></path>
+<polygon fill="black" stroke="black" points="383,-871.887 378.5,-861.887 383,-866.887 383,-861.887 383,-861.887 383,-861.887 383,-866.887 387.5,-861.887 383,-871.887 383,-871.887"></polygon>
+<text text-anchor="middle" x="393.5" y="-842.8" font-family="Times New Roman,serif" font-size="14.00">100</text>
+</g>
+<!-- label -->
+<g id="node16" class="node"><title>label</title>
+<ellipse fill="#8dd3c7" stroke="black" cx="495" cy="-901" rx="47" ry="29"></ellipse>
+<text text-anchor="middle" x="495" y="-897.3" font-family="Times New Roman,serif" font-size="14.00">label</text>
+</g>
+<!-- softmax -->
+<g id="node17" class="node"><title>softmax</title>
+<polygon fill="#fccde5" stroke="black" points="506,-1039 412,-1039 412,-981 506,-981 506,-1039"></polygon>
+<text text-anchor="middle" x="459" y="-1006.3" font-family="Times New Roman,serif" font-size="14.00">softmax</text>
+</g>
+<!-- softmax&#45;&gt;affine2 -->
+<g id="edge15" class="edge"><title>softmax-&gt;affine2</title>
+<path fill="none" stroke="black" d="M433.108,-972.547C423.302,-958.741 412.294,-943.243 403.099,-930.297"></path>
+<polygon fill="black" stroke="black" points="439.032,-980.887 429.572,-975.34 436.137,-976.811 433.241,-972.734 433.241,-972.734 433.241,-972.734 436.137,-976.811 436.91,-970.128 439.032,-980.887 439.032,-980.887"></polygon>
+<text text-anchor="middle" x="433" y="-951.8" font-family="Times New Roman,serif" font-size="14.00">10</text>
+</g>
+<!-- softmax&#45;&gt;label -->
+<g id="edge16" class="edge"><title>softmax-&gt;label</title>
+<path fill="none" stroke="black" d="M471.713,-971.215C476.333,-957.483 481.463,-942.236 485.729,-929.555"></path>
+<polygon fill="black" stroke="black" points="468.459,-980.887 467.382,-969.974 470.053,-976.148 471.647,-971.409 471.647,-971.409 471.647,-971.409 470.053,-976.148 475.913,-972.844 468.459,-980.887 468.459,-980.887"></polygon>
+</g>
+</g>
+</svg></div></div></div></div><div class="btn btn-default output_collapsed" title="click to expand output" style="display: none;">. . .</div></div></div><div class="cell code_cell rendered unselected" tabindex="2"><div class="input"><div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div><div class="inner_cell"><div class="ctb_hideshow"><div class="celltoolbar"></div></div><div class="input_area"><div class="CodeMirror cm-s-ipython"><div style="overflow: hidden; position: relative; width: 3px; height: 0px; top: 5.59668px; left: 5.59659px;"><textarea autocorrect="off" autocapitalize="off" spellcheck="false" tabindex="0" style="position: absolute; padding: 0px; width: 1000px; height: 1em; outline: none;"></textarea></div><div class="CodeMirror-vscrollbar" cm-not-content="true"><div style="min-width: 1px; height: 0px;"></div></div><div class="CodeMirror-hscrollbar" cm-not-content="true"><div style="height: 100%; min-height: 1px; width: 0px;"></div></div><div class="CodeMirror-scrollbar-filler" cm-not-content="true"></div><div class="CodeMirror-gutter-filler" cm-not-content="true"></div><div class="CodeMirror-scroll" tabindex="-1"><div class="CodeMirror-sizer" style="margin-left: 0px; min-width: 3px; margin-bottom: -16px; border-right-width: 14px; min-height: 27px; padding-right: 0px; padding-bottom: 0px;"><div style="position: relative; top: 0px;"><div class="CodeMirror-lines"><div style="position: relative; outline: none;"><div class="CodeMirror-measure"></div><div class="CodeMirror-measure"></div><div style="position: relative; z-index: 1;"></div><div class="CodeMirror-cursors"><div class="CodeMirror-cursor" style="left: 0px; top: 0px; height: 16.3636px;">&nbsp;</div></div><div class="CodeMirror-code"><pre class=" CodeMirror-line "><span style="padding-right: 0.1px;"><span cm-text="">​</span></span></pre></div></div></div></div></div><div style="position: absolute; height: 14px; width: 1px; top: 27px;"></div><div class="CodeMirror-gutters" style="display: none; height: 42px;"></div></div></div></div></div></div><div class="widget-area" style="display: none;"><div class="prompt"><button class="close">×</button></div><div class="widget-subarea"></div></div><div class="output_wrapper"><div class="out_prompt_overlay prompt" title="click to expand output; double click to hide output" style="display: none;"></div><div class="output" style="display: none;"></div><div class="btn btn-default output_collapsed" title="click to expand output" style="display: none;">. . .</div></div></div></div><div class="end_space"></div></div>
+        <div id="tooltip" class="ipython_tooltip" style="display:none"><div class="tooltipbuttons"><a href="http://localhost:8888/notebooks/Untitled.ipynb#" role="button" class="ui-button"><span class="ui-icon ui-icon-close">Close</span></a><a href="http://localhost:8888/notebooks/Untitled.ipynb#" class="ui-corner-all" role="button" id="expanbutton" title="Grow the tooltip vertically (press shift-tab twice)"><span class="ui-icon ui-icon-plus">Expand</span></a><a href="http://localhost:8888/notebooks/Untitled.ipynb#" role="button" class="ui-button" title="show the current docstring in pager (press shift-tab 4 times)"><span class="ui-icon ui-icon-arrowstop-l-n">Open in Pager</span></a><a href="http://localhost:8888/notebooks/Untitled.ipynb#" role="button" class="ui-button" title="Tooltip will linger for 10 seconds while you type" style="display: none;"><span class="ui-icon ui-icon-clock">Close</span></a></div><div class="pretooltiparrow"></div><div class="tooltiptext smalltooltip"></div></div>
+    </div>
+</div>
+
+
+
+</div>
+
+
+
+<div id="pager" class="ui-resizable">
+    <div id="pager-contents">
+        <div id="pager-container" class="container"></div>
+    </div>
+    <div id="pager-button-area"><a role="button" title="Open the pager in an external window" class="ui-button"><span class="ui-icon ui-icon-extlink"></span></a><a role="button" title="Close the pager" class="ui-button"><span class="ui-icon ui-icon-close"></span></a></div>
+<div class="ui-resizable-handle ui-resizable-n" style="z-index: 90;"></div></div>
+
+
+
+
+
+
+<script type="text/javascript">
+    sys_info = {"os_name": "nt", "platform": "Windows-8-6.2.9200", "default_encoding": "cp949", "notebook_path": "C:\\WinPython-64bit-2.7.10.3\\python-2.7.10.amd64\\lib\\site-packages\\notebook", "sys_platform": "win32", "sys_version": "2.7.10 (default, May 23 2015, 09:44:00) [MSC v.1500 64 bit (AMD64)]", "notebook_version": "4.0.6", "commit_source": "", "commit_hash": "", "sys_executable": "C:\\WinPython-64bit-2.7.10.3\\python-2.7.10.amd64\\python.exe"};
+</script>
+
+<script src="./Untitled_files/encoding.js.다운로드" charset="utf-8"></script>
+
+<script src="./Untitled_files/main.min.js.다운로드" charset="utf-8"></script>
+
+
+
+
+
+<div style="position: absolute; width: 0px; height: 0px; overflow: hidden; padding: 0px; border: 0px; margin: 0px;"><div id="MathJax_Font_Test" style="position: absolute; visibility: hidden; top: 0px; left: 0px; width: auto; padding: 0px; border: 0px; margin: 0px; white-space: nowrap; text-align: left; text-indent: 0px; text-transform: none; line-height: normal; letter-spacing: normal; word-spacing: normal; font-size: 40px; font-weight: normal; font-style: normal;"></div></div></body></html>
