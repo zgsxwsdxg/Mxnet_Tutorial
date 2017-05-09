@@ -184,12 +184,13 @@ def NeuralNet(epoch,batch_size,save_period):
             
         '''
 
+        '''tensorboard_part'''
+        summary_writer.add_scalar(name="cost", scalar_value=cost, global_step=epoch)
+
         #Save the data
         if epoch%save_period==0:
             print('Saving weights')
             mod.save_params("weights/mod-{}.params" .format(epoch))
-            '''tensorboard_part'''
-            summary_writer.add_scalar(name="cost", scalar_value=cost, global_step=epoch)
 
     '''tensorboard_part'''
     summary_writer.close()

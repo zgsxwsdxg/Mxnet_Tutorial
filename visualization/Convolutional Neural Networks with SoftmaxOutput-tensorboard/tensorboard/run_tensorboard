@@ -1,3 +1,5 @@
-tensorboard --logdir=tensorboard --logdir=/tmp/sample --port=6006
+'''run the tensorboard'''
+
+tensorboard --logdir=tensorboard --logdir=./path --port=6006
 
 
