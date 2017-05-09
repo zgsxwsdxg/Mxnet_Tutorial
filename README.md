@@ -81,19 +81,18 @@ print mx.asnumpy(out)
         ```
         ```python
         '''Issue'''
-
         The 80th line of the tensorboard file in the path '/home/user/anaconda2/bin' should be modified as shown below.
-
+        ```
+        ```python
         <code>
         for mod in package_path:
             module_space = mod + '/tensorboard/tensorboard' + '.runfiles'
             if os.path.isdir(module_space):
                 return module_space
         ```
-        
         * If you want to see the results immediately, 
         `Write the following script in the terminal window` where the event file exists.
-
+        
             * `tensorboard --logdir=tensorboard --logdir=./ --port=6006`
 
 
