@@ -440,5 +440,5 @@
     53
   ], 
   "heads": [[44, 0, 0]], 
-  "attrs": {"mxnet_version": ["int", 904]}
+  "attrs": {"mxnet_version": ["int", 905]}
 }

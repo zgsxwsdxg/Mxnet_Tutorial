@@ -67,12 +67,11 @@ print mx.asnumpy(out)
 
         import mxnet as mx  
         ...
-
         ...
         mx.viz.plot_network(symbol=mlp, shape=shape)
         ```
         * `To view only the results, run the 'xxx.html' file with 'Chrome' or 'Explorer'`
-    * [***mxnet with tensorboard Only available on Linux***](https://github.com/JONGGON/Mxnet_Tutorial/tree/master/visualization/tensorboard/Convolutional%20Neural%20Networks%20with%20SoftmaxOutput-tensorboard)
+    * [***mxnet with tensorboard Only available on Linux***](https://github.com/JONGGON/Mxnet_Tutorial/tree/master/visualization/tensorboard-linux/Convolutional%20Neural%20Networks%20with%20SoftmaxOutput-tensorboard)
         
         ```python
         pip install tensorboard   
