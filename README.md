@@ -2,7 +2,7 @@
 >## ***Mxnet?*** 
 * ***Flexible and Efficient Library for Deep Learning***
 * ***Symbolic programming or imperative programming***
-* ***Mixed programming available*** *(`Symbolic + imperative`)*
+* ***Mixed programming available*** ***(`Symbolic + imperative`)***
  
 <image src="https://raw.githubusercontent.com/dmlc/web-data/master/mxnet/image/banner.png" width=800 height=200></image>
 >## ***Introduction*** 
@@ -55,7 +55,8 @@ print mx.asnumpy(out)
     * [***mxnet with graphviz library Only available on Linux***](https://github.com/JONGGON/Mxnet_Tutorial/tree/master/visualization)
         ```python
         pip install graphviz ('Do not write conda install graphviz')
-
+        ```
+        ```python
         Must be run on 'jupyter notebook'   
 
         import mxnet as mx  
@@ -67,9 +68,26 @@ print mx.asnumpy(out)
         * `To view only the results, run the 'xxx.html' file with 'Chrome' or 'Explorer'`
         
     * [***mxnet with tensorboard Only available on Linux***](https://github.com/JONGGON/Mxnet_Tutorial/tree/master/visualization/Convolutional%20Neural%20Networks%20with%20SoftmaxOutput-tensorboard)
+        
         ```python
         pip install tensorboard   
         ```
+        ```python
+        '''Issue'''
+
+        The 80th line of the tensorboard file in the path '/ home / jg / anaconda2 / bin' should be modified as shown below.
+
+        for mod in package_path:
+            module_space = mod + '/tensorboard/tensorboard' + '.runfiles'
+            if os.path.isdir(module_space):
+                return module_space
+        ```
+        
+        * If you want to see the results immediately, 
+        `Write the following script in the terminal window` where the event file exists.
+
+            * `tensorboard --logdir=tensorboard --logdir=./ --port=6006`
+
 
 * ### ***Neural Networks Applications***
     * [***Predicting lotto numbers in regression analysis using mxnet***](https://github.com/JONGGON/Mxnet_Tutorial/tree/master/applications/Predicting%20lotto%20numbers%20in%20regression%20analysis%20using%20mxnet)
@@ -89,8 +107,8 @@ print mx.asnumpy(out)
 
 >## ***Dependencies*** 
 * mxnet-0.9.5
-* numpy-1.12.1, matplotlib-1.5.0rc3 ,tensorboard , graphviz -> (`Visualization`)
-* opencv-3.2.0, struct , gzip , os , glob , threading -> (`Data preprocessing`)
+* numpy-1.12.1 , matplotlib-1.5.0rc3 , tensorboard , graphviz -> (`Visualization`)
+* opencv-3.2.0 , struct , gzip , os , glob , threading -> (`Data preprocessing`)
 * cPickle -> (`Data save and restore`)
 * logging -> (`Observation during learning`)
 * argparse -> (`Command line input from user`)
