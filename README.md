@@ -100,9 +100,7 @@ print mx.asnumpy(out)
     * [***Deep Convolution Generative Adversarial Network : using ImageNet , CIFAR10 , MNIST data***](https://github.com/JONGGON/Mxnet_Tutorial/tree/master/applications/Deep%20Convolution%20Generative%20Adversarial%20Network)
        ```cmd
         <Code execution example>  
-        python main.py --state --epoch 100 --noise_size 100 --batch_size 200 --save_period 100 --dataset CIFAR10
-    * [***word2vec : using undefined data***]()(***in progress***)
-    
+        python main.py --state --epoch 100 --noise_size 100 --batch_size 200 --save_period 100 --dataset CIFAR10```
 >## ***Development environment***
 * ```window 8.1 64bit``` and ```Ubuntu linux 16.04.2 LTS``` 
 * `WinPython-64bit-2.7.10.3(window) and anaconda2 4.3.1(linux)` 
@@ -110,7 +108,7 @@ print mx.asnumpy(out)
 
 >## ***Dependencies*** 
 * mxnet-0.9.5
-* numpy-1.12.1, matplotlib-2.0.1 , tensorboard(linux) , graphviz -> (`Visualization`)
+* numpy-1.12.1, matplotlib-2.0.1 , tensorboard-1.0.0a7(linux) , graphviz -> (`Visualization`)
 * opencv-3.2.0(window) , opencv-3.1.0(linux) , struct , gzip , os , glob , threading -> (`Data preprocessing`)
 * cPickle -> (`Data save and restore`)
 * logging -> (`Observation during learning`)
