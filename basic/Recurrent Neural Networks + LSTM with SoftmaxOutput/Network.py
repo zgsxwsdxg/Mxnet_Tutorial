@@ -171,6 +171,6 @@ def NeuralNet(epoch,batch_size,save_period):
 
 if __name__ == "__main__":
     print "NeuralNet_starting in main"
-    NeuralNet(epoch=100,batch_size=100,save_period=100)
+    NeuralNet(epoch=0,batch_size=100,save_period=100)
 else:
     print "NeuralNet_imported"

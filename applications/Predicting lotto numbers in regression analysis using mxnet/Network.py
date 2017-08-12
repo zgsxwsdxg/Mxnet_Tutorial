@@ -3,10 +3,12 @@ import mxnet as mx
 import numpy as np
 import data_preprocessing as dp
 import logging
+import os
 logging.basicConfig(level=logging.INFO)
 
-def LottoNet(epoch,batch_size,save_period):
-
+def LottoNet(epoch,batch_size,save_period,load_period):
+    
+    print("sdafasdfasdfasdf")
     '''data processing'''
 
     #training data,#test_data
@@ -46,9 +48,12 @@ def LottoNet(epoch,batch_size,save_period):
 
     out_affine = mx.sym.FullyConnected(data=hidden6, name='out_fc', num_hidden=6)
     output = mx.sym.LinearRegressionOutput(data=out_affine, label=label)
-    print output.list_arguments()
+    print(output.list_arguments())
 
     #weights save
+    if not os.path.exists("weights"):
+        os.makedirs("weights")
+
     model_name = 'weights/Lotto_Net'
     checkpoint = mx.callback.do_checkpoint(model_name,period=save_period)
 
@@ -58,21 +63,24 @@ def LottoNet(epoch,batch_size,save_period):
     test = mx.mod.Module(symbol=out_affine , data_names=['input'], label_names=None, context=mx.gpu(0))
 
     # Network information print
-    print mod.data_names
-    print mod.label_names
-    print train_iter.provide_data
-    print train_iter.provide_label
+    print(mod.data_names)
+    print(mod.label_names)
+    print(train_iter.provide_data)
+    print(train_iter.provide_label)
 
-    '''if the below code already is declared by mod.fit function, thus we don't have to write it.
-    but, when you load the saved weights, you must write the below code.'''
-    mod.bind(data_shapes=train_iter.provide_data,label_shapes=train_iter.provide_label,for_training=True)
+    # weights load 
+    weights_path = 'weights/Lotto_Net-{}.param'.format(load_period) 
 
-    #'''
-    # When you want to load the saved weights, uncomment the code below.
-    symbol, arg_params, aux_params = mx.model.load_checkpoint(model_name,100)
-
-    #the below code needs mod.bind, but If arg_params and aux_params is set in mod.fit, you do not need the code below, nor do you need mod.bind.
-    mod.set_params(arg_params, aux_params)
+    if os.path.exists(weights_path):
+        '''if the below code already is declared by mod.fit function, thus we don't have to write it.
+        but, when you load the saved weights, you must write the below code.'''
+        mod.bind(data_shapes=train_iter.provide_data,label_shapes=train_iter.provide_label,for_training=True)
+        # When you want to load the saved weights, uncomment the code below.
+        symbol, arg_params, aux_params = mx.model.load_checkpoint(model_name,load_period)
+        #the below code needs mod.bind, but If arg_params and aux_params is set in mod.fit, you do not need the code below, nor do you need mod.bind.
+        mod.set_params(arg_params, aux_params)
+    else:
+        print("weigths do not exist")
     #'''
 
     mod.fit(train_iter,
@@ -86,14 +94,14 @@ def LottoNet(epoch,batch_size,save_period):
             aux_params=None,
             epoch_end_callback=checkpoint)
 
-    print mod.data_shapes
-    print mod.label_shapes,
-    print mod.output_shapes
-    print mod.get_params()
-    print mod.get_outputs()
+    print(mod.data_shapes)
+    print(mod.label_shapes)
+    print(mod.output_shapes)
+    print(mod.get_params())
+    print(mod.get_outputs())
 
-    print "training_data : {}".format(mod.score(train_iter, ['mse', 'acc']))
-    print "Optimization complete."
+    print("training_data : {}".format(mod.score(train_iter, ['mse', 'acc'])))
+    print("Optimization complete.")
 
     #################################TEST####################################
 
@@ -121,7 +129,7 @@ def LottoNet(epoch,batch_size,save_period):
     result1 = mx.nd.round(normalization_factor*result)
     result2 = mx.nd.rint(normalization_factor*result)
 
-    print original.asnumpy()
+    print(original.asnumpy())
     result1 = result1.asnumpy()
     result2 = result2.asnumpy()
     #print result1
@@ -130,9 +138,9 @@ def LottoNet(epoch,batch_size,save_period):
     return [result1,result2]
 
 if __name__=="__main__":
-    print "NeuralNet_starting in main"
-    net = LottoNet(epoch=100, batch_size=100, save_period=100)
-    print net[0]
-    print net[1]
+    print("NeuralNet_starting in main")
+    net = LottoNet(epoch=100, batch_size=100, save_period=100 , load_period=60000)
+    print(net[0])
+    print(net[1])
 else:
-    print "NeuralNet_imported"
+    print("NeuralNet_imported")

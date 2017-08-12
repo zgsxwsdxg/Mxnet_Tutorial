@@ -68,8 +68,9 @@ if __name__ == "__main__":
     '''
     #'''
     (train_lbl_one_hot, train_lbl, train_img) = read_data_from_file('train-labels-idx1-ubyte.gz','train-images-idx3-ubyte.gz')
+    print(np.shape(train_img))
     (test_lbl_one_hot, test_lbl, test_img) = read_data_from_file('t10k-labels-idx1-ubyte.gz','t10k-images-idx3-ubyte.gz')
     #'''
 else:
 
-    print "Load the mnist data"
+    print ("Load the mnist data")

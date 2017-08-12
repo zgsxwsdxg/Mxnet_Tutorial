@@ -72,4 +72,4 @@ if __name__ == "__main__":
     #'''
 else:
 
-    print "Load the mnist data"
+    print("Load the mnist data")
